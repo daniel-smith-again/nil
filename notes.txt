@@ -1,0 +1,165 @@
+What is Nil?
+Nil is a small language for programming in the large.
+What does this mean?
+
+There are some programs that have fixed behavior and comsume a predictable
+amount of resources.
+There are other programs that comsume an unpredictable amount of resources and
+can change their behavior arbitrarily.
+Compare the shell utility "ls" to a video game engine.
+ls does a single thing and requires exactly enough time and space to feed a
+directory listing to the standard output.
+A video game engine combines arbitrary media formats to form composite digital
+scenes which may react to user input.
+Some of these scenes may be pre-scripted, or some of them may result from
+arbitrarily complex, multi-state interactions between game entites and mechanics.
+Compared to "ls", a video game engine is a program that requires an unpredictable
+and highly dynamic amount of resources at any given time.
+Nil is capable of expressing both "ls" and a video game engine.
+
+
+You can write compute kernels for restricted systems but you can also write
+high level application logic for managing and dispatching components.
+The runtime supports both small restricted programs and large programs which
+manage lots of moving parts and dynamic resource consumption.
+
+
+Is it a shell, an extension language, an IDE, an EMACS, a JS?
+It's a language for shipping software.
+It's a shell language that you can use to describe large and small programming
+
+How does my IR work?
+It's sexpr based, but in a flat array.
+I want to have functions similarly to how WASM works, but I also need to have
+access to the program stack so I can manipulate where functions are called.
+That might just be a frame pointer.
+
+The IR should be a typed reduction of Nil.
+It should have all the same capabilities of LLVM but be truly architecture
+agnostic.
+MLIR is dumb, don't copy it.
+I need to be able to talk about the function frame.
+That should just be the frame.
+That lets me swap around.
+What are my registers then?
+
+You have functions.
+Functions replace clobber themselves with a return value.
+how do I claim more space on the stack?
+I push bytes onto the frame.
+I can only push functions onto the frame.
+This doesn't help me if I want to clobber the frame. 
+How would I extend a string?
+
+
+(module 
+ mystring (bytes "Hello World")
+ string-append (function ())
+)
+
+(module ... )                          defines a binary object
+(function () () ...)                   defines a "basic block"
+(do )                                  jump to a label inside the function
+(call )                                move control to a function
+(set _ _)                              set a value at a label or address
+(get _)                                load a value from a label
+(grab _ _)                             load a value of some size from a label or
+                                       address
+(@ _)                                  address of a label
+(push _)                               extend the top of the stack by alignment
+(# _)                                  gets the size in bytes of something
++ - * / // % %%                        add subtract multiply divide and 
+                                       signed divide
+and or not xor                         binary logic operators
+shiftup shiftdown pushdown             shift operations
+(grow _ _)                             appease the type checker that your data
+                                       is a different size now
+(if _ _ _ _ _)                         compares the values at two labels or
+                                       addresses and executes the second to 
+                                       last expression if true, or the last
+                                       expression if false
+(grow _ _)                             zero extends a value by a number of bytes
+(extend _ _)                           sign extends a value by a number of bytes
+
+Do I even need modules?
+This is just a temporary thingy for compiling.
+I really don't need it for anything else.
+Honestly this should just be how my interpreter bootstraps itself.
+I should really really just have an interpreter that runs on the standard
+library
+in fact, that's what I'll do.
+
+
+
+
+How is my interpreter structured?
+I have basic functions which you use to implement the session.
+But the user also has to implement how programs are sent and received.
+That should just be an "in" and "out" function with strings.
+I also need "claim" and "release" in order for the interpreter to grab memory.
+Everything else can run off of that.
+The interpreter itself can run off of claiming and releasing memory segments.
+
+What's my philosophy?
+Is my language a shell?
+Is it a notebook?
+Is it a REPL?
+Is it an IDE?
+How is my language useful outside of being a language?
+It's not.
+The point of it being useful is for using the language.
+If you're not using the language, what are you even doing?
+It might be nice to allow it to work as a shell though.
+
+
+
+
+How do I collect something like this?
+(define f (x -> (do (g x)(+ 1 1))))
+(define g (x -> (do (h x)(+ 1 1))))
+(define h (x -> (let (str (String (read))) (x _ 1 str))))
+(define my-list (list 1))
+(f my-list)
+This is hard because now "localstring" is owned by somebody very low on the stack
+and the string is physically very high up the stack, three activation records in.
+
+
+(define f (x -> (g x)))
+(define g (x -> (h x)))
+(define h (x -> (let (str "localstring") (set x str))))
+(define my-ref (foo 1))
+(f my-ref)
+In this example, I'm mutating indirection arbitrarily deep in the call stack with something
+at the top.
+Tail call optimization makes this okay.
+However what about
+(define f (x -> (do (g x) (+ 1 1))))
+(define g (x -> (do (h x) (+ 2 2))))
+(define h (x -> (let (str "localstring") (set x str))))
+(define my-ref (foo 1))
+(f my-ref)
+This should be fine though because flow-typing enforces that the string escapes.
+Thsi is kind of a worst-case scenario though because now I'm stuck relocating
+this string for every function return.
+This is where a heap would be good because the string really needs to be in
+it's own space.
+Having a heap isn't necessarily wrong, it's just that it's not always available.
+Should I have memory profiles?
+Stack vs. Stack+Heap vs. StackfulHeap?
+Basically the program should dynamically react to the space that it's given.
+The heap isn't bad, it's just that I don't want to be stuck going through the
+heap for everything.
+Should there be overridable capabilities in default?
+Constructors create everything on the stack but there's no reason they can't
+construct elsewhere while retaining the correct semantics of the program.
+So there should be a module for this.
+What should be my module for how to manage memory?
+Should I be able to override constructors?
+I shouldn't have to override the entire language.
+What I need is a global store.
+Escape analysis is better, but I'm building up a huge context of stuff that I
+have to relocate on every function return which is bad.
+I can perform whole program optimization but it's probably easier to just have
+a heap that can store stuff so that functions can pass around ownership.
+It's just nice to not have to require a heap for most things.
+

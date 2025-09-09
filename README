@@ -1,0 +1,40 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                     Nil                                      ║
+║                             (N)il (I)sn't (Lisp)                             ║
+╚═══════════════════════╤══════════════════════════════╤═══════════════════════╝
+                        │   Copyright © Daniel Smith   │
+                        │ daniel.smith.again@gmail.com │
+                        └──────────────────────────────┘
+
+                                   ╭────────╮
+                                   │Overview│
+                                   ╰────────╯
+      This directory contains the documentation and bootstrap source code
+  for the Nil programming language. The documentation is located in the 'doc/'
+           folder. The source code is contained in the 'src/' folder.
+
+                                 ╭────────────╮
+                                 │Installation│
+                                 ╰────────────╯
+      The source code requires only a standards compliant C compiler to be 
+    available in the executable path. A Makefile is provided to assist with
+                      compilation but it is not required.
+
+Compilation produces a single executable file with no dependencies which may be
+            installed and executed anywhere in the operating system.
+
+                                ╭─────────────╮
+                                │Documentation│
+                                ╰─────────────╯
+  The documentation is supplied in HTML format which should be viewable using 
+             any web browser. There are several "books" provided...
+
+                        "The Standard Definition of Nil"
+
+                      "Default, Supplement, and Auxiliary"
+
+                          "Learn to Program with Nil"
+
+                           "Nil for the C Programmer"
+
+                        "Formalization and Proof in Nil"

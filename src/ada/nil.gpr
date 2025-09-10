@@ -1,0 +1,40 @@
+project Nil is
+  type Target is (
+    "Microsoft-AMD64", 
+    "Microsoft-ARM", 
+    "Linux-AMD64",
+    "Linux-ARM", 
+    "OSX-ARM"
+    );
+  type Option is ("No", "Yes");
+  
+  Debug : Option := External("Debug", "Yes");
+  Build : Target := External("Build", "Linux-AMD64");
+
+  Flags := ("-gnatE", "-gnatwa", "-gnatVa", "-gnatv");
+
+  case Debug is
+    when "Yes"  => Flags := Flags & ("-g", "-gnatf");
+    when "No"   => Flags := Flags & ("-O3");
+  end case;
+
+  case Build is
+    when "Microsoft-ARM" 
+      | "Microsoft-AMD64" 
+      | "Linux-ARM" 
+      | "Linux-AMD64" 
+      | "OSX-ARM"
+      => Flags := Flags & ("-m64");
+  end case;
+
+  package Compiler is
+    for Switches ("Ada") use Flags;
+  end Compiler;
+  for Main use ("nil");
+  for Source_Dirs use ("src");
+  case Debug is 
+    when "Yes"  => for Object_Dir use ".objects/debug";
+    when "No"   => for Object_Dir use ".objects/release";
+  end case;
+  for Exec_Dir use "bin";
+end Nil;

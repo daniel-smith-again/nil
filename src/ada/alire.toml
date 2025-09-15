@@ -17,12 +17,3 @@ generate_ada = false
 generate_gpr = false
 generate_c = false
 auto_gpr_with = false
-
-[[depends-on]]
-gnat = "^15.1.2"
-
-[[depends-on]]
-gnatcov = "^22.0.1"
-
-[[depends-on]]
-gnatprove = "^15.1.0"

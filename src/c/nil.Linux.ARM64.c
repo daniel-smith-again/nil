@@ -1,1 +1,0 @@
-#error "Currently Unsupported Platform"

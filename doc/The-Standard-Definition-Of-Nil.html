@@ -1,20 +1,212 @@
-<DOCTYPE html/>
+<!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
+    <title>The Standard Definition of Nil</title>
+    <link rel="icon" href="./icon/icon.webp" type="image/x-icon" />
+    <link rel="manifest" href="./icon/site.webmanifest">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <script src="./assets/util.js"></script>
+    <style>
+      @font-face { font-family:nil-definition-overpass; src:url('./assets/OverpassMNerdFontMono-Regular.otf'); }
+      @font-face { font-family:nil-definition-noto; src:url('./assets/NotoSansMonoVariable.ttf'); }
+      @font-face { font-family:nil-definition-serif; src:url('./assets/Buenard-Variable.ttf'); }
+      :root
+      {
+        --size: calc(7px + ((1vw + 1vh) / 2));
+      }
+      html { width: 100%; height: 100%; scrollbar-color: var(--foregroundsecond) var(--backgroundsecond); }
+      /*::-webkit-scrollbar { color: var(--foregroundsecond); }
+      ::-webkit-scrollbar { }*/
+      body
+      {
+        color: var(--backgroundsecond);
+        background-color:var(--foregroundsecond);
+        font-size:var(--size);
+        max-width: min(69vw, 160ch);
+        margin: auto;
+        overflow: auto;
+      }
+      body *
+      {
+        font-family: nil-definition-overpass, nil-definition-noto;
+        font-variant-ligatures: none;
+        max-width: 100%;
+        scrollbar-color: var(--foregroundsecond);
+      }
+      header { min-height: 100vh; padding-top: 2lh;}
+      a { text-decoration: none; color: var(--diminished); }
+      svg {width: 25vw; }
+      h1 { font-size: calc(var(--size) * 3); }
+      h2 { font-size: calc(var(--size) * 2); }
+      h3 { font-size: calc(var(--size) * 1.5); }
+      h4 { font-size: calc(var(--size) * 1.5); }
+      main h1 { width: 100%; text-align: center; }
+      summary > h2, summary > h3, summary > h4 { display: inline; }
+      summary { list-style-type: none; cursor: pointer; }
+      details summary::after { content: '...'; }
+      details[open] summary::after { content: '-';}
+      figure 
+      { 
+        width: 69%; 
+        border: solid 0.2ch var(--foregroundsecond); 
+        border-radius: 1ch; 
+        padding: 1ch;
+        background-color: var(--backgroundsecond);
+        margin: auto; 
+        margin-bottom: 1ch;
+      }
+      figcaption { border-bottom: solid 0.2ch var(--foregroundsecond); margin-bottom: 1lh; }
+      main 
+      {
+        counter-reset: clause-number 0; 
+        counter-reset: article-number 0; 
+        counter-reset: chapter-count 0; 
+        counter-reset: section-count 0; 
+        counter-reset: subsectioncount 0;
+      }
+      h2::before { content: counter(chapter-count) ' '; }
+      h3::before { content: counter(chapter-count) ' . ' counter(section-count) ' '; }
+      h4::before { counter-increment: subsection; content: counter(chapter-count) ' . ' counter(section-count) ' . ' counter(subsection-count) ' '; }
+      main article 
+      { 
+        counter-set: clause-number 0;
+        counter-increment: article-number;
+        counter-increment: chapter-count; 
+        color: var(--foreground);
+        background-color: var(--background);
+        border-radius: 1ch;
+        padding: 1ch;
+        padding-left: 2ch;
+        padding-right: 2ch;
+        margin-bottom: 1lh;
+        outline: none;
+      }
+      main table { width: max-content; }
+      main tr { width: 100%; }
+      main td { padding: 1ch; }
+      main table[bnf] tr > td:last-child { text-align: right; }
+      main table[border] { border: solid 0.2ch var(--foregroundsecond); }
+      main table[border] td { border: solid 0.2ch var(--foregroundsecond); }
+      span[greyed] { color: var(--diminished); }
+      main *, header *, footer * { font-family: nil-definition-serif; }
+      main > article p { max-width: calc(100% - 3ch); counter-increment: clause-number; }
+      main > article p::after
+      {
+        vertical-align:top;
+        content: ' ' counter(clause-number) ' ';
+        position: absolute; 
+        right: calc(0% + 17vw);
+        color: var(--diminished);
+      }
+      footer { text-align: center; width: 100%; max-width: min(69vw, 160ch); }
+      footer > * { margin: auto; }
+      @media screen and (max-width: 160ch)
+      {
+        body { width: auto; max-width: calc(100% - 3ch); padding: 1ch; }
+        figure { width: fit-content; }
+        main > article p::after { position: absolute; right: calc(0% - 3vw); }
+      }
+    </style>
   </head>
-  <body>
-    <header>
+  <body onload="setup()">
+    <header onclick="setTheme()">
+      <table>
+        <tr>
+          <td>
+            <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMin" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+              <defs id="defs54" />
+              <ellipse style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:var(--background);stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+              ry="15.550441" rx="38.556782" cy="-1.5364231" cx="62.654388" transform="matrix(0.8,0.6,-0.70710678,0.70710678,0,0)" id="ellipse45" />
+              <path style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:var(--background);stroke-linejoin:round;stroke-miterlimit:5;stroke-dasharray:none;stroke-opacity:1"
+              d="M 66.489828,62.06793 A 18.564376,18.564376 0 0 1 47.925452,82.060335 18.564376,18.564376 0 0 1 30.789107,62.06793 18.564376,18.564376 0 0 1 47.925452,43.503554 18.564376,18.564376 0 0 1 66.489828,63.495959"
+              id="path47" />
+              <path style="fill:none;stroke:var(--background);stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+              d="M 60.777712,2.0907162 37.92925,97.768652" id="path49" />
+            </svg>
+          </td>
+          <td style="vertical-align:bottom;">
+            <p style="margin:0;padding:0;">
+              <span style="font-size: calc(var(--size) * 2);">The</span><br>
+              <span style="font-size: calc(var(--size) * 4);">Standard Definition</span><br>
+              <span style="font-size: calc(var(--size) * 2);">of</span><br>
+              <span style="font-size: calc(var(--size) * 9);">Nil</span><br>
+            </p>
+          </td>
+        </tr>
+      </table>
     </header>
     <main>
+      <article>
+        <h1>Table of Contents</h1>
+      </article>
+      <article>
+        <h1>Introduction</h1>
+        <p>This document formally defines the Nil programming langauge.</p>
+        <p>
+          The overall definition is separated by scope into four sections by order of dependence...
+        </p>
+        <ol>
+          <li>Foundation</li>
+          <li>Default</li>
+          <li>Supplement</li>
+          <li>Auxiliary</li>
+        </ol>
+        <p>
+          The Foundation is concerned with the form, format, and interpretation of Nil programs.
+          A program's behavior can be completely and rigorously determined by the meanings and 
+          effects described by the Foundation.
+        </p>
+        <p>
+          The Default is concerned with how the facilities of Nil are exposed to the programmer.
+        </p>
+        <p>
+          The Supplement and Auxiliary scopes pertain to modules which may be used as "libraries"
+          containing useful programs for constructing large or complex systems.
+        </p>
+        <h2>Foundation</h2>
+        <p>
+          The Foundation is given in parts according to each unique abstraction that Nil provides 
+          for specifying the behavior of a program. A system of types is used to connect each of 
+          these component abstractions with relations and equivalences.
+        </p>
+        <p>
+          The individual abstractions provided by Nil are, in no particular order, as follows...
+        </p>
+        <ul>
+          <li>Programs</li>
+          <li>Modules</li>
+          <li>Functions</li>
+          <li>Control</li>
+          <li>Effects</li>
+          <li>Types</li>
+          <li>Numbers</li>
+          <li>Boolean Values</li>
+          <li>Data</li>
+          <li>Sequences</li>
+          <li>Bytes</li>
+        </ul>
+        <p>
+          In addition, the Foundation also specifies the base syntax, the effects of evaluation, and
+          the properties of correctly constructed programs.
+        </p>
+      </article>
+      <article>
+        <h1>Syntax</h1>
+      </article>
+      <article>
+        <h1>Semantics</h1>
+      </article>
+      <article>
+        <h1></h1>
+      </article>
     </main>
     <footer>
-      <p>
-        This document is copyright &copy; Daniel Smith 2025<br>
-        daniel.smith.again@gmail.com
-      </p>
+    <p>
+      This document is copyright &copy; Daniel Smith 2025<br>
+      daniel.smith.again@gmail.com
+    </p>
     </footer>
   </body>
 </html>
-
-  
-

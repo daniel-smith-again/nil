@@ -17,3 +17,12 @@ generate_ada = false
 generate_gpr = false
 generate_c = false
 auto_gpr_with = false
+
+[[depends-on]]
+gnatprove = "^15.1.0"
+
+[[depends-on]]
+gnatcov = "^22.0.1"
+
+[[depends-on]]
+gnatdoc = "^25.2.0"

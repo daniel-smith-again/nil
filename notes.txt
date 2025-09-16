@@ -163,3 +163,25 @@ I can perform whole program optimization but it's probably easier to just have
 a heap that can store stuff so that functions can pass around ownership.
 It's just nice to not have to require a heap for most things.
 
+
+
+because I have a single, inconsistent universe, univalence is probably unnessecary.
+What I do need is a way to establish equalities beyond the implicit ones.
+How would I even do that?
+When would I need it?
+I would need it for verifying that a program is sound.
+Based on an equivalence relation, I can elide certain disqualifications.
+
+Do I make a distinction between (Number) and (1)?
+How about (Function) and ((Number) -> Number) and (x -> x + 1)?
+These are partial information structures.
+
+(define (Function Parameters Result Body))
+
+
+How do I crash my stack model?
+(define mystring "foo")
+(define f (x -> (do (g x) (1 + 1))))
+(define g (x -> (do (h x) (1 + 1))))
+(define h (x -> (do (x _ 1 <- "bar"))))
+(f mystring)

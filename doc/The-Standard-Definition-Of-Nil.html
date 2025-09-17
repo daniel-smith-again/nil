@@ -9,9 +9,10 @@
     <meta name="theme-color" content="#ffffff">
     <script src="./assets/util.js"></script>
     <style>
-      @font-face { font-family:nil-definition-overpass; src:url('./assets/OverpassMNerdFontMono-Regular.otf'); }
+      @font-face { font-family:nil-definition-mono; src:url('./assets/OverpassMNerdFontMono-Regular.otf'); }
       @font-face { font-family:nil-definition-noto; src:url('./assets/NotoSansMonoVariable.ttf'); }
       @font-face { font-family:nil-definition-serif; src:url('./assets/Buenard-Variable.ttf'); }
+      @font-face { font-family:nil-definition-sans; src:url('./assets/IBM-Plex-Sans-Var-Roman.woff2'); font-weight: normal; font-style: normal;}
       :root
       {
         --size: calc(7px + ((1vw + 1vh) / 2));
@@ -30,7 +31,7 @@
       }
       body *
       {
-        font-family: nil-definition-overpass, nil-definition-noto;
+        font-family: nil-definition-sans nil-definition-noto;
         font-variant-ligatures: none;
         max-width: 100%;
         scrollbar-color: var(--foregroundsecond);
@@ -91,6 +92,8 @@
       main table[border] td { border: solid 0.2ch var(--foregroundsecond); }
       span[greyed] { color: var(--diminished); }
       main *, header *, footer * { font-family: nil-definition-serif; }
+      main article h1, main article h2, main article h3, main article h4 { font-family: nil-definition-serif; }
+      main article * { font-family: nil-definition-sans;}
       main > article p { max-width: calc(100% - 3ch); counter-increment: clause-number; }
       main > article p::after
       {
@@ -143,63 +146,93 @@
       </article>
       <article>
         <h1>Introduction</h1>
-        <p>This document formally defines the Nil programming langauge.</p>
         <p>
-          The overall definition is separated by scope into four sections by order of dependence...
-        </p>
-        <ol>
-          <li>Foundation</li>
-          <li>Default</li>
-          <li>Supplement</li>
-          <li>Auxiliary</li>
-        </ol>
-        <p>
-          The Foundation is concerned with the form, format, and interpretation of Nil programs.
-          A program's behavior can be completely and rigorously determined by the meanings and 
-          effects described by the Foundation.
+          This document formally defines Nil with the purpose of facilitating the portability of Nil
+          programs across a variety of implementations and environments.
         </p>
         <p>
-          The Default is concerned with how the facilities of Nil are exposed to the programmer.
+          Nil is a "general purpose" programming language.
+          Programs are expressed as the applications of functions over data such that transformations
+          are effected on that data.
         </p>
         <p>
-          The Supplement and Auxiliary scopes pertain to modules which may be used as "libraries"
-          containing useful programs for constructing large or complex systems.
+          A Nil program is required to conform to a notion of correctness whereby a correct program 
+          is guaranteed to never perform undesired transformations on data, or otherwise corrupt or 
+          degrade the form of the data.
         </p>
-        <h2>Foundation</h2>
+        <h2>Implementation</h2>
         <p>
-          The Foundation is given in parts according to each unique abstraction that Nil provides 
-          for specifying the behavior of a program. A system of types is used to connect each of 
-          these component abstractions with relations and equivalences.
+          An implementation of Nil is any artifact which exhibits the structure and behavior set 
+          out in this document.
         </p>
         <p>
-          The individual abstractions provided by Nil are, in no particular order, as follows...
+          The Standard Definition of Nil constitutes a body of requirements that an implementation 
+          must conform to. 
+          Conversely, a conforming implementation is guaranteed to exhibit the structure and behavior 
+          described by this document.
+        </p>
+      </article>
+      <article>
+        <h1>Language Overview</h1>
+        <p>
+          The Nil programming language is comprised of modular, but interdependent, abstractions 
+          which are composed to describe a complete and correct program.
+          These abstractions are, in no particular order...
         </p>
         <ul>
           <li>Programs</li>
           <li>Modules</li>
           <li>Functions</li>
-          <li>Control</li>
-          <li>Effects</li>
-          <li>Types</li>
-          <li>Numbers</li>
-          <li>Boolean Values</li>
           <li>Data</li>
+          <li>Types</li>
+          <li>Control Flow</li>
           <li>Sequences</li>
-          <li>Bytes</li>
+          <li>Value Arithmetic</li>
         </ul>
+      </article>
+      <article>
+        <h1>Programs</h1>
         <p>
-          In addition, the Foundation also specifies the base syntax, the effects of evaluation, and
-          the properties of correctly constructed programs.
+          Programs in Nil are both a means of specifying transformations of data, and a form of data themselves.
+          This is such that a Nil program may represent both the transformations to be effected on data, and the data being transformed.
         </p>
+        <h2>Written Programs</h2>
+        <p>
+          Programs as data are canonically represented as a string of characters.
+          This format can be considered to be the authoritative representation of a program, referred to as a "written program".
+        </p>
+        <p>
+          Written programs are formed according to a synatx structure, which constrains the order and sequence in which certain characters may be used.
+          Within the syntax structure are syntax elements where each element corresponds to a structural component of a program or instance of data.
+          The following figure shows the syntax for written programs and their element association to program components and data.
+        </p>
+        <figure>
+          <figcaption>The syntax for the written form of Nil programs.</figcaption>
+          <table toc>
+            <tr><td>Program</td><td>&rightarrow;</td><td><code>(</code> Atom ... <code>)</code> | Symbol</td></tr>
+          </table>
+        </figure>
       </article>
       <article>
-        <h1>Syntax</h1>
+        <h1>Modules</h1>
       </article>
       <article>
-        <h1>Semantics</h1>
+        <h1>Functions</h1>
       </article>
       <article>
-        <h1></h1>
+        <h1>Data</h1>
+      </article>
+      <article>
+        <h1>Types</h1>
+      </article>
+      <article>
+        <h1>Control Flow</h1>
+      </article>
+      <article>
+        <h1>Sequences</h1>
+      </article>
+      <article>
+        <h1>Value Arithmetic</h1>
       </article>
     </main>
     <footer>

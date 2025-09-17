@@ -1,0 +1,42 @@
+                         The Standard Definition of Nil
+
+                                  Introduction
+This document formally defines Nil with the purpose of facilitating the
+portability of Nil programs across a variety of implementations and
+environments.
+
+Nil is a general purpose programming language. Programs are expressed in Nil as
+the repeated application of functions over data such that transformations are
+effected on that data. 
+
+Programs expressed in Nil are required to conform to a notion of correctness.
+A correct program is guaranteed to never corrupt or degrade the form of the data
+being transformed, or perform undesired transformations on that data.
+
+
+
+
+                               Language Overview
+The Nil programming language is comprised of modular but interdependent
+abstractions which are composed to describe a complete and correct program.
+These abstractions are as follows...
+Programs
+Modules
+Functions
+Data
+Types
+Effects
+Sequences
+Arithmetic of Values
+
+                                    Programs
+Programs in Nil are both a means of specifying transformations of data and a
+form of data themselves. This is such that a Nil program may represent both the
+transformations to be effected on data, and the data being transformed.
+
+Programs as data are canonically represented as a string of characters. This
+format can be considered the authoritative source of the form of a program. This
+is referred to as a "written program".
+
+Generally any character value can be used to write a program. This document
+assumes that the Unicode 

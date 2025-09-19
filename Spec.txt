@@ -16,7 +16,7 @@ being transformed, or perform undesired transformations on that data.
 
 
 
-                               Language Overview
+			       Language Overview
 The Nil programming language is comprised of modular but interdependent
 abstractions which are composed to describe a complete and correct program.
 These abstractions are as follows...
@@ -39,4 +39,16 @@ format can be considered the authoritative source of the form of a program. This
 is referred to as a "written program".
 
 Generally any character value can be used to write a program. This document
-assumes that the Unicode 
+assumes that the Unicode is used to store and transmit written programs.
+
+Programs are composed of two structural components, symbols and expressions.
+A symbol is a sequence of printable characters which correspond to a unique
+symbolic value.
+An expression is a sequence of programs which corresponds to a composite 
+aspect of the program's meaning.
+
+Written programs are composed according to a syntax which decides the 
+permissible orderings of characters.
+The syntax is as follows ...
+1. An expression begins with an open brace, "(", and ends with a closed brace, ")".
+2. A symbol is any unbroken sequence of non-blank characters, excluding "(" and ")".

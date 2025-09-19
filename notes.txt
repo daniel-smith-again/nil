@@ -185,3 +185,25 @@ How do I crash my stack model?
 (define g (x -> (do (h x) (1 + 1))))
 (define h (x -> (do (x _ 1 <- "bar"))))
 (f mystring)
+
+Why do I even want a stack-only model?
+Because it makes it very fast to use certain things.
+Everything can be immutable and pass by reference.
+Continuations allow you to "resize" data and then continue as you were.
+
+Do I have numbers?
+Yes, I have symbolic numbers.
+Signed byte encoding.
+The first byte is the least significant so you can work in order of long algebra.
+The first byte also has the sign bit.
+
+I need a way to do slices.
+Slices are an important form of indirection.
+They're different than array indexing.
+I can use ranges.
+Ranges are useful.
+I should provide some machine types for all this stuff.
+It's not like 32 bit architecture isn't common.
+Optimizing for embedded byte-based architectures is honestly really stupid.
+More like that would be a special limited application of this langauge.
+Those architectures aren't general purpose.

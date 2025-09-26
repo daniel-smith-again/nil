@@ -36,7 +36,7 @@
         max-width: 100%;
         scrollbar-color: var(--foregroundsecond);
       }
-      header { min-height: 100vh; padding-top: 2lh;}
+      header { min-height: 100vh; padding-top: 9lh; align-items:center;}
       a { text-decoration: none; color: var(--diminished); }
       svg {width: 25vw; }
       h1 { font-size: calc(var(--size) * 3); }
@@ -51,14 +51,13 @@
       figure 
       { 
         width: 69%; 
-        border: solid 0.2ch var(--foregroundsecond); 
+        border: solid 0.2ch var(--backgroundsecond); 
         border-radius: 1ch; 
         padding: 1ch;
-        background-color: var(--backgroundsecond);
         margin: auto; 
         margin-bottom: 1ch;
       }
-      figcaption { border-bottom: solid 0.2ch var(--foregroundsecond); margin-bottom: 1lh; }
+      figcaption { border-bottom: solid 0.2ch var(--backgroundsecond); margin-bottom: 1lh; }
       main 
       {
         counter-reset: clause-number 0; 
@@ -75,8 +74,7 @@
         counter-set: clause-number 0;
         counter-increment: article-number;
         counter-increment: chapter-count; 
-        color: var(--foreground);
-        background-color: var(--background);
+        border: solid 0.3ch var(--background);
         border-radius: 1ch;
         padding: 1ch;
         padding-left: 2ch;
@@ -162,7 +160,7 @@
         </p>
         <h2>Implementation</h2>
         <p>
-          An implementation of Nil is any artifact which exhibits the structure and behavior set 
+          An implementation of Nil is any program which exhibits the structure and behavior set 
           out in this document.
         </p>
         <p>
@@ -209,7 +207,10 @@
         <figure>
           <figcaption>The syntax for the written form of Nil programs.</figcaption>
           <table toc>
-            <tr><td>Program</td><td>&rightarrow;</td><td><code>(</code> Atom ... <code>)</code> | Symbol</td></tr>
+            <tr><td>Program</td><td>&Rightarrow;</td><td>Expression | Symbol</td><td><i>a program may be an Expression or a Symbol</i></td></tr>
+            <tr><td>Expression</td><td>&Rightarrow;</td><td><code>(</code><code>)</code></td></tr>
+            <tr><td>Program</td><td>&Rightarrow;</td><td>Expression | Symbol</td><td><i>A Program may be an Expression or a Symbol</i></td></tr>
+            <tr><td>Expression</td><td>&Rightarrow;</td><td><code>(</code>Atom ...<code>)</code></td></tr>
           </table>
         </figure>
       </article>

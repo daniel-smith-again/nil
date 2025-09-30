@@ -1,6 +1,8 @@
 What is Nil?
 Nil is a small language for programming in the large.
 What does this mean?
+This means it has flexible abstractions for making small programs at any level of
+abstraction.
 
 There are some programs that have fixed behavior and comsume a predictable
 amount of resources.
@@ -207,3 +209,57 @@ It's not like 32 bit architecture isn't common.
 Optimizing for embedded byte-based architectures is honestly really stupid.
 More like that would be a special limited application of this langauge.
 Those architectures aren't general purpose.
+
+How do I reason about types of things?
+Like first class functions and modules?
+Those are opaque.
+viewtypes are for turning normal stuff into ADT's.
+Specifically it's to destructure an ADT.
+That's just the most stupid thing ever.
+They're just functions.
+
+
+What can I do with my GADT's.
+I can have transform constructors.
+What about performing transforms in-place?
+That should be fine.
+There's ways to do it without a heap.
+
+How do I have seamless opt-in heap when everything's supposed to be allocated on
+the stack?
+Effects.
+Effects are dependency injection.
+Run some code with effect handlers that allocate to the stack.
+What are those handlers?
+What are the default methods.
+Do I have a prelude like Haskell?
+Do I have to use typeclasses? ew.
+I need to be able to express a malloc.
+How do I reason about casting and the fact that "everything is a byte"?
+
+Dependency injection.
+Just like how there's profiles in Ada, there's effects which decide how things are
+accomplished in a language.
+That actually is a nice way to reason about the interpreter and compilation
+because effects map to what the compiler needs to emit.
+
+What are my primitive effects?
+create      ...       reserve storage to contain a new entity
+discard     ...       release storage when an entity is no longer needed
+apply       ...       activate a function
+yield       ...       exit a function activation
+access      ...       observe an entity in storage
+store       ...       update an entity in storage
+read        ...       get a program as input
+
+
+
+What are my syntax functions?
+
+'foo a symbol value
+(' foo) a quoted expression
+(' ('' foo)) insert the value of foo
+(' (''' foo)) insert the items of foo at that position.
+You can only use these constructively.
+In addition you can use sequence primitives.
+...whatever those are

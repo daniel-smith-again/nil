@@ -7,13 +7,11 @@ environments.
 
 Nil is a general purpose programming language. Programs are expressed in Nil as
 the repeated application of functions over data such that transformations are
-effected on that data. 
+effected on that data.
 
 Programs expressed in Nil are required to conform to a notion of correctness.
 A correct program is guaranteed to never corrupt or degrade the form of the data
 being transformed, or perform undesired transformations on that data.
-
-
 
 
 			       Language Overview
@@ -44,11 +42,18 @@ assumes that the Unicode is used to store and transmit written programs.
 Programs are composed of two structural components, symbols and expressions.
 A symbol is a sequence of printable characters which correspond to a unique
 symbolic value.
-An expression is a sequence of programs which corresponds to a composite 
+An expression is a sequence of programs which corresponds to a composite
 aspect of the program's meaning.
 
 Written programs are composed according to a syntax which decides the 
 permissible orderings of characters.
 The syntax is as follows ...
-1. An expression begins with an open brace, "(", and ends with a closed brace, ")".
-2. A symbol is any unbroken sequence of non-blank characters, excluding "(" and ")".
+1. An expression begins with an open brace, "(",
+   and ends with a closed brace, ")".
+2. A symbol is any unbroken sequence of non-blank characters,
+   excluding "(" and ")".
+The only invalid written program is one which does not contain evenly matched
+pairs of round braces, which violates the first rule of Nil syntax.
+
+                                    Modules
+Modules provide a way to modularize large programs.

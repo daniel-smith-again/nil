@@ -1,4 +1,42 @@
-                         The Standard Definition of Nil
+                 ╭────────────────────────────────────────────╮
+                 │       The Standard Definition of Nil       │
+                 ╰────────────────────────────────────────────╯
+
+                            Copyright © Daniel Smith
+
+                                 ╒════════════╗
+                                 ╵Introduction║
+╒═════════════════════════════════════════════╝
+
+This document formally defines the algorithmic language Nil with the purpose of
+facilitating the portability of Nil programs across a veriety of implementations
+and environments.
+
+Nil is a general purpose programming language and as such is capable of
+expressing any program.
+
+Nil is a general purpose langauge for describing programs. Programs are
+expressed in Nil as the repeated application of functions over data such that
+transformations are effected on that data.
+
+Programs expressed in Nil are required to conform to a notion of correctness
+
+│
+│
+│
+│
+│
+│
+│
+│
+│
+│
+│
+
+
+
+
+The Standard Definition of Nil
 
                                   Introduction
 This document formally defines Nil with the purpose of facilitating the

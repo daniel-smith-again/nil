@@ -263,3 +263,82 @@ What are my syntax functions?
 You can only use these constructively.
 In addition you can use sequence primitives.
 ...whatever those are
+
+
+In a batch compiler, you read in a bunch of crap and then spit out all the
+errors all at once.
+In Nil, you're only dealing with one snippet at a time.
+This means that errors can be annotated dynamically as the user types.
+For example, a type mismatch can be communicated by flagging the expression once
+it's been closed.
+Lets say I do something like 
+(define (the (foo bar) baz)
+ (function (x) ...))
+The editor will automatically fill out what needs to be present in the body 
+of the function.
+(...
+ (function (x) (do a b c)))
+Macros can also communicate errors.
+What are my errors?
+* Missing expression.
+* Type mismatch.
+* Syntax mismatch.
+
+What questions can I ask about a program?
+* Result type
+* Control flow
+* Effects
+* Structural supertype
+
+How do I merge parsing macros and template macros?
+Allow functions of ((Program) -> Program) to be run on capture fragments.
+Lets say I have a loop macro like 
+((syntax loop-utility (loop) 
+ (loop x) ((''' (foo x))))
+ where (foo (function (x) ...)))
+
+(let (foo (function (x) ...))
+ (syntax loop-utility (loop)
+  (loop list) ((''' (foo list)))))
+
+That should work.
+Template works as an implicit quote.
+Each capture variable is implicitly a (''' x)
+
+How does my repl work?
+You type a snippet using a mixture of parentheses and indentation.
+As you type an expression, the REPL will search for partial syntax matches and 
+suggest completions to you.
+If you type something that doesn't match any syntax, you get an error that 
+there's no match.
+If you type a partial syntax and then fail to complete it, the macro will issue
+a partial match error and suggest corrections.
+The REPL will always stub out the types that are required at certain positions.
+
+
+What are my basic types?
+
+String
+UTF-8 encoded bytes.
+
+Bit array for machine types.
+
+Numbers are ranges.
+You can even give significant figures such as -100.0000 -- 100.00
+You can use a carrier such as a specific bit array or a Natural number.
+For example, 
+(define Natural-10k (range of (bits 16) from 1 to 100))
+(define foo 1)
+(define foo (function (x) (x + 1)))
+(define (foo x y z))
+(define (foo (x : Natural) (y : Natural) (z : Natural)))
+(foo 1 2 3)
+Arbitrary precision is as follows...
+Digits are encoded as binary octets.
+The most significant bit is 1 if the following bytes is a digit.
+The 7 least significant bits are a base-128 encoded digit.
+
+What goes on the stack vs. the heap?
+Containers.
+You have various organizations of indexed mutable slots.
+

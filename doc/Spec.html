@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>The Standard Definition of Nil</title>
     <meta charset="utf-8">
+    <title>The Standard Definition of Nil</title>
+    <link rel="icon" href="icon/icon.svg" type="image/x-icon">
     <style>
-      @font-face { font-family:NIL-FONT; src:url('3270.ttf'); }
+      @font-face { font-family:NIL-FONT; src:url('AnonymicePro.ttf'); }
       body
       {
           font-family:NIL-FONT;
           font-variant-ligatures:none;
-          font-size:calc((16px + 2vw + 0.5vh) / 2);
+          font-size:calc((7px + 2vw + 0.5vh) / 2);
           width:80ch;
-          line-height:2ch;
+          line-height:1.8ch;
           margin:auto;
       }
       body *
@@ -23,7 +24,9 @@
           display:block;
           width:20ch;
           height:auto;
-          margin:auto;          
+          margin:auto;
+          margin-top:31vh;
+          margin-bottom:69vh;
       }
       a
       {
@@ -55,6 +58,35 @@
     </style>
   </head>
   <body>
+   <pre style="height:100vh;">
+Revision 1                                                  20th September, 2025
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                ╭╼    
+                                ╰───────────────────╮
+                            The Standard Definition │
+                                     ╭──────────────╯
+                                     │ of 
+                                     ╰────╮
+                                      NIL │
+                                     ╭────╯
+                                     ╰╼
+    </pre>
     <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMin" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
               <defs id="defs54" />
               <ellipse style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -64,22 +96,17 @@
               id="path47" />
               <path style="fill:none;stroke:black;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
               d="M 60.777712,2.0907162 37.92925,97.768652" id="path49" />
-            </svg>
+            </svg>   
     <pre>
-╔═══════════════════════════════════════════════════════════════════════════════╗
-║                        The Standard Definition of NIL                         ║
-║                        ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄                         ║
-║                                                                               ║
-║                           Copyright © Daniel Smith                            ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
-
                                 ╭──────────────╮
                                 ╽ <a href="#introduction" id="introduction">Introduction</a> │
 ╭──────────────────────────────────────────────╯
 ├ This document provides the formal definition of the algorithmic language,
-│ <span footnote>"NIL"<div annotation>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+│ <span footnote>"NIL"<div annotation>
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ A recursive acronym for "Nil Isn't Lisp". ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</div></span>, which is a recursive acronym for "Nil Isn't Lisp".
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+</div></span>, which is a recursive acronym for "Nil Isn't Lisp".
 │
 ├ The purpose of this document is to promote the portability of NIL programs
 │ across a variety of implementations and hardware.
@@ -107,7 +134,47 @@
 ╭───────────────────────────────────────────╯
 ├ Programs are the medium through which the behavior and effects of execution
 │ can be specified. Programs are also a form of Data.
+│
+├ Programs are represented by a structure composed of Symbols and Expressions.
+│ Symbols are atomic and cannot be decomposed into smaller structures.
+│ Expressions are composite and contain sequences of other Symbols and
+│ Expressions.
+│
+├ A "written Program" refers to the format used for storage and transmission of
+│ NIL programs. Written Programs are represented by UTF-8 encoded Unicode® 
+│ character sequences.
+│
+├ Syntax is used to draw a correspondence between a Program and its written form.
+│
+│                                  ╭────────╮
+│                                  │ Syntax │
+│╭─────────────────────────────────┴────────╯ 
+│├ The syntax of written programs is comprised of two rules...
+││    
+││ 1. A Symbol is any unbroken sequence of Unicode® glyphs excluding the  
+││    character codes defined in the Character Category, "Z", and the ASCII round 
+││    braces, "(" and ")". For berevity, the term "Blank" will be used to refer
+││    to the set of characters in the Character Category, "Z".
+││
+││ 2. An Expression is a closed pair of round braces, "(" and ")" with an 
+││    arbitrary number of characters between them.
+│╰╼
+│                                 ╭─────────╮
+│                                 ╽ Parsing │
+│╭──────────────────────────────────────────╯
+│├ Parsing rules are used to reconstruct a Program from its written form. These
+││ rules are as follows...
+││
+││ 1. A Symbol will include all glyphs until a Blank or Expression occurs.
+││
+││ 2. Each opening round brace corresponds to a unique Expression which will 
+││    include all Symbols and Expressions occurring before the corresponding 
+││    closing round brace as items in the order that they occur in the written
+││    Program.
 
+
+
+         
                                   ╭─────────╮
                                   ╽ Modules │
 ╭───────────────────────────────────────────╯
@@ -137,6 +204,8 @@
 ╭────────────────────────────────────────────────╯
 
 
+╒═══════════════════════════════════════════════════════════════════════════════╕
+│                           Copyright © Daniel Smith                            │
     </pre>
   </body>
 </html>

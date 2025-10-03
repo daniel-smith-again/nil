@@ -9,12 +9,12 @@
       {
           font-family:NIL-FONT;
           font-variant-ligatures:none;
-          font-size:calc((16px + 1vw + 0.5vh) / 2);
+          font-size:calc((16px + 2vw + 0.5vh) / 2);
           width:80ch;
           line-height:2ch;
           margin:auto;
       }
-      body *, body > pre
+      body *
       {
           font-family:NIL-FONT;
       }
@@ -24,6 +24,33 @@
           width:20ch;
           height:auto;
           margin:auto;          
+      }
+      a
+      {
+          text-decoration:none;
+          color:inherit;
+          outline:none;
+      }
+      a:hover
+      {
+          font-style:italic;
+      }
+      span[footnote]
+      {
+          position:relative;
+      }
+      span[footnote] > div[annotation]
+      {
+          position:absolute;
+          bottom:100%;
+          left:100%;
+          display:none;
+          white-space:pre;
+          background-color:white;
+      }
+      span[footnote]:hover > div[annotation]
+      {
+          display:block;
       }
     </style>
   </head>
@@ -47,10 +74,12 @@
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
                                 ╭──────────────╮
-                                ╽ Introduction │
+                                ╽ <a href="#introduction" id="introduction">Introduction</a> │
 ╭──────────────────────────────────────────────╯
 ├ This document provides the formal definition of the algorithmic language,
-│ "NIL", which is a recursive acronym for "Nil Isn't Lisp".
+│ <span footnote>"NIL"<div annotation>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ A recursive acronym for "Nil Isn't Lisp". ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</div></span>, which is a recursive acronym for "Nil Isn't Lisp".
 │
 ├ The purpose of this document is to promote the portability of NIL programs
 │ across a variety of implementations and hardware.
@@ -73,12 +102,11 @@
 │╰╼
 ╰╼
 
-
-
-
                                  ╭──────────╮
                                  ╽ Programs │
 ╭───────────────────────────────────────────╯
+├ Programs are the medium through which the behavior and effects of execution
+│ can be specified. Programs are also a form of Data.
 
                                   ╭─────────╮
                                   ╽ Modules │

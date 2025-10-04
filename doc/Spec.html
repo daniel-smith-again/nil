@@ -12,7 +12,6 @@
           font-variant-ligatures:none;
           font-size:calc((7px + 2vw + 0.5vh) / 2);
           width:80ch;
-          line-height:1.8ch;
           margin:auto;
       }
       body *
@@ -59,7 +58,15 @@
   </head>
   <body>
    <pre style="height:100vh;">
-Revision 1                                                  20th September, 2025
+Revision ∞                                                    19th January, 2038
+
+
+
+
+
+
+
+
 
 
 
@@ -106,15 +113,15 @@ Revision 1                                                  20th September, 2025
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ A recursive acronym for "Nil Isn't Lisp". ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-</div></span>, which is a recursive acronym for "Nil Isn't Lisp".
+</div></span>, for computer programming.
 │
 ├ The purpose of this document is to promote the portability of NIL programs
 │ across a variety of implementations and hardware.
 │
 │                               ╭─────────────╮
-│                               ╽ Conformance │
+│                               ╽ <a href="#conformance" id="conformance">Conformance</a> │
 │╭────────────────────────────────────────────╯
-│├ This document in its entirety constitutes a body of requirements for an
+│├ This document in its entirety constitutes a set of requirements for an
 ││ implementation.
 ││
 │├ An implementation of the NIL programming language is said to be a
@@ -147,8 +154,11 @@ Revision 1                                                  20th September, 2025
 ├ Syntax is used to draw a correspondence between a Program and its written form.
 │
 │                                  ╭────────╮
-│                                  │ Syntax │
-│╭─────────────────────────────────┴────────╯ 
+│                                  ╽ Syntax │
+│╭──────────────────────────────────────────╯ 
+│├ Syntax is used to establish a correspondence between the structure of a 
+││ Program and its written form.
+││
 │├ The syntax of written programs is comprised of two rules...
 ││    
 ││ 1. A Symbol is any unbroken sequence of Unicode® glyphs excluding the  
@@ -158,19 +168,38 @@ Revision 1                                                  20th September, 2025
 ││
 ││ 2. An Expression is a closed pair of round braces, "(" and ")" with an 
 ││    arbitrary number of characters between them.
+││
+│├ Some examples of the correspondence between syntax and Program data are...
+││
+││                     "(a(b (c)))"   ==>   ┌───────────────┐
+││                                          │ a ┌─────────┐ │
+││                                          │   │ b ┌───┐ │ │
+││                                          │   │   │ c │ │ │
+││                                          │   │   └───┘ │ │
+││                                          │   └─────────┘ │
+││                                          └───────────────┘
+││
+││            "((a b c (d e) f) g)"   ==>   ┌─────────────┐
+││                                          │ ┌─────────┐ │
+││                                          │ │ a b c   │ │
+││                                          │ │ ┌─────┐ │ │
+││                                          │ │ │ d e │ │ │
+││                                          │ │ └─────┘ │ │
+││                                          │ └─────────┘ │
+││                                          │           g │ 
+││                                          └─────────────┘
+││
+│├ A written Program is considered malformed if the character sequence does not
+││ contain evenly matched pairs of round braces. In all cases, every opening 
+││ round brace must be followed by a closing round brace. Conversely, every 
+││ closing round brace must be preceded by an opening round brace.
+││
+│├ The Unicode® character encoding also includes character codes which are
+││ unprintable or otherwise invisible in a character sequence. These are 
+││ specified in the Character Category, "C". Characters in the "C" category have
+││ no meaning when included in a written program and must be ignored.
 │╰╼
-│                                 ╭─────────╮
-│                                 ╽ Parsing │
-│╭──────────────────────────────────────────╯
-│├ Parsing rules are used to reconstruct a Program from its written form. These
-││ rules are as follows...
-││
-││ 1. A Symbol will include all glyphs until a Blank or Expression occurs.
-││
-││ 2. Each opening round brace corresponds to a unique Expression which will 
-││    include all Symbols and Expressions occurring before the corresponding 
-││    closing round brace as items in the order that they occur in the written
-││    Program.
+│
 
 
 
@@ -206,6 +235,7 @@ Revision 1                                                  20th September, 2025
 
 ╒═══════════════════════════════════════════════════════════════════════════════╕
 │                           Copyright © Daniel Smith                            │
+│                               <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">🅭🅯🄎 CC BY-SA 4.0</a>                                │
     </pre>
   </body>
 </html>

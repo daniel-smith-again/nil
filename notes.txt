@@ -342,3 +342,102 @@ What goes on the stack vs. the heap?
 Containers.
 You have various organizations of indexed mutable slots.
 
+
+Even if I dont' have in-place constructors, I can still have codata constructors.
+
+(define (foo x)
+ (bar x)
+ (baz x)
+ (switch (bar x) → (baz x)))
+
+Now I can do stuff like
+(let (x (bar 1))
+ (switch x))
+
+
+
+
+
+how does format work?
+
+(format foo) => "foo"
+(format foo bar) => "foo bar"
+
+(format Hello, World!) => "Hello, World! \n"
+(format Hello, World! (break))
+
+how do I manage macro characters?
+Lisp manages them by having a macro character table.
+Not sure if I want a macro character though.
+That helps with parsing text and fancy text layout, however I want a 
+transmission format rather than a fancy mutable parser.
+The implementation will supply the logic for reading in.
+I don't have macro characters because that enforces a specific way of reading
+source text in.
+What about macro characters though?
+
+(define mod (module 
+ (syntax foo f))
+Do I specify a unicode character or just a glyph?
+What if I want to parse things based on a newline?
+I think the best thing would be to overload (read).
+This should be specified in an addendum module. There should be a "REPL" or 
+"Session" module?
+
+What functions do I have over programs?
+is syntax a function?
+Nope.
+What can I actually do with a program?
+Match on symbols.
+Symbols are constant values.
+Expressions are tuples.
+Can I convert an expression into a tuple, or is an expression just a tuple?
+What is a program type if not a list?
+A program is simply just a list.
+(' a b c)
+(list 'a 'b 'c)
+these are the same.
+
+making a list of things should be fine.
+What's my actual list syntax?
+({ a b c })
+({ a b c })
+
+
+What are my single character constructors?
+
+!
+@
+#
+$
+%
+^
+&
+*
+~
+,
+.
+{ }
+[ ]
+|
+\
+/
+
+list
+array
+
+
+How do I do parsing macros?
+I don't really care that there's a character string, that's assumed.
+What I do care about is how parsers work together, or how you can hook your
+parser into other code.
+Probably through a "read" function.
+More like a parse function though.
+What should be part of the base language though?
+Parsing or just syntax macros?
+What comes in the default?
+Do I enforce a live session in the default?
+What's the signature of a parser function?
+There is no signature.
+Actually there's only effects.
+There's (read) (get) (peek) as effects defined specifically for functions.

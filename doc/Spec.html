@@ -17,6 +17,8 @@
       body *
       {
           font-family:NIL-FONT;
+          width:auto;
+          height:auto;
       }
       svg
       {
@@ -54,11 +56,30 @@
       {
           display:block;
       }
+      div[pagebreak]
+      {
+          break-before:page;
+          display:none;
+      }
+      figure
+      {
+          display:inline-block;
+          break-inside:avoid;
+          margin:0;
+          padding:0;
+      }
+      @media print
+      {
+          div[pagebreak]
+          {
+              display:block;
+          }
+      }
     </style>
   </head>
   <body>
    <pre style="height:100vh;">
-Revision ∞                                                    19th January, 2038
+Revision 1                                                  20th September, 2025
 
 
 
@@ -108,16 +129,22 @@ Revision ∞                                                    19th January, 20
                                 ╭──────────────╮
                                 ╽ <a href="#introduction" id="introduction">Introduction</a> │
 ╭──────────────────────────────────────────────╯
-├ This document provides the formal definition of the algorithmic language,
-│ <span footnote>"NIL"<div annotation>
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ A recursive acronym for "Nil Isn't Lisp". ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-</div></span>, for computer programming.
+├ This document provides the formal definition of "NIL", an algorithmic language
+│ for computer programming. 
+│
+├ NIL is a recursive acronym which stands for "Nil Isn't Lisp".
 │
 ├ The purpose of this document is to promote the portability of NIL programs
 │ across a variety of implementations and hardware.
 │
+│                                  ╭───────╮
+│                                  ╽ Scope │
+│╭─────────────────────────────────────────╯
+│├ This document specifies the format, meaning, and validation of NIL programs.
+││
+│├ This document does not specify requirements for host systems, hardware 
+││ capabilities, or the interface of an implementation.
+│╰╼
 │                               ╭─────────────╮
 │                               ╽ <a href="#conformance" id="conformance">Conformance</a> │
 │╭────────────────────────────────────────────╯
@@ -134,8 +161,62 @@ Revision ∞                                                    19th January, 20
 │├ Requirements which must be present in some implementation dependent capacity
 ││ are explicitly classified as "implementation defined".
 │╰╼
+│                           ╭──────────────────────╮
+│                           ╽ Principals of Design │
+│╭─────────────────────────────────────────────────╯
+│├ There exists a notion of "small" and "large" programming. This refers to the
+││ disparity between abstractions over "small" single-thread processes, compute
+││ kernels, and constrained environments, and "large" multi-process systems, high 
+││ complexity software with many components, and homogeneous computing 
+││ architectures. As software continues to grow in complexity, the gulf between 
+││ what is "small" and what is "large" increases. Additionally, the domains of 
+││ "small" and "large" grow orthogonally in terms of what is needed to express 
+││ programs in each. NIL is designed to bridge that gap.
+││
+││ Both "large" and "small" programs require a certain level of expressivity.
+││ However, these domains are not mutually exclusive. They require exactly the 
+││ same form of expressivity. To this end, NIL provides a macro 
+││ system which allows the structure and meaning of programs to be transformed 
+││ programmatically in order for a domain to be modelled in its own terms while 
+││ maintaining a close correspondence with the domain of the host.
+││
+││ Increasingly so, programs are transmitted and recieved between disparate 
+││ hosts with varying levels of trust and secure capability. It becomes necessary
+││ to validate programs in their initial state without allowing execution. There
+││ are known limitations to validation such as detecting divergence in
+││ recursion, however these limitations tend to be of little practical 
+││ significance. Much more often, discrete properties of programs are the 
+││ subject of validation such as whether or not a program will corrupt data, 
+││ access secure resources without permission, or simply behave according to how
+││ it appears. NIL provides a notion of validation such that if a program is 
+││ invalidated, it can be safely rejected as malformed. This allows a program, 
+││ as it is stored for transmission, to contain embedded constraints pertaining 
+││ to its behavior and effects.
+││
+││ Both "large" and "small" programs require some degree of encapsulation. For
+││ "small" programs, encapsulation serves to hide differences in hosts which have
+││ no effect on the successful execution of a program. For "large" programs, 
+││ encapsulation allows multiple self-contained, monolithic components to 
+││ interface with each other. NIL provides first-order modules as the primary 
+││ means of encapsulation. Modules may encapsulate both state and programs which 
+││ allow them to fulfill a variety of approaches to program organization and 
+││ the design of interfaces.
+││
+││ All computer programs, in both "large" and "small" domains, face challenges
+││ such as the proper handling of resources, multi-process communication, and 
+││ the handling of internal and external conditions such as errors. In all these
+││ cases, some element of external state manifests. NIL provides a system of 
+││ typed effects to address this. Typed effects allow for the introduction of 
+││ non-local control flow in a rigorous fashion. Programs may employ effects to
+││ abstract over, and react to, external or otherwise asynchronous stateful 
+││ changes in a predictable manner.
+│╰╼ 
 ╰╼
 
+                                  ╭──────────╮
+                                  ╽ Overview │
+╭────────────────────────────────────────────╯
+│
                                  ╭──────────╮
                                  ╽ Programs │
 ╭───────────────────────────────────────────╯
@@ -159,19 +240,24 @@ Revision ∞                                                    19th January, 20
 │├ Syntax is used to establish a correspondence between the structure of a 
 ││ Program and its written form.
 ││
-│├ The syntax of written programs is comprised of two rules...
+│├ The syntax of written programs is comprised of three rules...
 ││    
 ││ 1. A Symbol is any unbroken sequence of Unicode® glyphs excluding the  
 ││    character codes defined in the Character Category, "Z", and the ASCII round 
 ││    braces, "(" and ")". For berevity, the term "Blank" will be used to refer
 ││    to the set of characters in the Character Category, "Z".
 ││
-││ 2. An Expression is a closed pair of round braces, "(" and ")" with an 
-││    arbitrary number of characters between them.
+││ 2. An Expression is denoted as a closed pair of round braces, "(" and ")" 
+││    with an arbitrary number of characters between them.
+││
+││ 3. Symbols and Expressions which are items within another expression, must 
+││    occur between a closed pair of round braces denoting the enclosing
+││    Expression.
+││    
 ││
 │├ Some examples of the correspondence between syntax and Program data are...
 ││
-││                     "(a(b (c)))"   ==>   ┌───────────────┐
+<figure>││                      "(a(b(c)))"   ==>   ┌───────────────┐
 ││                                          │ a ┌─────────┐ │
 ││                                          │   │ b ┌───┐ │ │
 ││                                          │   │   │ c │ │ │
@@ -188,7 +274,7 @@ Revision ∞                                                    19th January, 20
 ││                                          │ └─────────┘ │
 ││                                          │           g │ 
 ││                                          └─────────────┘
-││
+││</figure>
 │├ A written Program is considered malformed if the character sequence does not
 ││ contain evenly matched pairs of round braces. In all cases, every opening 
 ││ round brace must be followed by a closing round brace. Conversely, every 
@@ -199,7 +285,30 @@ Revision ∞                                                    19th January, 20
 ││ specified in the Character Category, "C". Characters in the "C" category have
 ││ no meaning when included in a written program and must be ignored.
 │╰╼
-│
+│            
+
+NIL supports both parsing and writing.
+You submit programs to a live process.
+That's a fundamental part of this language.
+
+│                                  ╭────────╮ 
+│                                  ╽ Macros │
+│╭──────────────────────────────────────────╯
+│├
+
+NIL provides a system of macros.
+A macro is a function over programs which is engaged automatically when the
+
+
+│                              ╭────────────────╮
+│                              ╽ Program Macros │
+│╭──────────────────────────────────────────────╯
+│├ NIL provides
+
+quotation : turns a program into data
+insert : inserts a value into a program
+splice : inserts a program as a sequence in another program.
+format : turns an expression into a string.
 
 
 
@@ -233,9 +342,11 @@ Revision ∞                                                    19th January, 20
 ╭────────────────────────────────────────────────╯
 
 
-╒═══════════════════════════════════════════════════════════════════════════════╕
-│                           Copyright © Daniel Smith                            │
-│                               <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">🅭🅯🄎 CC BY-SA 4.0</a>                                │
+╞═══════════════════════════════════════════════════════════════════════════════╡
+                            Copyright © Daniel Smith                            
+                         The Standard Definition of NIL
+                               is licensed under
+                                <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0 🅭🅯🄎</a>
     </pre>
   </body>
 </html>

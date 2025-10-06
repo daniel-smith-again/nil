@@ -130,8 +130,3 @@ function setTheme()
   }
 }
 setTheme(Theme);
-
-function setup()
-{
-  //document.querySelectorAll('article[nth]')[0].onkeydown = editorInput
-}

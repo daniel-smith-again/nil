@@ -5,10 +5,10 @@
     <title>The Standard Definition of Nil</title>
     <link rel="icon" href="icon/icon.svg" type="image/x-icon">
     <style>
-      @font-face { font-family:NIL-FONT; src:url('AnonymicePro.ttf'); }
+      @font-face { font-family:NIL-FONT; src:url('FreeMonoBold.woff'); }
       body
       {
-          font-family:NIL-FONT;
+          font-family: NIL-FONT;
           font-variant-ligatures:none;
           font-size:calc((7px + 2vw + 0.5vh) / 2);
           width:80ch;
@@ -16,9 +16,11 @@
       }
       body *
       {
-          font-family:NIL-FONT;
+          font-family: NIL-FONT;
           width:auto;
           height:auto;
+          font-variant-ligatures:none;
+          white-space:pre;
       }
       svg
       {
@@ -117,7 +119,7 @@ Revision 1                                                  20th September, 2025
     </pre>
     <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMin" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
               <defs id="defs54" />
-              <ellipse style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+              <ellipse style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stroke-width:1px"
               ry="15.550441" rx="38.556782" cy="-1.5364231" cx="62.654388" transform="matrix(0.8,0.6,-0.70710678,0.70710678,0,0)" id="ellipse45" />
               <path style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-linejoin:round;stroke-miterlimit:5;stroke-dasharray:none;stroke-opacity:1"
               d="M 66.489828,62.06793 A 18.564376,18.564376 0 0 1 47.925452,82.060335 18.564376,18.564376 0 0 1 30.789107,62.06793 18.564376,18.564376 0 0 1 47.925452,43.503554 18.564376,18.564376 0 0 1 66.489828,63.495959"
@@ -160,6 +162,25 @@ Revision 1                                                  20th September, 2025
 ││
 │├ Requirements which must be present in some implementation dependent capacity
 ││ are explicitly classified as "implementation defined".
+│╰╼
+│                               ╭─────────────╮
+│                               ╽ Conventions │
+│╭────────────────────────────────────────────╯
+│├ Chapters, Sections, and Subsections are denoted by nesting of runners down
+││ the left margin.
+││
+│├ Macros, Default Functions, and other operations provided by NIL are 
+││ documented by "card" figures which give the abstract name of the operation, 
+││ the form of its invocation, and the type constraints which evaluation should 
+││ conform to. An example card is given below.
+││ 
+││ ╭─────────────────╮  
+││ │ [ABSTRACT NAME] ╰──────────────────────────────────────────────────────╮
+││ │                                                        '([INVOCATION]) │
+││ │                        (with [EFFECTS] ([PARAMETERS] → [RESULT TYPE])) │
+││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
+││ │ [DESCRIPTION]                                                          │
+││ ╰────────────────────────────────────────────────────────────────────────╯
 │╰╼
 │                           ╭──────────────────────╮
 │                           ╽ Principals of Design │
@@ -210,16 +231,228 @@ Revision 1                                                  20th September, 2025
 ││ non-local control flow in a rigorous fashion. Programs may employ effects to
 ││ abstract over, and react to, external or otherwise asynchronous stateful 
 ││ changes in a predictable manner.
+││
+││ NIL also outlines a novel interface for the creation and execution of 
+││ programs. This interface is called "session based programming". This is in 
+││ contrast to the practices of "batch compilation" or "dynamic programming". To
+││ illustrate the difference, imagine a painter who is beginning a new 
+││ painting... 
+││ 
+││ If the painter employed "batch compilation" as a method, they would be 
+││ required to finish the painting as fast as possible in a single attempt, with
+││ no mistakes. If the painter is not able to finish, they must burn the 
+││ incomplete painting, dispose of all their paints, and begin anew with their 
+││ next attempt.
+││
+││ If the painter employed "dynamic programming" as a method, they would never 
+││ be able to complete the painting. The paint would never dry, and each brush 
+││ stroke would affix that brush to the canvas. Not only this, the painting 
+││ would be permanently stuck to the easel, and the tubes of paint and paint 
+││ thinner would need to be stored with the painting at all times.
+││
+││ It's apparent from these analogies that neither of the existing approaches 
+││ is feasible. It's possible to paint in that manner, but extremely tedious.
+││ Session based programming provides a compromise between the two extremes.
+││ The painter can paint over multiple periods without needing to destroy their 
+││ incomplete work. At the same time the painter may discard their paints, 
+││ brushes and easel when they're finished. In terms of programming, a 
+││ programmer may use NIL to run and inspect partial or incomplete programs 
+││ within a managed context. When the programmer decides their program is 
+││ complete, they may extract a static executable from that context.
 │╰╼ 
 ╰╼
 
                                   ╭──────────╮
-                                  ╽ Overview │
+                                  ╽ Sessions │
 ╭────────────────────────────────────────────╯
+├ Sessions are the abstract interface through which a programmer may utilize
+│ NIL.
 │
-                                 ╭──────────╮
-                                 ╽ Programs │
-╭───────────────────────────────────────────╯
+├ A Session is minimally a live process which exposes a duplex stream of UTF-8
+│ encoded Unicode® characters and maintains a Module. The programmer will 
+│ submit written Programs via this stream which may affect the bindings in the
+│ Session's Module, and the Session will return the results of execution as the 
+│ written Program which constructs it.
+│
+├ A Session will always evaluate a Program submitted by the programmer so long 
+│ as it can be validated.
+│
+├ A Session will provide capabilities for transforming NIL Programs into 
+│ programs which are understood by the host.
+│
+├ A Session will provide capabilities for inspecting NIL Programs, and the 
+│ effects of their execution.
+│
+│                              ╭────────────────╮
+│                              ╽ Session Macros │
+│╭──────────────────────────────────────────────╯
+│├ NIL provides Macros which allow the duplex stream to be accessed 
+││ programmatically. They are defined here as Macros since their inner 
+││ mechanisms may be implementation defined and may result in different behavior
+││ depending on the host system. They are as follows...
+││
+││ ╭──────╮  
+││ │ Load ╰─────────────────────────────────────────────────────────────────╮
+││ │                                                        '(load '''path) │
+││ │                                (with load-failed ((List) → Judgement)) │
+││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
+││ │ Load will accept a path list that points to location of a saved NIL    │
+││ │ Module.                                                                │
+││ │                                                                        │
+││ │ If a path list is given that does not point to the location of a NIL   │
+││ │ Module, this Expression will call the 'load-failed effect.             │
+││ │                                                                        │
+││ │ If there is an implementation dependent failure when the Session       │
+││ │ attempts to load the Module, this Expression will call the             │
+││ │ 'load-failed effect.                                                   │
+││ ╰────────────────────────────────────────────────────────────────────────╯
+││
+││ ╭──────╮  
+││ │ Save ╰─────────────────────────────────────────────────────────────────╮
+││ │                                               '(save ''module '''path) │
+││ │           (with save-failed ((type Symbol Module) (List) → Judgement)) │
+││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
+││ │ Save will accept a path list that points to a location where the       │
+││ │ Module, given as the first parameter, will be stored as a file.        │
+││ │                                                                        │
+││ │ If the first parameter is Nil, then the current top-level will be      │
+││ │ stored.                                                                │
+││ │                                                                        │
+││ │ If the target of the path list does not exist, the Session will        │
+││ │ attempt to create directory structure denoted by the path list.        │
+││ │                                                                        │
+││ │ If the target of the path list exists, the Session will attempt to     │
+││ │ overwrite the existing file or Module.                                 │
+││ │                                                                        │
+││ │ If there is any implementation dependent failure when the Session      │
+││ │ attempts to save the Module, this Expression will call the             │
+││ │ 'store-failed effect.                                                  │
+││ ╰────────────────────────────────────────────────────────────────────────╯
+││
+││ ╭──────╮  
+││ │ Read ╰─────────────────────────────────────────────────────────────────╮
+││ │                                                                '(read) │
+││ │                               (with eof (_ → (type Program Character)) │
+││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
+││ │ Read will consume characters from the Session duplex input stream and  │
+││ │ interpret them as one of several forms of data.                        │
+││ │                                                                        │
+││ │ Depending on the desired result type, Read will either yield a Program │
+││ │ or a single character.                                                 │
+││ │                                                                        │
+││ │ If the duplex input ends before Read can interpret a completed written │
+││ │ Program or consume the next Character value, Read will call the eof    │
+││ │ effect.                                                                │
+││ ╰────────────────────────────────────────────────────────────────────────╯
+││ 
+││ ╭──────╮
+││ │ Peek ╰─────────────────────────────────────────────────────────────────╮
+││ │                                                       '(peek ''number) │
+││ │                            (with eof ((type Natural Nil) → Character)) │
+││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
+││ │ Peek will yield a Character value from the Session duplex input        │
+││ │ without consuming it.                                                  │
+││ │                                                                        │
+││ │ Peek will accept a Natural number which denotes the number of          │
+││ │ index positions in the duplex input beyond the current next Character  │
+││ │ value which Peek will yield.                                           │
+││ │                                                                        │
+││ │ If the duplex input ends before Peek can yield the requested Character │
+││ │ value, Peek will call the eof effect.                                  │
+││ ╰────────────────────────────────────────────────────────────────────────╯
+││ 
+││ ╭───────╮
+││ │ Print ╰────────────────────────────────────────────────────────────────╮
+││ │                                                       '(print '''data) │
+││ │                              (with print-failure ((List) → Judgement)) │
+││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
+││ │ Print accepts a list of Symbols, Strings, and Expressions. It will     │
+││ │ collate each item into a single string containing their written forms. │
+││ │                                                                        │
+││ │ The written form of an item will be identical to the String yielded by │
+││ │ applying Format to that item.                                          │
+││ │                                                                        │
+││ │ The written form of each item will be appended to the Print String in  │
+││ │ the order of its index as an item in the Expression invoking Print.    │
+││ │                                                                        │
+││ │ Expressions are not converted to their written form, but instead are   │
+││ │ evaluated and their result is converted to written form.               │
+││ │                                                                        │
+││ │ After collating the written form of all the items in its invocation    │
+││ │ Expression, Print will send the String data through the Session duplex │
+││ │ output.                                                                │
+││ ╰────────────────────────────────────────────────────────────────────────╯
+││
+│├ A path list, as used in Load and Save, is a list of Symbols and String data 
+││ which corresponds to a directory structure. Each item in the list shall 
+││ correspond to the name of a directory, with the last item in the list 
+││ corresponding to the name of a file. String data shall correspond directly to 
+││ a name in the filesystem which matches its Character contents. A Symbol shall
+││ correspond to a name in the filesystem which matches the Character contents
+││ of that Symbol's written form as if obtained by applying Format to that 
+││ Symbol.
+│╰╼
+│
+│                             ╭─────────────────╮
+│                             ╽ Character Hooks │
+│╭──────────────────────────────────────────────╯
+│├ When the Session is reading from the duplex input, or Read has been invoked 
+││ by a program, the Session employs a system of "hooks" in order to interpret
+││ the Characters in the stream as NIL entities.
+││ A "hook" is a pair of a Character value (a Unicode® code point) and a 
+││ function which will perform the actual consumption of Character values and 
+││ construct a NIL entity accordingly.
+││
+│├ A Session utilizes Hooks in the following manner...
+││ 1. A Session will await Character values to be submitted to the duplex input.
+││ 2. When a Character value is submitted, the Session will check the Hook 
+││    Characters for a value that matches.
+││ 3. If a Hook Character matches the Character from the duplex input, the 
+││    associated Hook Function will be called.
+││    If no Character matches the input Character, the Session will discard that
+││    Character.
+││ 4. After discarding the Character, or the Hook Function returning, the 
+││    Session will repeat this process from step 1.
+││
+│├ A Hook Function will be invoked when the Session's Read capability encounters
+││ a Character value in the duplex input stream which matches the Character value
+││ for which that Hook is set.
+││ 
+│├ Hooks are global to the current live Session.
+││
+│├ Hooks are created or existing Hooks are updated with the following Macro...
+││
+││ ╭──────╮
+││ │ Hook ╰─────────────────────────────────────────────────────────────────╮
+││ │                                            '(hook ''string ''function) │
+││ │          (((array Character 1) ((type (_ → *) _)) → (type Function _)) │
+││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
+││ │ Hook will accept a Character value given as a String of cardinality 1  │
+││ │ and a Function which takes no arguments and may return any NIL entity. │
+││ │                                                                        │
+││ │ If the Function parameter is Nil, then Hook will yield the Function,   │
+││ │ if one exists, otherwise Hook will yield Nil.                          │
+││ ╰────────────────────────────────────────────────────────────────────────╯
+││ 
+││                             ╭───────────────╮
+││                             ╽ Default Hooks │
+││╭────────────────────────────────────────────╯
+││├ When a Session starts, there are certain Hooks which are guaranteed to be 
+│││ present before the Session begins reading from the duplex input, these Hooks
+│││ are...
+│││  · "("
+│││  · "\""
+│││  · "'"
+│││ These three hooks correspond to the three Character syntaxes which make up
+│││ the written form of Programs. The Functions associated with these may be 
+│││ implementation defined, but must conform to the formal grammar set out in 
+│││ the subsection on Syntax in the following Chapter.
+││╰╼
+│╰╼
+╰╼
+                                  ╭──────────╮
+                                  ╽ Programs │
+╭────────────────────────────────────────────╯
 ├ Programs are the medium through which the behavior and effects of execution
 │ can be specified. Programs are also a form of Data.
 │
@@ -256,8 +489,8 @@ Revision 1                                                  20th September, 2025
 ││    
 ││
 │├ Some examples of the correspondence between syntax and Program data are...
-││
-<figure>││                      "(a(b(c)))"   ==>   ┌───────────────┐
+<figure>││
+││                      "(a(b(c)))"   ==>   ┌───────────────┐
 ││                                          │ a ┌─────────┐ │
 ││                                          │   │ b ┌───┐ │ │
 ││                                          │   │   │ c │ │ │
@@ -271,6 +504,7 @@ Revision 1                                                  20th September, 2025
 ││                                          │ │ ┌─────┐ │ │
 ││                                          │ │ │ d e │ │ │
 ││                                          │ │ └─────┘ │ │
+││                                          │ │       f │ │
 ││                                          │ └─────────┘ │
 ││                                          │           g │ 
 ││                                          └─────────────┘
@@ -285,12 +519,7 @@ Revision 1                                                  20th September, 2025
 ││ specified in the Character Category, "C". Characters in the "C" category have
 ││ no meaning when included in a written program and must be ignored.
 │╰╼
-│            
-
-NIL supports both parsing and writing.
-You submit programs to a live process.
-That's a fundamental part of this language.
-
+│           
 │                                  ╭────────╮ 
 │                                  ╽ Macros │
 │╭──────────────────────────────────────────╯
@@ -332,6 +561,10 @@ format : turns an expression into a string.
                                 ╭──────────────╮
                                 ╽ Control Flow │
 ╭──────────────────────────────────────────────╯
+
+                                  ╭────────╮
+                                  ╽ Effects│
+╭──────────────────────────────────────────╯
 
                                  ╭───────────╮
                                  ╽ Sequences │

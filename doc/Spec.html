@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>The Standard Definition of Nil</title>
+    <title>The Standard Definition of NIL</title>
     <link rel="icon" href="icon/icon.svg" type="image/x-icon">
     <script src="./assets/util.js"></script>
     <style>
@@ -11,10 +11,10 @@
       {
           font-family: NIL-FONT;
           font-variant-ligatures:none;
-          font-size:calc((7px + 3vw) / 2);
+          font-size:calc((7px + 4vw) / 3);
           width:80ch;
           margin:auto;
-          line-height: 1.6ch;
+          line-height: 1.55ch;
           color:var(--foregroundsecond);
           background-color:var(--backgroundsecond);
       }
@@ -38,12 +38,17 @@
       a
       {
           text-decoration:none;
-          color:inherit;
+          color:var(--diminished);
           outline:none;
+          border-radius:0.2ch;
+      }
+      a[title]
+      {
+          color:var(--foregroundsecond);
       }
       a:hover
       {
-          color:var(--diminished);
+          background-color:var(--background);
       }
       span[footnote]
       {
@@ -88,32 +93,10 @@
     </style>
   </head>
   <body onload="setTheme()">
-   <pre style="height:100vh;">
+   <pre>
 Revision 1                             <span theme onclick="setTheme()">▒</span>                    20th September, 2025
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   </pre>
+   <pre style="margin-top:33vh;margin-bottom:69vh;">
 
                                 ╭╼    
                                 ╰───────────────────╮
@@ -137,7 +120,7 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
             </svg>   
     <pre>
                                 ╭──────────────╮
-                                ╽ <a href="#introduction" id="introduction">Introduction</a> │
+                                ╽ <a title href="#introduction" id="introduction">Introduction</a> │
 ╭──────────────────────────────────────────────╯
 ├ This document provides the formal definition of "NIL", an algorithmic language
 │ for computer programming. 
@@ -148,7 +131,7 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 │ across a variety of implementations and hardware.
 │
 │                                  ╭───────╮
-│                                  ╽ Scope │
+│                                  ╽ <a title href="#scope" id="scope">Scope</a> │
 │╭─────────────────────────────────────────╯
 │├ This document specifies the format, meaning, and validation of NIL programs.
 ││
@@ -156,7 +139,7 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ or the the internal mechanisms of an implementation.
 │╰╼
 │                               ╭─────────────╮
-│                               ╽ <a href="#conformance" id="conformance">Conformance</a> │
+│                               ╽ <a title href="#conformance" id="conformance">Conformance</a> │
 │╭────────────────────────────────────────────╯
 │├ This document in its entirety constitutes a set of requirements for an
 ││ implementation.
@@ -189,6 +172,15 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 ││ │ [DESCRIPTION]                                                          │
 ││ ╰────────────────────────────────────────────────────────────────────────╯
+││
+│├ Program samples are presented in their written form between two round 
+││ parentheses.
+││
+││                       ⎛                            ⎞
+││                       ⎜ (a code sample             ⎟
+││                       ⎜     (with multiple lines)) ⎟
+││                       ⎝                            ⎠
+││
 │╰╼
 │                           ╭──────────────────────╮
 │                           ╽ Principals of Design │
@@ -291,6 +283,56 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ├ A Session will provide capabilities for inspecting NIL Programs, and the 
 │ effects of their execution.
 │
+│                                 ╭─────────╮
+│                                 ╽ Context │
+│╭──────────────────────────────────────────╯
+│├ The Module which is maintained by an active Session is referred to as the
+││ Context.
+││
+│├ When a Session begins evaluation of a Program, it shall use the Context to 
+││ determine the meaning and effects of the program.
+││
+│├ The Context contains sub-Modules which are accessible to Programs.
+││ They are...
+││ ⎡
+││ ⎢ ⋅ Default
+││ ⎢ ⋅ System
+││ ⎢ ⋅ Auxiliary
+││ ⎣
+││ 
+│├ The Context exposes these Modules to Programs as if by evaluating the
+││ following Program...
+││
+││                  ⎛                                      ⎞
+││                  ⎜ (define Default   (load 'Default))   ⎟
+││                  ⎜ (define System    (load 'System))    ⎟
+││                  ⎜ (define Auxiliary (load 'Auxiliary)) ⎟
+││                  ⎜ (use Default System Auxiliary)       ⎟
+││                  ⎝                                      ⎠
+││
+│├ The Default Module shall contain the definitions which form the NIL language,
+││ or in other words the definitions set out in this document. A complete 
+││ listing is given <a href="#Default-Module">here</a>.
+││
+│├ The System Module shall contain implementation defined definitions which 
+││ facilitate access to the host system.
+││
+│├ The Auxiliary Module shall contain any other implementation defined 
+││ definitions which are not associated with the System Module and are outside 
+││ the scope of this document.
+│╰╼
+│                          ╭────────────────────────╮
+│                          ╽ Evaluation of Programs │
+│╭──────────────────────────────────────────────────╯
+│├ When a Session recieves a complete Program, it will attempt to evaluate it.
+││ This involves a process of validating the Program structure, potentially 
+││ transforming the program to another interpretable form, and finally 
+││ performing the effects of evaluation.
+││
+│├ The exact meaning of a Program is determined using the definitions in this 
+││ document as well as any definitions held in the Session context.
+│
+│
 │                              ╭────────────────╮
 │                              ╽ Session Macros │
 │╭──────────────────────────────────────────────╯
@@ -308,7 +350,7 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ │ Module.                                                                │
 ││ │                                                                        │
 ││ │ Load will convert the saved Module file into a live Module instance    │
-││ │ which will be returned as the result.
+││ │ which will be returned as the result.                                  │
 ││ │                                                                        │
 ││ │ If a path list is given that does not point to the location of a NIL   │
 ││ │ Module, this Expression will call the 'load-failed effect.             │
@@ -451,9 +493,11 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││├ When a Session starts, there are certain Hooks which are guaranteed to be 
 │││ present before the Session begins reading from the duplex input, these Hooks
 │││ are...
-│││  · "("
-│││  · "\""
-│││  · "'"
+│││ ⎡ 
+│││ ⎢ · "("
+│││ ⎢ · "\""
+│││ ⎢ · "'"
+│││ ⎣
 │││ These three hooks correspond to the three Character syntaxes which make up
 │││ the written form of Programs. The Functions associated with these may be 
 │││ implementation defined, but must conform to the formal grammar set out in 

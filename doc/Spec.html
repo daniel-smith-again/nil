@@ -321,17 +321,6 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ definitions which are not associated with the System Module and are outside 
 ││ the scope of this document.
 │╰╼
-│                          ╭────────────────────────╮
-│                          ╽ Evaluation of Programs │
-│╭──────────────────────────────────────────────────╯
-│├ When a Session recieves a complete Program, it will attempt to evaluate it.
-││ This involves a process of validating the Program structure, potentially 
-││ transforming the program to another interpretable form, and finally 
-││ performing the effects of evaluation.
-││
-│├ The exact meaning of a Program is determined using the definitions in this 
-││ document as well as any definitions held in the Session context.
-│
 │
 │                              ╭────────────────╮
 │                              ╽ Session Macros │
@@ -394,7 +383,7 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ │ or a single character.                                                 │
 ││ │                                                                        │
 ││ │ If the duplex input ends before Read can interpret a completed written │
-││ │ Program or consume the next Character value, Read will call the eof    │
+││ │ Program or consume the next Character value, Read will call the 'eof   │
 ││ │ effect.                                                                │
 ││ ╰────────────────────────────────────────────────────────────────────────╯
 ││ 

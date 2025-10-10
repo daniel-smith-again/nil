@@ -300,8 +300,8 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ ⎢ ⋅ Auxiliary
 ││ ⎣
 ││ 
-│├ The Context exposes these Modules to Programs as if by evaluating the
-││ following Program...
+│├ The Context implicitly exposes these Modules to Programs as if by evaluating 
+││ the following Program...
 ││
 ││                  ⎛                                      ⎞
 ││                  ⎜ (define Default   (load 'Default))   ⎟
@@ -320,6 +320,12 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 │├ The Auxiliary Module shall contain any other implementation defined 
 ││ definitions which are not associated with the System Module and are outside 
 ││ the scope of this document.
+││
+│├ The Session may only ever refer to a single Module when evaluating a Program.
+││ The Module referred to by the Session is called the Top-Level.
+││ When a Session is first started, the Top-Level will always be the Context, 
+││ the implicit Module which uses the Default, System, and Auxiliary Modules.
+││ The Top-Level may be set programmatically to a different Module.
 │╰╼
 │
 │                              ╭────────────────╮
@@ -368,7 +374,7 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ │                                                                        │
 ││ │ If there is any implementation dependent failure when the Session      │
 ││ │ attempts to save the Module, this Expression will call the             │
-││ │ 'store-failed effect.                                                  │
+││ │ 'save-failed effect.                                                   │
 ││ ╰────────────────────────────────────────────────────────────────────────╯
 ││
 ││ ╭──────╮  
@@ -423,7 +429,47 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ │ After collating the written form of all the items in its invocation    │
 ││ │ Expression, Print will send the String data through the Session duplex │
 ││ │ output.                                                                │
+││ │                                                                        │
+││ │ If any implementation defined error occurrs when attempting to Print,  │
+││ │ the 'print-failure effect is called.
 ││ ╰────────────────────────────────────────────────────────────────────────╯
+││
+││ ╭──────────╮
+││ │ Evaluate ╰─────────────────────────────────────────────────────────────╮
+││ │                                                  '(evaluate ''program) │
+││ │                                         (with invalid ((Program) → *)) │
+││ │                                                                        │
+││ │                                         '(evaluate ''program ''module) │
+││ │                                (with invalid ((Program) (Module) → *)) │
+││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
+││ │ Evaluate accepts a Program and optionally a Module. It will evaluate   │
+││ │ the Program, using the Module as the top-level if provided, as if the  │
+││ │ Program was recieved from the Session input.                           │
+││ │                                                                        │
+││ │ If the Program provided to Evaluate cannot be validated, Evaluate will │
+││ │ call the 'invalid Effect.                                              │
+││ ╰────────────────────────────────────────────────────────────────────────╯
+
+Enter : 
+'(enter ''module)
+((Module) → _)
+
+Enter will set the Top-Level to the provided Module.
+
+Leave : 
+'(leave)
+(_ → _)
+
+Leave will set the Top-Level to the Module which was the previous Top-Level.
+If the Top-Level is the Context, the Session shall terminate.
+
+Quit :
+'(quit)
+Quit will cause the Session to terminate.
+
+
+
+
 ││
 │├ A path list, as used in Load and Save, is a list of Symbols and String data 
 ││ which corresponds to a directory structure. Each item in the list shall 

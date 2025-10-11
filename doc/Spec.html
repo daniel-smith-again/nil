@@ -167,8 +167,7 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ 
 ││ ╭─────────────────╮  
 ││ │ [ABSTRACT NAME] ╰──────────────────────────────────────────────────────╮
-││ │                                                        '([INVOCATION]) │
-││ │                        (with [EFFECTS] ([PARAMETERS] → [RESULT TYPE])) │
+││ │                                                   [SYNTAX DECLARATION] │
 ││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 ││ │ [DESCRIPTION]                                                          │
 ││ ╰────────────────────────────────────────────────────────────────────────╯
@@ -338,8 +337,8 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││
 ││ ╭──────╮  
 ││ │ Load ╰─────────────────────────────────────────────────────────────────╮
-││ │                                                        '(load '''path) │
-││ │                                   (with load-failed ((List) → Module)) │
+││ │                              (syntax Load (load) (load path)           │
+││ │                               '(with load-failed (ϰ (the Path path)))) │
 ││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 ││ │ Load will accept a path list that points to location of a saved NIL    │
 ││ │ Module.                                                                │
@@ -357,6 +356,9 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││
 ││ ╭──────╮  
 ││ │ Save ╰─────────────────────────────────────────────────────────────────╮
+││ │ (syntax Save (save) │ 
+││ │(save path) '(with save-failed ([Save-Module] [Top-Level] (the Path path)))
+││ │(save module path) '(with save-failed ([Save-Module]
 ││ │                                               '(save ''module '''path) │
 ││ │           (with save-failed ((type Symbol Module) (List) → Judgement)) │
 ││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤

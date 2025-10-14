@@ -441,3 +441,14 @@ What's the signature of a parser function?
 There is no signature.
 Actually there's only effects.
 There's (read) (get) (peek) as effects defined specifically for functions.
+
+
+
+What's my shorthand for effects?
+
+(define x 1)
+(define (f x) (x + 1))
+(data (f x)
+(define f (x → foo (x + 1)))
+
+(function (x) (effect) (x + 1))

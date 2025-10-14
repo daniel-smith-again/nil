@@ -6,7 +6,8 @@
     <link rel="icon" href="icon/icon.svg" type="image/x-icon">
     <script src="./assets/util.js"></script>
     <style>
-      @font-face { font-family:NIL-FONT; src:url('FreeMono.woff'); }
+      /*@font-face { font-family:NIL-FONT; src:url('FreeMono.woff'); }*/
+      @font-face { font-family:NIL-FONT; src:url('FreeMonoBold.woff'); }
       body
       {
           font-family: NIL-FONT;
@@ -337,8 +338,7 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││
 ││ ╭──────╮  
 ││ │ Load ╰─────────────────────────────────────────────────────────────────╮
-││ │                              (syntax Load (load) (load path)           │
-││ │                               '(with load-failed (ϰ (the Path path)))) │
+││ │ (syntax Load (load) (load path) (((Path) → Load-Failed Module) path)   │
 ││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 ││ │ Load will accept a path list that points to location of a saved NIL    │
 ││ │ Module.                                                                │
@@ -356,11 +356,9 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││
 ││ ╭──────╮  
 ││ │ Save ╰─────────────────────────────────────────────────────────────────╮
-││ │ (syntax Save (save) │ 
-││ │(save path) '(with save-failed ([Save-Module] [Top-Level] (the Path path)))
-││ │(save module path) '(with save-failed ([Save-Module]
-││ │                                               '(save ''module '''path) │
-││ │           (with save-failed ((type Symbol Module) (List) → Judgement)) │
+││ │    (syntax Save (save)                                                 │
+││ │     (save path) (((Module) (Path) → Save-Failed _) Context path)       │
+││ │     (save module path) (((Module) (Path) → Save-Failed _) module path) │
 ││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 ││ │ Save will accept a path list that points to a location where the       │
 ││ │ Module, given as the first parameter, will be stored as a file.        │
@@ -381,8 +379,8 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││
 ││ ╭──────╮  
 ││ │ Read ╰─────────────────────────────────────────────────────────────────╮
-││ │                                                                '(read) │
-││ │                               (with eof (_ → (type Program Character)) │
+││ │                (syntax Read (read)                                     │
+││ │                 (read) ((type (_ → End Character) (_ → End Program)))) │
 ││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 ││ │ Read will consume characters from the Session duplex input stream and  │
 ││ │ interpret them as one of several forms of data.                        │
@@ -397,8 +395,9 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ 
 ││ ╭──────╮
 ││ │ Peek ╰─────────────────────────────────────────────────────────────────╮
-││ │                                                       '(peek ''number) │
-││ │                            (with eof ((type Natural Nil) → Character)) │
+││ │                             (syntax Peek (peek)                        │
+││ │                              (peek) (((Natural) → End Character) 1)    │
+││ │                              (peek n) (((Natural) → End Character) n)) │
 ││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 ││ │ Peek will yield a Character value from the Session duplex input        │
 ││ │ without consuming it.                                                  │
@@ -413,8 +412,8 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ 
 ││ ╭───────╮
 ││ │ Print ╰────────────────────────────────────────────────────────────────╮
-││ │                                                       '(print '''data) │
-││ │                              (with print-failure ((List) → Judgement)) │
+││ │               (syntax Print (print)                                    │
+││ │                (print data) (((List) → Print-Failure Judgement) data)) │
 ││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 ││ │ Print accepts a list of Symbols, Strings, and Expressions. It will     │
 ││ │ collate each item into a single string containing their written forms. │
@@ -433,16 +432,13 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ │ output.                                                                │
 ││ │                                                                        │
 ││ │ If any implementation defined error occurrs when attempting to Print,  │
-││ │ the 'print-failure effect is called.
+││ │ the 'print-failure effect is called.                                   │
 ││ ╰────────────────────────────────────────────────────────────────────────╯
 ││
 ││ ╭──────────╮
 ││ │ Evaluate ╰─────────────────────────────────────────────────────────────╮
-││ │                                                  '(evaluate ''program) │
-││ │                                         (with invalid ((Program) → *)) │
-││ │                                                                        │
-││ │                                         '(evaluate ''program ''module) │
-││ │                                (with invalid ((Program) (Module) → *)) │
+││ │                             (syntax Evaluate (evaluate)                │
+││ │                              (evaluate p) (((Program) → Invalid *) p)) │
 ││ ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 ││ │ Evaluate accepts a Program and optionally a Module. It will evaluate   │
 ││ │ the Program, using the Module as the top-level if provided, as if the  │
@@ -453,12 +449,13 @@ Revision 1                             <span theme onclick="setTheme()">▒</spa
 ││ ╰────────────────────────────────────────────────────────────────────────╯
 
 Enter : 
-'(enter ''module)
-((Module) → _)
+(syntax Enter (enter)
+ (enter module) (((Module) → _) module))
 
 Enter will set the Top-Level to the provided Module.
 
 Leave : 
+(syntax Leave (leave) (leave) ((_ → Quit _))
 '(leave)
 (_ → _)
 
@@ -466,7 +463,7 @@ Leave will set the Top-Level to the Module which was the previous Top-Level.
 If the Top-Level is the Context, the Session shall terminate.
 
 Quit :
-'(quit)
+(syntax Quit (quit) (quit) ((_ → Quit _)))
 Quit will cause the Session to terminate.
 
 

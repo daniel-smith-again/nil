@@ -452,3 +452,22 @@ What's my shorthand for effects?
 (define f (x → foo (x + 1)))
 
 (function (x) (effect) (x + 1))
+
+WASM is dumb. 
+What's my IR?
+I shouldn't have to deal with integer sizes.
+Make them be ranges.
+Or bit vectors.
+Declare the types as part of the module.
+
+It also has effects.
+
+It also has tail calls.
+
+data is defined in terms of frames (basically a closure)
+A frame is a giant struct which you index into programmatically.
+Frames are doubly linked so you can walk them.
+Functions are not frames because functions are *over* state, not *with* state.
+
+struct and array types are definable.
+

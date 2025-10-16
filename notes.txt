@@ -471,3 +471,150 @@ Functions are not frames because functions are *over* state, not *with* state.
 
 struct and array types are definable.
 
+You have code, and you have frames.
+Frames are completely static.
+Frame types are structs with typed slots.
+Frames are also doubly linked.
+
+How do I do dynamically sized frames?
+More frames?
+Extension of a slot?
+The only caveat is allocating a dynamically sized array.
+You can always append a slot to a frame.
+It's more expensive, but it's possible.
+Frame extend with a single slot type.
+It incurs a domain check, but then you're good to go.
+You can have multiple stack spaces.
+
+What about malloc?
+That's array manipulation.
+It's fine to just cast shit using raw pointers.
+
+What are my datatypes?
+- Variable width integers.
+- Byte Ranges. (not bit ranges) ((You can declare arbitrary bit widths up to 128B)
+Basically every ISA worth anything supports 8-bit bytes minimally.
+As long as I can frame everything in bytes, we're good.
+
+
+You declare a module with a number of abstract frame types.
+You also declare a bunch of named segments of instructions.
+You can also declare a packed type.
+If you can vectorize it, it's by accident.
+If the target has SIMD then it will try its best to use it.
+
+There's a text version and a binary version.
+The binary version is smaller but that's it.
+
+(module name [links] [optional entry point] [definitions])
+(frame {slot list})
+(array [domain] [length])
+(struct {slot list})
+(ref [type])
+(function ({parameter types})
+(label [name] {instruction list})
+
+Operations are threaded, that is given a sequence of instructions, there's an
+implicit single store.
+All chains begin with a load and end with a store.
+Chains are framed as memory-to-memory.
+
+Floating point is standardized and should be fine to employ.
+32b and 64b floating point should be fine.
+
+What are my operations?
+
+(load [slot])
+(store [slot] [data])
+(imm [value])
+(fun [src])
+(let [label] {[name] [src]} [body])
+
+(sze [type])
+(cvt [src] [type])
+
+(call [function] {params})
+(jmp [label])
+
+operations on all numeric types
+(add {src})
+(sub {src})
+(mul {src})
+(div [src] [src])
+(rem [src] [src])
+
+operations on floating point
+(abs [src])
+(neg [src])
+(cel [src])
+(flr [src])
+(tnc [src])
+(rnd [src])
+
+bitwise integer operations
+(shl [src] [src])
+(shr [src] [src])
+(rtl [src] [src])
+(rtr [src] [src])
+(clz [src]) count leading zeros
+(ctz [src]) count trailing zeros
+
+boolean operations
+(or [src] [src])
+(xor [src] [src])
+(and [src] [src])
+(not [src])
+
+
+How to secure function pointers without tables?
+I need to make sure that if I'm calling an address, it's a function address.
+This is trivial if I'm calling a label by name, or calling a stored label.
+This is non-trivial if I'm reaching into memory and converting a random
+reference to a function pointer.
+Honestly, any model of secured function pointers is fine as long as you can't
+take a function pointer from external memory.
+An outside actor can't hand me a function table referring to things inside my
+process.
+
+
+It should be impossible by construction to call a function reference which does
+not originate from a function label.
+Threaded operation helps because you can inspect the dataflow from beginning to
+end.
+I still do want first class labels though for branching at runtime.
+You have to declare an array with either a function type or a label type.
+Labels must be either function references or instruction references.
+How do I make sure that the table I'm using holds "relevant" labels to the
+current function?
+Each function has an implicit tabel containing all the labels.
+Just jump according to which one.
+You don't necessarily have to make a specialized array up front.
+How do I prevent accessing a function from random memory?
+Frames.
+How do you know which frame is which?
+Actually, what I need is delimited continuations.
+Those should be a primitive, which lets me do anything else.
+Or a function reference is null by default until it's set with a specific
+instruction which refers to a label or copies a ref from another reliable
+source.
+Setting the initial value solves half the problem.
+Protecting secure provenance is the other half.
+Functions are frames.
+They have local parameters which are statically declared.
+Stack walking is outside the scope.
+I need continuations which are just function closures.
+
+Do I really REALLY need to avoid calling functions?
+Like what can actually corrupt a runtime that you can't call out of.
+WASM doesn't have an inline ASM format.
+The worst that could happen is you call the wrong function.
+Buffer overflows are worse.
+So you can call a function that's not a function.
+What would that even look like?
+You can't call into the data segment.
+Checking a function call is simple enough.
+There should be an operation called function-from-ref that checks if the pointer
+is valid according to the known labels.
+Ugh, tables are still the most efficient way.
+Although those are hard to make dynamically at runtime.
+

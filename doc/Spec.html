@@ -6,8 +6,7 @@
     <link rel="icon" href="icon/icon.svg" type="image/x-icon">
     <script src="./assets/util.js"></script>
     <style>
-      /*@font-face { font-family:NIL-FONT; src:url('FreeMono.woff'); }*/
-      @font-face { font-family:NIL-FONT; src:url('FreeMonoBold.woff'); }
+      @font-face { font-family:NIL-FONT; src:url('FreeMono.woff'); }
       body
       {
           font-family: NIL-FONT;
@@ -458,17 +457,15 @@ Enter :
 Enter will set the Top-Level to the provided Module.
 
 Leave : 
-(syntax Leave (leave) (leave) ((_ → Quit _))
-'(leave)
-(_ → _)
-
-Leave will set the Top-Level to the Module which was the previous Top-Level.
-If the Top-Level is the Context, the Session shall terminate.
+(syntax Leave (leave) (leave) ((_ → Quit _)))
+Leave will set the Top-Level to the Module which was previously the Top-Level 
+before the most recent call to Enter.
+If the Top-Level is the Context, the Session will terminate with the Quit 
+effect.
 
 Quit :
-(syntax Quit (quit) (quit) ((_ → Quit _)))
-Quit will cause the Session to terminate.
-
+(syntax Quit (quit) (quit) ((_ → Quit (Quit))))
+Quit will cause the Session to terminate with the Quit effect.
 
 
 
@@ -562,6 +559,38 @@ Quit will cause the Session to terminate.
 │                                  ╭────────╮
 │                                  ╽ Syntax │
 │╭──────────────────────────────────────────╯ 
+
+
+Syntax is used to establish a correspondence between the structure of a Program 
+and its written form.
+
+The syntax of written programs is given by the following extended BNF grammar.
+
+Program    ⇒ Symbol | Expression | String | Quote
+Symbol     ⇒ Glyph* Delimiter
+Expression ⇒ Begin Items End
+Begin      → (
+End        → )
+Items      ⇒ Program
+String     ⇒ Quotation Sequence* Quotation
+Quotation  → "
+Sequence   ⇒ Character | Escape
+Escape     ⇒ Prefix Quotation | Prefix Prefix | Prefix Expression
+Prefix     → \
+Quote      ⇒ Apostrophe Program | Insert Program | Spread Program
+Apostrophe → '
+Insert     → ''
+Spread     → '''
+
+Glyph is a terminal that corresponds to any printable Unicode® glyph which is not
+part of the Character Categories C or Z.
+
+Delimiter is a context dependent terminal which corresponds to any Unicode® glyph
+which is part of the Character Category Z. It is only required to be present 
+where two separate symbols would otherwise be directly adjacent.
+
+
+
 │├ Syntax is used to establish a correspondence between the structure of a 
 ││ Program and its written form.
 ││
@@ -582,7 +611,7 @@ Quit will cause the Session to terminate.
 ││
 │├ Some examples of the correspondence between syntax and Program data are...
 <figure>││
-││                      "(a(b(c)))"   ==>   ┌───────────────┐
+││                        (a(b(c)))   ==>   ┌───────────────┐
 ││                                          │ a ┌─────────┐ │
 ││                                          │   │ b ┌───┐ │ │
 ││                                          │   │   │ c │ │ │
@@ -590,7 +619,7 @@ Quit will cause the Session to terminate.
 ││                                          │   └─────────┘ │
 ││                                          └───────────────┘
 ││
-││            "((a b c (d e) f) g)"   ==>   ┌─────────────┐
+││              ((a b c (d e) f) g)   ==>   ┌─────────────┐
 ││                                          │ ┌─────────┐ │
 ││                                          │ │ a b c   │ │
 ││                                          │ │ ┌─────┐ │ │
@@ -616,6 +645,18 @@ Quit will cause the Session to terminate.
 │                                  ╽ Macros │
 │╭──────────────────────────────────────────╯
 │├
+Macros are functions which are applied to Programs with the intent to transform
+a Program to a differnt form.
+
+Macros are declared per-Module using the Syntax declaration. A Syntax declaration
+begins with the keyword 'syntax, followed by a Symbol which binds the declaration
+to the Module, followed by an Expression listing keyword symbols, followed by 
+a number of Expression pairs associating a Pattern with an Expansion.
+
+(syntax Syntax (syntax) (syntax export keywords patterns))
+
+
+
 
 NIL provides a system of macros.
 A macro is a function over programs which is engaged automatically when the

@@ -1,97 +1,33 @@
-                 ╭────────────────────────────────────────────╮
-                 │       The Standard Definition of Nil       │
-                 ╰────────────────────────────────────────────╯
-
-                            Copyright © Daniel Smith
-
-                                 ╒════════════╗
-                                 ╵Introduction║
-╒═════════════════════════════════════════════╝
-
-This document formally defines the algorithmic language Nil with the purpose of
-facilitating the portability of Nil programs across a veriety of implementations
-and environments.
-
-Nil is a general purpose programming language and as such is capable of
-expressing any program.
-
-Nil is a general purpose langauge for describing programs. Programs are
-expressed in Nil as the repeated application of functions over data such that
-transformations are effected on that data.
-
-Programs expressed in Nil are required to conform to a notion of correctness
-
-│
-│
-│
-│
-│
-│
-│
-│
-│
-│
-│
+<!DOCTYPE html>
+<html>
 
 
 
+The Standard Definition of NIL
+Copyright © Daniel Smith, 2025
 
-The Standard Definition of Nil
+                                 1 Introduction
+This document provides the formal definition of "NIL", an algorithmic language 
+for computer programming. 
+NIL is a recursive acronym which stands for "NIL isn't Lisp". 
+The purpose of this document is to promote the portability of NIL programs 
+across a variety of implementations and hardware.
 
-                                  Introduction
-This document formally defines Nil with the purpose of facilitating the
-portability of Nil programs across a variety of implementations and
-environments.
+                                   1.1 Scope
+This document specifies the format, meaning, and validation of NIL programs.
 
-Nil is a general purpose programming language. Programs are expressed in Nil as
-the repeated application of functions over data such that transformations are
-effected on that data.
+This document does not specify requirements for the host system, hardware, or 
+the internal mechanisms of an implementation.
 
-Programs expressed in Nil are required to conform to a notion of correctness.
-A correct program is guaranteed to never corrupt or degrade the form of the data
-being transformed, or perform undesired transformations on that data.
+                                1.2 Conformance
 
+This document in its entirety constitutes a set of requirements for an 
+implementation. 
 
-			       Language Overview
-The Nil programming language is comprised of modular but interdependent
-abstractions which are composed to describe a complete and correct program.
-These abstractions are as follows...
-Programs
-Modules
-Functions
-Data
-Types
-Effects
-Sequences
-Arithmetic of Values
+An implementation of the NIL programming language is said to be a 
+"conforming implementation" if it fulfills the requirements as set out in this
+document.
 
-                                    Programs
-Programs in Nil are both a means of specifying transformations of data and a
-form of data themselves. This is such that a Nil program may represent both the
-transformations to be effected on data, and the data being transformed.
+Requirements which are beyond the scope of this document are explicitly
+classified as "implementation dependent".
 
-Programs as data are canonically represented as a string of characters. This
-format can be considered the authoritative source of the form of a program. This
-is referred to as a "written program".
-
-Generally any character value can be used to write a program. This document
-assumes that the Unicode is used to store and transmit written programs.
-
-Programs are composed of two structural components, symbols and expressions.
-A symbol is a sequence of printable characters which correspond to a unique
-symbolic value.
-An expression is a sequence of programs which corresponds to a composite
-aspect of the program's meaning.
-
-Written programs are composed according to a syntax which decides the 
-permissible orderings of characters.
-The syntax is as follows ...
-1. An expression begins with an open brace, "(",
-   and ends with a closed brace, ")".
-2. A symbol is any unbroken sequence of non-blank characters,
-   excluding "(" and ")".
-The only invalid written program is one which does not contain evenly matched
-pairs of round braces, which violates the first rule of Nil syntax.
-
-                                    Modules
-Modules provide a way to modularize large programs.

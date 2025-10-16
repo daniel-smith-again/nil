@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <header>
+      <h1>The Standard Definition of NIL</h1>
+    </header>
+    <main>
+      <article>
+        <h2>Introduction</h2>
+        <p>This document provides the formal definition of "NIL", an algorithmic language for computer programming.</p>
+        <p>NIL is a recursive acronym which stands for "NIL isn't Lisp".</p>
+        <p>The purpose fo this document is to promote the portability of NIL programs across a variety of implementations and hardware.</p>
+        <h3>Scope</h3>     
+        <p>This document specifies the format, meaning, and validation of NIL programs.</p>
+        <p>This document does not specify requirements for the host system, hardware, or the internal mechanisms of an implementation.</p>
+        <h3>Conformance</h3>
+        <p>This document in its entirety constitutes a set of requirements for an implementation</p>
+        <p>An implementation of the NIL programming language is said to be a "conforming implementation" if it fulfills the requirements as set out in this document.</p>
+        <p>Requirements which are beyond the scope of this document are explicitly classified as "implemntation dependent".</p>
+        <p>Requirements which must be present in some implementation dependent capacity are explicitly classified as "implementation defined".</p>
+        <h3>Conventions</h3>
+        <p><i>blank</i></p>
+      </article>
+      <article>
+        <h2>Principals of Design</h2>
+        <p>Be useful.</p>
+      </article>
+      <article>
+        <h2>Sessions</h2>
+        <p>Sessions are the abstract interface through which a programmer may utilize NIL.</p>
+        <p>A Session is minimally a live process which exposes a duplex stream of UTF-8 encoded Unicode® characters and maintains a Module. The programmer will submit written Programs via this stream which may affect the bindings in the Sessions's Module, and the Session will return the results of the execution as the written Program which constructs it.</p>
+        <p>A Session will always evaluate a Program submitted by the programmer so long as it can be validated.</p>
+        <p>A Session will provide capabilities for transforming NIL Programs into programs which are understood by the host.</p>
+        <p>A Session will provide capabilities for inspecting NIL Programs, and the effects of their execution.</p>
+        <h3>Context</h3>
+        <p>The Module which is maintained by an active Session is referred to as the Context.</p>
+        <p>When a Session begins evaluation of a Program, it shall use the Context to determine the meaning and effects of the program.</p>
+        <p>The Context contains sub-Modules which are accessible to Programs.
+          They are...</p>
+        <ul>
+          <li>Default</li>
+          <li>System</li>
+          <li>Auxiliary</li>
+        </ul>
+        <p>The Context implicitly exposes these Modules to Programs as if by evaluating the following Program...</p>
+        <p><code>
+            (define
+             Default (load 'Default)<br>
+            System (load 'System)<br>
+            Auxiliary (load 'Auxiliary))<br>
+            (use Default System Auxiliary)
+            </code></p>
+      </article>
+      
+    </main>
+    <footer>
+      <p>Copyright © Daniel Smith, 2025</p>      
+    </footer>    
+  </body>  
+</html>
+
+The Standard Definition of NIL
+Copyright Â© Daniel Smith, 2025
+
+                                 1 Introduction
+This document provides the formal definition of "NIL", an algorithmic language 
+for computer programming. 
+NIL is a recursive acronym which stands for "NIL isn't Lisp". 
+The purpose of this document is to promote the portability of NIL programs 
+across a variety of implementations and hardware.
+
+                                   1.1 Scope
+This document specifies the format, meaning, and validation of NIL programs.
+
+This document does not specify requirements for the host system, hardware, or 
+the internal mechanisms of an implementation.

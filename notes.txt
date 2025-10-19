@@ -618,3 +618,18 @@ is valid according to the known labels.
 Ugh, tables are still the most efficient way.
 Although those are hard to make dynamically at runtime.
 
+How do I make an allocator?
+I have an array of memory.
+I can subscript a type based on a byte index.
+How would that look in practice?
+
+A big part of heaps is that I need to have a concept of pointers.
+Variables are pointers because everything is by-reference.
+Memory is a pointer because there's no guarantee that it's located in a
+predictable place.
+You access it by yielding more pointers.
+If I do something like
+(define foo (storage 1024))
+(define bar (foo 8 True)) "this is the same as (define bar True)"
+Welp, now it's uninitialized.
+Now I have to deal with default values.

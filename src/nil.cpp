@@ -3,10 +3,6 @@
  *                          Copyright © Daniel Smith
  */
 
-/*
- * There's a few components.
- */
-
 #include <fstream>
 #include <stdlib>
 

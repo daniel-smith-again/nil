@@ -3,6 +3,13 @@
  *                          Copyright © Daniel Smith
  */
 
+/*
+Features:
+
+Debugger
+
+ */
+
 #include <fstream>
 #include <stdlib>
 

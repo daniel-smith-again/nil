@@ -1,25 +1,28 @@
-<!DOCTYPE html>
-<html>
-
-
-
 The Standard Definition of NIL
 Copyright © Daniel Smith, 2025
 
-                                 1 Introduction
-This document provides the formal definition of "NIL", an algorithmic language 
-for computer programming. 
-NIL is a recursive acronym which stands for "NIL isn't Lisp". 
-The purpose of this document is to promote the portability of NIL programs 
+
+                                  Introduction
+
+This document provides the formal definition of "NIL", an algorithmic language
+for computer programming.
+
+NIL is a recursive acronym which stands for "NIL Isn't Lisp".
+
+The purpose of this document is to promote the portability of NIL programs
 across a variety of implementations and hardware.
 
-                                   1.1 Scope
-This document specifies the format, meaning, and validation of NIL programs.
 
-This document does not specify requirements for the host system, hardware, or 
+                                     Scope
+
+This document specifies the format, meaning, validation, and interpretation of 
+NIL programs.
+
+This document does not specify requirements for thehost system, hardware, or 
 the internal mechanisms of an implementation.
 
-                                1.2 Conformance
+
+                                  Conformance
 
 This document in its entirety constitutes a set of requirements for an 
 implementation. 
@@ -31,3 +34,23 @@ document.
 Requirements which are beyond the scope of this document are explicitly
 classified as "implementation dependent".
 
+
+                                    Overview
+
+NIL is both a language and a set of capabilities which together provide an 
+environment which a programmer will interact with to create, evaluate, and 
+reason about programs.
+
+NIL as a language provides functions, recursive data, natural and integer numbers
+of both fixed and arbitrary precision, modules, and first class continuations.
+
+NIL as a programming environment provides an image-based, live environment which
+includes an interpreter, debugger, compiler, linker, and extractor. 
+These utilities are exposed as facets of the language and may be invoked 
+manually by the programmer, or programmatically by the evaluation of a NIL 
+program.
+
+
+                                     Syntax
+
+NIL syntax is given by the following extended BNF grammar,

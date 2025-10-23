@@ -633,3 +633,50 @@ If I do something like
 (define bar (foo 8 True)) "this is the same as (define bar True)"
 Welp, now it's uninitialized.
 Now I have to deal with default values.
+
+
+
+System abstraction is weird.
+You can either specify a standard abstraction, or you can make programs change
+their behavior on each new operating system.
+I think having a standardized abstract host is probably the best way to do this.
+This is hard because I may want to abstract capabilities that a host doesn't have.
+Well. A host can always have a subset of capabilities, but it's better to 
+specify a bunch of them all at once.
+
+My abstractions are Sockets, Streams, Pools, Containers
+
+Abstractions are nice and make things convenient.
+I can always export a limited module which doesn't use the the full context.
+
+What's my philosophy here?
+Should each vendor supply a runtime?
+They do that anyways.
+The vendor has their own runtime.
+NIL should be able to use that runtime.
+Cross compilation assumes knowledge of the runtime that you're targetting.
+This is tricky because it potentially crosses implementations.
+Implementations should be compatible.
+Smalltalk environments are cool, but I don't want the language itself to be
+inextricably grafted to a specific graphics library.
+It might be better to have some primitives like the way low-level UI libraries 
+do it.
+If I was a "real" language, I'd just link to raylib.
+Like how do I hook into stuff like Vulkan if I'm stuck with an already existing
+GUI capability?
+Wouldn't it be nice to use Vulkan or CUDA straight out of the box, or subsume 
+pieces of the language to hook into those resources?
+That's what the context is for.
+Shadow some of the default functions.
+My development UI should not be the same UI.
+I can make a UI that's the same as my development UI and export the module 
+that way.
+How would I construct a system that uses other libraries?
+Link to them?
+How does smalltalk do it?
+
+I don't want a bytecode interpreter.
+I want a symbolic interpreter or just compile to machine code.
+I'll have an FFI system.
+I can also specify data layout in my lang so pointers and struct parameters are
+easy enough.

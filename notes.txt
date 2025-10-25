@@ -680,3 +680,55 @@ I want a symbolic interpreter or just compile to machine code.
 I'll have an FFI system.
 I can also specify data layout in my lang so pointers and struct parameters are
 easy enough.
+
+How to reason about objects being printable and readable according to a 
+cannonical form?
+Regular Expressions.
+
+I need a good FFI and an assembler.
+
+What capabilities do I need for a compiler?
+Image based development is cool and all, but at some point you're finished developing.
+In Smalltalk, you have to go through this crazy process of deleting parts of your runtime.
+Even then, you can't do this in a way that allows cross compilation.
+
+What can C do?
+C can link to libraries 
+C can call OS DLL's (this is a coincidence since C is the vendor's supported language)
+C can cross compile
+C can express memory allocators as casting objects from a byte-array substrate.
+
+What can NIL do?
+NIL can link to libraries by emitting assembly.
+NIL can call into OS libraries by emitting assembly.
+NIL can call into the Linux kernel by emitting assembly that calls the correct syscall.
+NIL can cross compile itself and its runtime.
+NIL can express memory allocators as getting a page from memory and then storing a value in a portion of it.
+
+So what do I actually need to do this?
+Assembler, Linker, and filesystem access.
+Trivial.
+Do I need more than that?
+Nope.
+In fact, more than that would be weird and presumptive.
+Debugging is the natural state of the program.
+What's my FFI?
+Is it a CFFI?
+Do I have a way to emit assembly?
+What I need is a way to differentiate between a string, byte string, and some code somewhere.
+I need a good inline assembly interface.
+What am I passing in, what am I getting out?
+Where do I put it?
+Well I can get storage information about all my types.
+
+What's my numerical abstraction????
+Byte, 
+ByteWidth (Fixed Width Signed/Unsigned numbers by storage size),
+Number (bigint)
+Float/Double (standard types)
+This should give you everything.
+
+I want bytes because bytes are the storage medium.
+I want byte-widths because I want to deal with fixed with signed/unsigned numbers with overflow.
+I want bigints to deal with arbitrary precision.
+

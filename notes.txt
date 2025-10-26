@@ -732,3 +732,17 @@ I want bytes because bytes are the storage medium.
 I want byte-widths because I want to deal with fixed with signed/unsigned numbers with overflow.
 I want bigints to deal with arbitrary precision.
 
+how do I reason about parsing stuff from a string?
+I want to maintain consistency between printing and reading objects.
+There should be a single representation which is freely convertible between
+strings and data.
+Regular expressions should be part of this.
+But full regular expressions are inadequate.
+I need to reason about
+1. The order of delimiter characters.
+2. Ambiguity in parsing. (no lookahead should help with that)
+3. Subpatterns.
+4. Pattern Sequences
+5. Recursive Patterns.
+
+What I end up with is algebraic data representations.

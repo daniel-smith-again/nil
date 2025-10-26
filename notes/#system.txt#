@@ -1,0 +1,72 @@
+What access to I have to my underlying system?
+If I have the ability to call any routine from the host API, then do I need
+abstractions?
+Yes, I need portable abstractions.
+I especially need portable abstractions for things that NIL does innately.
+Filesystem, Linking, Assembly, Memory, and 
+
+
+
+I should 100% provide a native listing of everything that the OS provides access to.
+But should I provide my own system agnostic abstractions?
+I need a filesystem, the ability to load modules, the ability to run native segments...
+and that's about it.
+
+My system should include,
+
+Sockets, Streams, Containers, Pools....
+Nah, that's WAY too much abstraction.
+Now I can't talk to the OS at all.
+Although that's exactly what C/C++ does though.
+There's a whole filesystem header in C++ that abstracts all the filesystem nonsense.
+
+Meh, all I need is filesystem access, and the ability to link to libraries.
+On POSIX, everything is a file so that's even easier.
+
+Filesystem Access, Threading, and CFFI.
+
+filesystem is a socket.
+What is a socket?
+It's a glob of data that has state and corresponds to something outside.
+A socket is an object.
+
+I don't want to have a resource handle.
+Rather I want to have a socket.
+Sockets can send out effects.
+
+(filesystem) gives you a filesystem socket
+Sockets are "live objects" that you can call methods on
+(define f (filesystem))
+(f 'directory '(foo bar baz))
+(f 'directory "foo" "bar" "baz")
+or should I just use slashes?
+Nah, don't use either.
+That might not even work if some other system comes along.
+
+(define f (filesystem)) "creates a socket object"
+(f 'directory '(
+
+
+
+a NIL program executes as a process.
+A Process corresponds to a single agent within the context of the host system.
+A Process will have permission to access some resources and may not have
+permission to access other resources.
+
+A Process may include one more more threads which are sub-processes which will
+have access to the data contained by that Process and will also share the
+same permissions and statuses that the host has afforded the Process.
+
+A thread may create additional data which is local to itself.
+Threads do not have access to local data which it did not create.
+
+
+A Process may have access to data and resources which are global to the host.
+Some common examples include, the filesystem, network capabilities, and
+environment values.
+
+NIL provides portable access to these resources if they are available in a host.
+
+Specifically NIL provides access to the filessystem, the network stack, and
+the environment, and the ability to directly call routines provided by the host.
+

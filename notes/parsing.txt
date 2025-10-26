@@ -1,0 +1,22 @@
+Lisp has a cool quality where an object is printed in a way that can be read back in with the reader.
+For example, in common lisp,
+
+> (defparameter x (quote (foo bar baz)))
+> (print x)
+(quote (foo bar baz))
+
+which is neato
+
+Here's the issue though, this property is only informally maintained.
+again, in common lisp, objects have no printable representation that's readable.
+It's definitely weird.
+
+I need a way to talk about how things are mapped to character strings.
+In order for this to work, I need regular expressions.
+F-strings may work.
+Like being able to use recursive strings.
+I also need context for certain things.
+
+Actually, macro characters are a great way to do this.
+You have a TON of options and macro characters are also syntax highlightable
+(this means a frontend can easily highlight based on syntax regions)

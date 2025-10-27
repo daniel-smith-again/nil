@@ -28,4 +28,15 @@ I can write inline assembler.
 Memory:
 I can claim memory and use views to store stuff into it.
 
-Multithreading
+
+Actually this is very very stupid.
+Literally just do what you want.
+If you have an assembler, proper CFFI, and the ability to load libraries, you can do anything in the system.
+As long as you can speak the vendor language, you're good to go.
+
+
+This doesn't do a lot for having a gread portable multithreading and graphics library but that's fine.
+
+What I really need to worry about is if I can emit a bootstrapped executable.
+This involves issuing the proper linking to system libraries.
+You also need to be able to properly manage memory.

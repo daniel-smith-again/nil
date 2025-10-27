@@ -20,3 +20,77 @@ I also need context for certain things.
 Actually, macro characters are a great way to do this.
 You have a TON of options and macro characters are also syntax highlightable
 (this means a frontend can easily highlight based on syntax regions)
+
+How do I talk about my parser.
+
+S expressions don't fit neatly into anything since symbols are delimited weirdly.
+
+Like how do I make a regex for anything that's not a special character?
+Via exclusion.
+
+(form Program (repeats (some Symbol Expression String Quotation)))
+(form Symbol (excludes Special Whitespace "(" ")") +)
+(form Expression "(" (repeats Program (optional Whitespace)) ")")
+
+(form Float (some "+" "-") Digits (optional (some "." "//") Digits))
+
+(form Record "{" (repeat Symbol (optional ":" Symbol) "=" Program) "}")
+
+(form Lambda "/" (capture Parameter Symbol) "." (capture Body Program))
+
+
+I have a data type.
+I have to attach some form to a data.
+
+(form Symbol (capture (repeats (excludes Special Whitespace Punctuation))))
+
+How do I get a number from a string though?
+That's super important and also is not guaranteed.
+This is guaranteed via the Number constructor though.
+
+(form Number (capture Number (number (the String (repeats Digit)))))
+
+So I do have dedicated parsers for raw jumbles of strings.
+
+How does format use the pattern for a specific type?
+It takes the data instance, and the form attached to it, and deconstructs the data fields into the string.
+
+What about choices?
+In float I can use either a slash or a period dot.
+How do I reason about that?
+
+I can't even hook this into a structural editor anyways.
+
+Symbols and numbers are fundamental bits.
+How do I parse other things though?
+Are they all subsets of symbols and numbers?
+
+What about binary?
+
+(form Bits Number "0b" (repeat (some "0" "1")))
+This tells you how to read it in, but this doesn't tell you how to ingest it
+or how to print it back out.
+This is weird because I don't need custom syntax for a structural editor.
+I'm never ever deal with ingensting a text file.
+Do I want to define new syntax inside the structural editor?
+Nah, it's more about having some minimal punctuation for structured stuff.
+Just like how you have paragraphs and sentences, you have expressions and atoms.
+What about escape characters?
+Backslash.
+
+What I'm really missing is alternative delimiters.
+That's how I can do other syntax.
+It would be really nice to be able to use other delimiters.
+How do I declare that?
+Macros?
+
+(syntax Foo (keywords) "foo" body "bar")
+
+(syntax Foo (keywords) (foo bar baz) (stuff foo bar baz))
+
+here's how I'd make a record
+
+(syntax RecordConstructor (= ,)
+ "{" field-list "}" (record '''(parse-field-list field-list)))
+
+Yeah this should be fine.

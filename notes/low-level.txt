@@ -1,0 +1,22 @@
+How do I do things like claiming more memory, emitting inilne assembly, and compiling?
+
+I use memory with views.
+
+(define my-memory (memory 1000))
+(define foo (view my-memory 100 "hello world"))
+
+
+
+So here's some fundamental things that I should be able to do.
+
+* claim memory in segments of bytes (via 'allocate)
+
+* spawn a thread
+
+* call into an "external" routine
+
+* emit assembly for an external routine
+
+* extend the compiler with new target architectures.
+
+What does this API look like?

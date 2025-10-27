@@ -40,3 +40,32 @@ This doesn't do a lot for having a gread portable multithreading and graphics li
 What I really need to worry about is if I can emit a bootstrapped executable.
 This involves issuing the proper linking to system libraries.
 You also need to be able to properly manage memory.
+
+
+Philosophical issue:
+I have language X, and System Y.
+I would like to deploy an application written in X on Y.
+The problem is that the System Y vendor only supports language Z.
+You can write and compile programs in Z and they will run on Y.
+There's two choices...
+1. write an X implementation in Z.
+2. cross compile an X implemetation by reverse-engineering the Z runtime.
+
+The issue with 1 is that you have to keep re-implementing X in a new language
+for each system you want to target, and you end up with multiple versions.
+
+The issue with 2 is that the vendor can easily break compatability.
+
+2 is still the best option because if you manage to make something that works
+for a specific version, it will continue to work.
+Vendors usually want to maintain some level of backwards compatability.
+
+You can also create modules in the vendor language that supply more functionality
+to the cross compiled bootstrap implementation.
+
+Start with one system, make the bootstrap, make a portable implementation,
+compile it to everywhere else.
+
+Linux is the easiest to start with.
+It runs on most systems and you can call into things easily by emitting assembly
+and whatnot.

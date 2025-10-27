@@ -1,0 +1,87 @@
+For sequenced types, it's pretty easy to so something like
+
+(define iterate ((l List) → Yield
+ (let loop ((first rest) l)
+  (do
+   (yield first)
+   (iterate rest)))))
+
+
+What are my primitives for iterating through a loop?
+Just pick each member and yield?
+That's a generator.
+Can a generator hijack code?
+No not really.
+
+(let
+ (yield (function (k x) (k) x))
+
+
+How do I use slices?
+What is a slice?
+It's an array which is formed as a subsequence of an existing array.
+The purpose is for performing in-place mutation according to a bounds smaller
+than the containing array.
+
+How would I do a quicksort partition in my array?
+
+(let (partition (function (l)
+      (let (a (slice l (from 0 to ((# l) / 2))))
+           (b (slice l (from ((# l) / 2) to (# l))))
+           (list a b))))
+ (partition list)
+
+
+How do I make a slice?
+I make a slice with let
+I can also make a slice with (slice ...)
+How is the length and position of a slice decided?
+Intervals.
+
+(0x00 .. 0xFF)
+
+(5 .. 7)
+
+((list a b c) * (5 .. 7))
+
+
+Ways to make a sequence
+(let (a (list * (5 .. 7)))
+ a)
+
+what happens when a escapes the let binding?
+Does it become a real list?
+or is it like saying
+(define x 1)
+(define y x)
+
+how do I have polymorphism?
+multiple defines?
+yes.
+
+how do I do multiple defines without weirdness happening?
+Multiple defines by itself should be okay.
+(define x 1)
+(define x "foo")
+(define x 'whatever)
+is the same as
+(define x (type 1 "foo" 'whatever))
+I already decided this a WHILE ago.
+I should remember that this is there.
+
+how else do I access a slice?
+
+
+Can I use discrete types?
+
+(data Month
+ January   February March    April
+ May       June     July     August
+ September October  November December)
+
+(array Month "")
+How do I use indirection with strings?
+
+(define foo (array Month (Box String)))
+(foo _ February ← (Box "Hello World"))
+

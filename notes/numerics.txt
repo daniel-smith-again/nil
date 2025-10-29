@@ -1,0 +1,57 @@
+My number system is weird.
+
+Start with arbitrary precision Rationals.
+Encoded using arbitrary length base-128 digit sequences
+(it's a byte string and with the MSB being the continuation bit.)
+
+(Fraction (Integer (Natural)))
+
+This means whatever I write down,
+
+1
++1
+-1
+1.1
+1/1
+1^2
+-1^-2
+
+I'll always have a computational type that corresponds.
+
+On the other side, I have intervals which are modular and mutable.
+They only work on integer values.
+(1 .. 10)
+(define x (1 .. 10))
+Their default value is always the first number.
+If you want to go backwards, do (10 .. 1) which reverses the order.
+
+Now I can do things like
+(define Byte (0 .. 255))
+
+I also have normal machine types which are groups of bytes.
+Int or Nat gives signed or unsigned encoding.
+You can specify Int1 up to Int256
+Actually that's dumb. Why would you ever want Int3?
+Well, maybe you would, so keep it.
+
+Intervals run on top of Nat by counting the number of whole values and
+representing the range as a Nat of some width.
+
+(1/10000 .. 1)
+gives you 9999 values, so Nat2
+
+You only have to worry about conversion when printing back out.
+
+So in summary, my types are
+
+Arbitrary Precision:
+
+Natural < Integer < Fraction
+which can be notated with 1, -1, 1.1, -1.1, 1^1, -1^1, 1^-1, -1^-1
+
+Then you have
+Intx and Natx which can specify a byte width between 1 and 256.
+Int1 Nat2 Int3 Nat4, etc...
+
+Using Nat, you can use intervals.
+Intervals are inclusive ranges formed from static values.

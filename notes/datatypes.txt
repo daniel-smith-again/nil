@@ -1,0 +1,9 @@
+Are enumerations separate from datatypes?
+
+No.
+Rather I should do something like
+(data Weekday
+ Monday -> 1
+ Tuesday -> 2
+ Wednesday -> 3
+ ...)

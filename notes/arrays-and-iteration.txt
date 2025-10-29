@@ -85,3 +85,13 @@ How do I use indirection with strings?
 (define foo (array Month (Box String)))
 (foo _ February ← (Box "Hello World"))
 
+
+
+
+Sequence type have elements which are indexed according to an ordered type.
+
+Ordered types are usually numbers, but are also data types such as enumerations.
+Arrays are initialized from ranges or enumerations.
+
+You can subscript an array using a value of the type used to index the array.
+

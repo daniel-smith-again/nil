@@ -1,5 +1,5 @@
-The Standard Definition of NIL
-Copyright © Daniel Smith, 2025
+                         The Standard Definition of NIL
+                         Copyright © Daniel Smith, 2025
 
 
                                   Introduction
@@ -18,7 +18,7 @@ across a variety of implementations and hardware.
 This document specifies the format, meaning, validation, and interpretation of 
 NIL programs.
 
-This document does not specify requirements for thehost system, hardware, or 
+This document does not specify requirements for the host system, hardware, or 
 the internal mechanisms of an implementation.
 
 

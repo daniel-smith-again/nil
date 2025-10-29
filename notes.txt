@@ -746,3 +746,39 @@ I need to reason about
 5. Recursive Patterns.
 
 What I end up with is algebraic data representations.
+
+
+
+How do I make syntax correspond to types?
+Numbers and symbols have specific ways they're printed out.
+It's all macro characters.
+
+A string should be a string no matter what form.
+That involves having reversible algorithms, or a pair of algorithms that are
+guaranteed to have the same output.
+This is worse than program equivalence.
+How do you reverse a thing?
+
+Lets say I made
+(data (list x) empty (cons x (list x)))
+which can make data as
+(define l (cons 1 (cons 2 (cons 3 empty))))
+But I wanted to make a special syntax to do the same thing,
+[1 2 3]
+How would I go between the two?
+
+
+Read and format should be different.
+What I want to reason about is how to create new structural syntax classes.
+That's just more delimiters.
+How do I declare that in a way which the reader and the frontend can be aware of?
+eh, that's impossible.
+Macro characters make that hard to use.
+Maybe I shouldn't bother...
+Having a fixed syntax, but flexible form makes for a better frontend experience.
+Nobody's really complaining about making a language in a language anyways.
+
+
+But here's the deal, how do I show expressions without visible parentheses?
+I should have line breaks and tabs, but what else?
+

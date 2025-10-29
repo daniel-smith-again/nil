@@ -1,0 +1,7 @@
+I want to go beyond malloc.
+Malloc actually sucks for most use cases.
+It's freakishly fast, but other applications can be just as fast as malloc
+without the engineering overhead.
+Garbage collection is one of these things.
+Just copy over everything that's live.
+Do it in a separate thread as well.

@@ -1,0 +1,8 @@
+Sockets are resource handles.
+They are stateful and correspond to a persistent resource in the host system.
+For example, a network socket.
+Additional types of sockets can be made like sockets for graphics and ports.
+A Socket is an event emitter which is handled by some code established by the user.
+
+Sockets can be network sockets, filesystem sockets, device sockets, or any extension.
+

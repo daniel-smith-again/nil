@@ -1,0 +1,7 @@
+Intermediate Representation
+
+
+I need some basic instructions to do stuff.
+The virtual machine is a register-stack machine.
+Pushing and popping works similarly to vector stack instructions in modern CPUs.
+

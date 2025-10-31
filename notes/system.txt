@@ -69,3 +69,50 @@ compile it to everywhere else.
 Linux is the easiest to start with.
 It runs on most systems and you can call into things easily by emitting assembly
 and whatnot.
+
+Actually it should be easier to abstract the system to a few things.
+
+Sockets
+Streams
+Pools
+Workers
+Substrate
+
+How do I use a better vocabulary for this?
+I should use an analogy.
+Like an engine?
+No engine is wrong.
+This is its own analogy.
+
+Should I even acknowledge that there's a filesystem?
+Nope, that's a socket type.
+
+
+Sockets
+        Stateful resource handles
+
+Streams
+        buffered, consumable input
+
+Pools
+        dynamic storage resources
+
+Workers
+        concurrent, sometimes parallel computing
+
+Substrate
+        host compatability, linking, assembler utility, calling native routines.
+
+
+(define System
+ (module
+  (define Sockets       (module ...))
+  (define Streams       (module ...))
+  (define Pools         (module ...))
+  (define Workers       (module ...))
+  (define Substrate     (module ...))
+))
+
+I still need API's for this to work.
+What are my APIs?
+Also should I use functions or some other thing to make them all work?

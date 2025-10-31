@@ -1,0 +1,95 @@
+OS?=$(shell uname -s | sed 's:_.*::')
+ARCH?=$(shell uname -m)
+ROOT=$(shell pwd)
+SYS=mod/sys
+
+VERSION=0.4.2
+
+CFLAGS += -DWASP_VERSION='"$(VERSION)"'
+
+STATICLIBS += -levent
+
+ifeq ($(ARCH),i686)
+ARCH = x86
+else
+ifeq ($(ARCH),Power Macintosh)
+ARCH = ppc
+endif
+endif
+
+ifeq ($(OS),MINGW32)
+OS = win
+else
+ifeq ($(OS),Linux)
+OS = linux
+endif
+endif
+
+ifeq ($(OS),win)
+EXE = .exe
+OBJ = .o
+SO  = .dll
+CFLAGS += -mno-cygwin 
+CFLAGS += -DWASP_SO='".dll"'
+CFLAGS += -I/usr/local/include -L/usr/local/lib -L/usr/lib/w32api
+CFLAGS += -D_WIN32_WINNT=0x501
+EXEFLAGS += -L/usr/local/lib 
+DYNAMICLIBS += -lws2_32 
+CFLAGS += -Irx
+LDFLAGS += -Lrx
+LIBRX += rx/libregex.a
+
+else # Assuming we're in UNIX..
+
+EXE = 
+OBJ = .o
+SO  = .so
+
+ifeq ($(OS),Darwin)
+CFLAGS += -fnested-functions
+endif
+
+CFLAGS += -DWASP_SO='".so"'
+### Disabled until lib/build and bin/waspc understands subsystems.
+# EXEFLAGS += -rdynamic -ldl
+PLATFORM = unix
+### An indirect dependency of libevent.
+ifneq ($(OS),Darwin)
+ifneq ($(OS),android)
+DYNAMICLIBS += -lrt
+endif
+endif
+
+endif
+
+ifdef DEBUG
+
+CFLAGS += -g
+
+else
+
+CFLAGS += -DNDEBUG
+
+endif
+
+ifdef COMPACT
+### NOTE: -Os causes list formatting to fail on linux with gcc-4.3.
+CFLAGS += -Os
+else
+ifdef FAST
+### NOTE: -O3 causes list formatting to fail on linux with gcc-4.3.
+CFLAGS += -O2
+else
+CFLAGS += -O
+endif
+endif
+
+PLATFORM = $(OS)-$(ARCH)
+CFLAGS += -DWASP_PLATFORM='"$(PLATFORM)"' 
+
+### Derived from a patch submitted by Chris Double.
+ifeq ($(OS),Darwin)
+EXEFLAGS += $(STATICLIBS) $(DYNAMICLIBS)
+else
+EXEFLAGS += -Wl,-Bstatic $(STATICLIBS) -Wl,-Bdynamic $(DYNAMICLIBS)
+endif

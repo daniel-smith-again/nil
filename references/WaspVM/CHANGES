@@ -1,0 +1,371 @@
+2011/01/01 Migration From Launchpad to Github
+  - Exported bazaar tree to git
+
+2010/03/03 Added rfc1071 primitive to core.
+  - Added (rfc1071 str) -> integer, which performs an RFC 1071 checksum of a
+    string.  Useful for implementing IPv4 packets.
+  
+2009/12/12 Preliminary 64-Bit Support
+  - Changed wasp_value's type from wasp_quad to uintptr_t.
+  - This may cause Wasp to compile and work 64-bit clean, but does not gain
+    a lot of efficiency from 64-bit, as MAX_IMM and MAX_INT have not been
+    adjusted.
+
+2009/12/11 Waspdoc TC Bugs Fixed
+  Waspdoc contained some incomplete argument parsing fixes that blocked
+  normal operation.  Fixed, and ensured it will install properly.
+
+  - Restored functionality of waspdoc dump source, waspdoc dump module.
+  - Added waspdoc to install process.
+
+2009/12/06 Bugfix, No Deactivate for Poll Processes
+  Identified by Chris Double; error introduced 2009/12/06 in Polling Processes
+  patch.
+
+  - Added a standard wasp_poll_deactivate dummy procedure to process.c
+
+2009/12/06 Polling Processes and Sleeping the VM
+  - Modified the process object to change the boolean "enabled" to an byte
+    "state."
+  - Added a state WASP_ACTIVE_PROCESS for processes that are actively
+    executing.  This approximates the old "enabled" processes.
+  - Added a state WASP_IDLE_PROCESS for processes that are waiting on a resume;
+    this approximates processes that were not enabled.
+  - Added a state WASP_POLL_PROCESS for processes that poll.
+  - Added convenient wasp_make_poll( fn, value ) to process.c.
+  - Expanded wasp_process_loop to sleep 100 microseconds when active count is
+    0 but enable count is nonzero.
+  - Simplified wasp_os_loop_activate to make wasp_os_poll.
+  - Removed unused wasp_can_be_only_one and wasp_vm_count.
+
+2009/12/06 Salsa/20 Cast Correction
+  - Corrected an implicit pointer cast in vm/salsa.c when calling wasp_root_obj
+
+2009/12/05 Static Compilation Improvements
+  Derived from a patch supplied by Chris Double; ensures libevent is statically
+  linked.
+
+  - Factored libraries out of EXEFLAGS into STATICLIBS and DYNAMICLIBS.
+  - STATICLIBS are linked with -Bstatic.
+  - DYNAMICLIBS are linked with -Bdynamic.
+  - Made librt an explicit dynamic dependency on Linux, indirectly required by
+    libevent.
+
+2008/12/31 Roguelike Terminal Support
+  - Added (string-set! str offset byte), similar to vector-set!
+  - Added (make-string str length init), which creates a string of length bytes,
+    with each byte initialized to init.
+  - Added (string-fill! str offset length byte), which changes length bytes,
+    starting at offset, to byte.
+  - Added (console-blit text foreground background) to os.c; this primitive
+    will iterate over the bytes in text, printing each one with the foreground
+    color and background color at the corresponding offset in foreground and
+    background.  Additionally, offset and length arguments may be specified to
+    restrict the data being displayed.  (For windowing functionality.)
+  - Added (set-console-colors fg bg) primitive for POSIX and CONIO.
+  - Added (reset-console-colors) primitive for POSIX and CONIO.
+  - Modified lib/scud to use new set and reset primitives.
+
+2008/12/26 Terminal Support Improvements
+  - Bumped version to 0.4.2.
+  - Moved lib/env to use a dictionary instead of an assoc-list.
+  - Ensured environ is not used on Windows.
+  - Added conio-size primitive, which returns the current number of rows and
+    columns.
+  - Added tty-size primitive, which returns the current number of rows and
+    columns.
+    + NOTE: Only works on Linux.. Need to figure this out for BSD.
+  - Added scud-size function, which returns the current number of rows and
+    columns as a list.
+  - Added clear background to vt100, simply resets background; workaround for
+    transparent terminals that are only transparent when there is no
+    background color.
+  - Added clear background to conio, simply uses black.
+
+2008/12/26 The SCUD Terminal Library
+  - Added unbuffer-console primitive, which prevents line buffering of stdin.
+  - Added conio-goto, conio-set-attr, conio-cls, conio-clear for Win32.
+  - Introduced the SCUD terminal abstraction library.
+  - Added the osdef macro to lib/env, which permits per-OS function 
+    definitions.
+  - Tagged 0.4.1
+
+2008/9/18 Code Quality Improvements for MOSREF 
+  - Fixed bug in lib/build when building cross-platform applications for win32
+  - Added (preload module ..) function to core/import; informs the module
+    loader that the specified module should be considered "loaded in the
+    near future."
+  - Added logic to lib/build to manage circular dependencies in standalone
+    applications by emitting a preload after the core modules are loaded but 
+    before the remainder.
+  - Removed some superfluous debug spam.
+  - Tagged WASPVM as 0.4.
+  - Added Henry Spencer's regex for WIN32 platform, which is regex-poor.
+  - Added string->uppercase, string->lowercase primitives to core.c
+  
+2008/08/30 MOSREF Proxy Command and Fixes
+  At this point, MOSREF is functional, but could use some improvements; this
+  milestone is focussed on making MOSREF a production-worthy tool.
+  
+  - Verified operation of drone bridging.
+  - Moved mosref/patch to lib/patch.
+  - Removed debugging spam from lib/patch.
+  - Modified MOSREF communications to operate in blocks of random sizes from 0 
+    to 255 bytes, each block has a checksum, the overall message has a 
+    checksum.  This reduces the potential for noise to tie up memory or hang 
+    the node.  (It will still cause the connection to break, though.)
+  - Renamed tcp-connect primitive to start-tcp-connect
+  - Modified outbound tcp connections to yield 'connect after they first 
+    connect.
+  - Added tcp-connect function to core/io; emulates old synchronous 
+    tcp-connect behavior.  (Eating the opening 'connect message.)
+  - Restored tcp-forward.
+  - Adulterated spawn in mosref to traceback and halt on an unhandled error in
+    any spawned process.
+  - Ensured that OS connections will only yield a 'close once; subsequent 
+    waits on the connection result in an infinite wait.  (Which corresponds
+    with other inputs.)
+  - Restored the MOSREF "proxy" command.
+
+2006/08/16 Port MOSREF 2.0b4 into WaspVM.
+  Found the final source tree for MOSREF, porting it into the current
+  work on MOSREF..
+  
+  - Ported lib/env into the core.
+  - Ported lib/clue-db into the core.
+  - Ported lib/cons-filter into the core.
+  - Ported lib/shuffle into the core.
+  - Ported lib/format-filter into the core.
+  - Ported mosref/shell into the core.
+  - Merged mosref/base and mosref/endpoint into mosref/transport.
+  - Updated implementations of Console and Drone endpoints.
+  - Ported lib/args-fu into the core.
+  - Ported lib/catch into the core.
+  - Ported mosref/node into the core.
+  - Ported mosref/parse into the core.
+  - Ported mosref/format into the core.
+  - Ported mosref/cmds into the core.
+  - Ported mosref/listener into the core.
+  - Ported mosref/props into the core.
+  - Ported mosref/patch into the core.
+  - Added input, timeout and output methods for lanes to lib/bridge
+  - Modified mosref/patch to use the input and output multimethods defined in
+    core/io.  (And, in turn, lib/bridge)
+  - Ported mosref/prop/* into the core.
+  - Ported mosref/cmd/* into the core.
+  - Ported lib/cons-filter into the core.
+  - Ported bin/mosref into the core.
+  - Disabled use of lib/terminal in bin/mosref.
+  - Disabled exploit command.
+  - Disabled fork command.
+
+2008/08/14 Port MOSREF Affiliation into WaspVM.
+  - Ported lib/buffer-channel into the core.
+  - Ported lib/tag-filter into the core.
+  - Ported lib/package-filter into the core.
+  - Ported lib/fuzz-filter into the core.
+  - Ported lib/line-filter into the core.
+  - Replaced use of base64-encode with format.
+  - Replaced use of base64-decode with common sense.
+  - Replaced all uses of ecdh and aes with generic ciphers from base in 
+    mosref/drone.
+  - Replaced all uses of ecdh and aes with generic ciphers from base in 
+    mosref/console.
+  - Ported test/affiliation into the core.
+  - Fix -- Found wasp_prng state was not being properly rooted.
+
+2008/08/14 Port mosref/base into WaspVM. 
+  - Copied MOSREF 2.0-b3 into the Core.
+  - Copied lib/crypto-filter into the Core.
+  - Copied lib/checksum-filter into the Core.
+  - Copied lib/copy-filter into the Core.
+  - Restored crc32 primitive to static build.
+  - Modified mosref/base to use curve25519 and salsa20.
+  - Modified make-salsa20-key to accept an optional IV argument.
+  - Modified (wait timeout input) in core/io to cancel the timeout after a
+    message arrives.
+  - Fixed core/io to use current-input, not current-process-input.
+  - Fixed core/io to use current-output, not current-process-output.
+  - Added (wait timeout) method to core/io.
+  - Added test/mosref-base to test MOSREF's fundamental xmit and recv 
+    operations.
+  - Added string->byte to core.c
+  - Added string->word to core.c
+  - Added string->quad to core.c
+  - Added lib/collate-filter, which prepends a length field as needed.
+  - Ensured messages are intact by including a length header.
+
+2008/08/13 Port lib/socks-client, lib/socks-server Back to WaspVM
+  - Added (random-integer minimum maximum) -> integer primitive.
+  - Added (resolve-ipv4 hostname) -> integer primitive.
+  - Modified tcp-connect to accept integer addresses.
+  - Rename cancel-task to cancel-timeout.
+  - Added (close-service os-service) primitive.
+  - Ported lib/socks-client and lib/socks-server from MOSREF 2.0 to WaspVM.
+  - Added a unit test for lib/socks-client and lib/socks-server.
+  - Fixed overuse of OS loop due to cancel-task not decreasing the OS usage
+    index.
+  - Added (scan-io) primitive when compiled with WASP_DEBUG_IO
+  - Fixed missing return value from wasp_read_entropy_str.
+
+2008/08/13 Port lib/bridge Back to WaspVM
+  - Ported lib/bridge from MOSREF 2.0 to WaspVM.
+  - Fixed a bug in the queue-input GC trace that was not passing trace on to
+    the generic input GC trace method.
+  - Added a unit test for lib/bridge.
+
+2008/08/13 Restore Platform, Architecture and OS Semantics
+  - Added arch to makefile.cf.
+  - Moved old platform logic to os in Makefile.cf
+  - Made platform a combination of os and arch, like MOSVM.
+  - Made waspvm stub name a combination of waspvm, os and arch, like MOSVM.
+  - Updated make exe-package to account for platform changes.
+  - Restored stubs directory.
+  - read-file now returns "" when reading past end of the file, instead of #f.
+  - Restored use of stub-path to lib/build
+  - Modified build process for local waspc and wasp to overlay site/config.ms
+    and site/config.mo with mod/local-config.m*
+  - Added support for -platform <platform> to waspc, can be used instead of 
+    -stub
+  - Restored stubs directory to bin/install installer.
+
+2008/08/12 Port SALSA20 to WaspVM
+  - Disabled plugins until after 1.0 due to Win32 issues.
+  - Added (make-salsa20-key seed) -> salsa20-key.
+  - Added (salsa20-encrypt key plaintext ?iv) -> ciphertext
+  - Added (salsa20-encrypt key plaintext ?iv) -> plaintext
+  - Added (read-entropy amount) -> entropy primitive for UNIX.
+  - Added (read-prng amount) -> data primitive; uses an internal Salsa/20 
+    state keyed from OS entropy.
+  - Wrote test/salsa20 test case.
+  - Added (read-entropy amount) -> entropy primitive for WIN32.
+
+2008/08/12 Added Elliptic Curve 25519 Primitives
+  - Added (curve25519-public private) -> public primitive; private key must be 
+    a 32 byte random string.
+  - Added (curve25519-secret public private) -> secret; using a pair of remote 
+    public key and local private key, determines a 32 byte shared secret.  This
+    secret should be hashed before use.
+  - Added test/curve25519 test case.
+
+2008/08/08 Tweaks to WaspDoc Check Source
+  - Modified waspdoc check source to use dir-files to identify source files.
+  - Modified waspdoc check source to add "UNDOCUMENTED" to undocumented source files.
+
+2008/08/07 I/O System Bugfixes 
+  - Fixed bug that would cause non-interactive applications to not exit unless
+    (exit) was called.
+  - Removed (exit) calls from bin/install and bin/waspc applications that were 
+    concealing this problem.
+  - Clarified all logic in vm/os.c related to when connections would start and stop
+    I/O, when their associated event buffers should be disabled, etc.
+
+2008/08/04 UNIX I/O System Refactor
+  - Fixed error in queue free method.
+  - Refactored OS loop so libevent and windows loop can be interchanged.
+  - Removed raw-input, raw-output and channel types as they are unused.
+  - Modifies OS connections with three-phase logic: connected, closing,
+    closed.
+  - Corrected a lot of missed traces in os-* types.
+  - Ensured os-connections can be supplied to connection primitives.
+  - Removed mention of sys/filesystem and sys/regex from modules.
+  - Removed multiple processes waiting on a single channel; confuses os 
+    handling.
+  - Removed resolve-ipv4 primitive.
+  - Modified tcp-connect to require a string for host name and either a string
+    or an integer for the service, treating the following as equivalent:
+      (tcp-connect "localhost" "http")
+      (tcp-connect "127.0.0.1" "80")
+      (tcp-connect "kabuki.merseine.nu" 80)
+  - Backported Console I/O to Windows environment.
+
+2008/08/03 Process System Cleanup and Improvement
+  - Added set-current-input! primitive.
+  - Added set-current-output! primitive.
+  - Added set-process-input! primitive.
+  - Added set-process-output! primitive.
+  - Added process-input primitive.
+  - Added process-output primitive.
+  - Renamed active-process to current-process.
+  - Restored lib/tcp-server from Mosquito.
+  - Modified lib/tcp-server to pass ancilliary arguments, much like spawn.
+  - Restored lib/http-server from Mosquito.
+  - Restored lib/http-file-server from Mosquito.
+  - Modified dir-files to work under Windows.
+
+2008/08/01 Timeout System Improvements
+  - Generalized timeouts to tasks
+  - Modified timeout primitive to create a task with the timeout method.
+  - Modified pause primitive to accept an optional timeout in milliseconds.
+  - Backported to WIN32, Isolating LibEvent Calls
+  - Note, moved all subsystems back into the core vm; need to explore better
+    ways to export symbols to DLLs than using the all-in-one-dll method.
+  - WaspC works, Wasp doesn't, as expected.
+  - BUG: (pause 100) at REPL causes halt.
+  - Restored lib/url from Mosquito.
+  - Restored lib/http-url from Mosquito.
+
+2008/07/28 LibEvent Restoration
+  - Restored event loop from future.
+  - Modified core/io module to handle os-connection outputs and inputs.
+  - Added os-service type to vm, derived from input, yields os-connections.
+  - Added (tcp-serve portno) -> os-service to vm/os.c
+  - Corrected optional arguments to be type-specific and refuse subtypes.
+  - Added macros for requiring subtype'd arguments.
+  - Implemented timeout scheduling.
+  - Made makefile default to -DNDEBUG.
+  - Added timeout multimethod to core/io to overlay the primitive.
+  - Added timeout option to wait multimethod.
+  - Fixed (input process) and (output process) methods in core/io.
+  - Aliased <number> to <integer>, since eventually integers will be a 
+    subset of <number>.
+  - Added timeout argument to wait multimethod.
+
+2008/06/24 WaspDoc Integration
+  - Added exprs->string primitive.
+  - Added write-lisp-file to core/file module.
+  - Added string-read-expr! primitive to vm/core.c and vm/string.c
+  - Modified string-skip-space! to return number of spaces skipped.
+  - Fixed a bug in the parser that considered a single dot to be an incomplete 
+    expression; should be an error.
+  - Reintegrated WaspDoc from pre-Rewind tree.
+
+2008/06/20 Namespace Cleanup
+  - Renamed set primitive to make-set.
+  - Renamed dict primitive to make-dict.
+  - Renamed tc-append! primitive to tc-add!
+  - Renamed tc-splice! primitive to tc-append!
+  - Modified tc-add! to accept multiple items, not just one.
+  - Modified tc-remove! to accept multiple items, not just one.
+  - Modified iter in lib/iterate to generate tc iterators.
+  - tc no longer considered a list by list predicate.
+  - tc no longer considered a pair by pair predicate.
+  - tc no longer a subtype of pair.
+
+2008/06/11 WaspDoc Parses Module Files
+  - Added waspdoc/waspdoc.ms
+  - waspdoc/waspdoc can analyze module files for their imports and exports
+    !! Note, this does not identify a module's macro exports, nor does it expand those macros. 
+
+2008/06/10 Subsystems Back From The Future
+  - Added subsystem compilation back into the build system.
+  - Restored regex subsystem into the build system.
+  - Restored subsystem installation in the install script.
+  - Added filesystem subsystem.
+  - Moved all filesystem primitives other than file open and read primitives to filesystem 
+    subsystem.
+  - Removed uses of file-path? from core.
+  - Added dependency on sys/filesystem to compiler.
+
+2008/06/10 Initial Import from WaspVM 0.3
+  This is a fork of WaspVM 0.3 devel as of 2008/06/05 with reduced build complexity and the
+  removal of some functionality not needed for installation or compilation.  It is the new
+  development focus of the Wasp project -- see the README for details.
+
+  - WaspVM compiles on Linux 2.6 with GNU toolchain.
+  - Removed timeouts, async I/O, crc32 
+  - WaspC runs identically under Rewind VM.
+  - Wasp REPL runs under Rewind VM.
+  - Ported over all dependencies of WaspC and REPL to Rewind.
+  - Ported install script back into build system.
+

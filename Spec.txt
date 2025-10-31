@@ -55,4 +55,61 @@ program.
 
 NIL syntax is given by the following extended BNF grammar,
 
-Program ⇒ 
+Program ⇒ Symbol | Number | Expression | Quote | String
+Symbol ⇒ Glyph | Glyph Symbol
+Number ⇒ Decimal | Hexadecimal | Binary
+Expression ⇒ "(" List ")"
+Quote ⇒ "'" Contents
+String ⇒ "\"" Characters "\""
+Glyph → !L | !M | !N | !P | !S
+Decimal ⇒ ?Sign Digits
+         | ?Sign Digits "." Digits
+         | ?Sign Digits "/" Digits
+         | ?Sign Digits "^" ?Sign Digits
+Hexadecimal ⇒ "0" "x" HexDigits
+Binary ⇒ "0" "b" Bits
+List ⇒ Program | Separator | List List
+Contents ⇒ Program | "'" "'" Program | "'" "'" "'" Program
+Characters ⇒ Character
+            | "\\" "\\"
+            | "\\" "\""
+            | "\\" Expression
+            | Character Characters
+Sign → "+" | "-"
+Digits ⇒ Digit | Digit Digits
+HexDigits ⇒ HexDigit | HexDigit HexDigits
+Bits ⇒ Bit | Bit Bits
+Separator → Separator Separator | !Z | !C
+Digit → "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+HexDigit → Digit
+         | "A" | "a"
+         | "B" | "b"
+         | "C" | "c"
+         | "D" | "d"
+         | "E" | "e"
+         | "F" | "f"
+Bit → "0" | "1"
+
+
+
+
+
+
+                                    Numerics
+NIL provides a range of numeric types with various guarantees and behavior.
+The type hierarchy of NIL is as follows...
+
+Number
+        Integer
+                Ix
+                Natural
+                        Nx
+        Double
+                Float
+        Interval
+
+The Number type shall capable of representing any possible rational.
+The Integer subtype of Number shall be capable of representing any possible
+integer.
+The Natural subtype shall be capable of representing any possible natural.
+Ix

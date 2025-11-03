@@ -46,3 +46,22 @@ What's my primitive lisp ir?
 (let ... _)
 (data ...)
 
+
+How do I visualize expressions without having to add a bunch of parens?
+
+(a (b (c (d e) f g h i (j) (k)) l m) n o)
+
+honestly parens aren't the issue.
+as long as I have a structural editor, we're good to go.
+
+How does my interface work?
+
+You start with the repl.
+The repl lets you enter expressions.
+Minimal editing.
+
+
+What modes are there?
+'describe
+'inspect
+'trace

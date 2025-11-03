@@ -782,3 +782,32 @@ Nobody's really complaining about making a language in a language anyways.
 But here's the deal, how do I show expressions without visible parentheses?
 I should have line breaks and tabs, but what else?
 
+How do I do polymorphism?
+Interfaces?
+Datatypes?
+Ad-Hoc polymorphism?
+Typeclasses?
+Polymorphism through modules?
+
+I have datatype polymorphism.
+A structure may encapsulate any instance as a slot.
+Functions over that structure are implicitly over any slot type as well.
+
+Then I have polymorphism like (format x) where x may be some type.
+
+What if I want to abstract an array to be something specific like a sorted array.
+
+
+(data (foo x)
+ (bar x → (m x))
+ (baz x → (n x)))
+
+
+For starters, within a module you can just sum type everything.
+You can constrain stuff by using abstract data.
+
+(data (fooable x)
+ (foo x → (foo x)))
+
+(define (M : (fooable T)) T)
+(define foo ((x t) → ...))

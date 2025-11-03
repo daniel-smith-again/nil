@@ -3,7 +3,7 @@
 
 
                                   Introduction
-
+─────────────────────────────────────────────────────────────────────────────────
 This document provides the formal definition of "NIL", an algorithmic language
 for computer programming.
 
@@ -14,7 +14,7 @@ across a variety of implementations and hardware.
 
 
                                      Scope
-
+─────────────────────────────────────────────────────────────────────────────────
 This document specifies the format, meaning, validation, and interpretation of 
 NIL programs.
 
@@ -23,7 +23,7 @@ the internal mechanisms of an implementation.
 
 
                                   Conformance
-
+─────────────────────────────────────────────────────────────────────────────────
 This document in its entirety constitutes a set of requirements for an 
 implementation. 
 
@@ -36,7 +36,7 @@ classified as "implementation dependent".
 
 
                                     Overview
-
+─────────────────────────────────────────────────────────────────────────────────
 NIL is both a language and a set of capabilities which together provide an 
 environment which a programmer will interact with to create, evaluate, and 
 reason about programs.
@@ -52,7 +52,7 @@ program.
 
 
                                      Syntax
-
+─────────────────────────────────────────────────────────────────────────────────
 NIL syntax is given by the following extended BNF grammar,
 
 Program ⇒ Symbol | Number | Expression | Quote | String
@@ -96,6 +96,7 @@ Bit → "0" | "1"
 
 
                                     Numerics
+─────────────────────────────────────────────────────────────────────────────────
 NIL provides a range of numeric types with various guarantees and behavior.
 The type hierarchy of NIL is as follows...
 
@@ -113,3 +114,18 @@ The Integer subtype of Number shall be capable of representing any possible
 integer.
 The Natural subtype shall be capable of representing any possible natural.
 Ix
+
+Transducers
+
+Sockets
+
+Threads
+
+                                 Resource Model
+─────────────────────────────────────────────────────────────────────────────────
+NIL requires that certain resource capabilities be made available by the host
+in order for evaluation to take place.
+
+The host should...
+
+⋅ provide a 

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -6,23 +7,103 @@
     <link rel="icon" href="icon/icon.svg" type="image/x-icon">
     <script src="./assets/util.js"></script>
     <style>
+      :root {
+        --size:calc((2vw + 2vh) / 3);
+      }
       @font-face { font-family:NIL-FONT; src:url('./assets/FreeMono.woff'); }
       body {
           color:var(--foreground);
           background-color:var(--background);
+          font-size:var(--size)
       }
-    </style> 
+      body * { color:inherit; background-color:inherit; font-family: NIL-FONT; font-size:var(--size);}
+      nth-editor {
+          height: 100%;
+          width: 100%;
+          display:grid;
+          grid-template-areas: 'a b b b b b b';
+          grid-template-columns: 10ch auto;
+          z-index:0;
+      }
+      nth-modelist {
+          display:flex;
+          grid-area: 'a';
+          flex-flow:column;
+          padding:1ch;
+      }
+      nth-modeitem {
+          display:grid;
+          align-items:center;
+          justify-content:center;
+          min-height:3lh;
+          width: 10ch;
+          border-radius: 2ch 0ch 0 2ch;
+          margin-bottom:-0.5ch;
+          background-color:var(--background);
+          box-shadow:0 0 1ch 0.1ch var(--foregroundsecond);
+          z-index:1;
+      }
+      nth-modeitem[selected] {
+          z-index:2;
+      }
+      nth-area {
+          display:block;
+          grid-area: 'b';
+          z-index:100;
+          padding:1ch;
+          border-radius:1ch;
+          min-height:100%;
+      }
+      nth-expression {
+          border-radius:0.7ch;
+          height:min-content;
+          width:fit-content;
+          vertical-align:top;
+          transition:all 0.2s;
+          margin:0;
+          box-shadow:var(--backgroundsecond) 0 0 0 0.1ch;
+      }
+      nth-expression > * + * {margin-left:1ch;}
+       nth-expression >
+                        nth-linebreak + *,
+                        nth-symbol[quote] + *,
+                        nth-symbol[tab] + *,
+                        nth-symbol:empty + *,
+                        * + nth-symbol[tab]
+      {margin-left:0;}
+                              
+          
+    </style>
   </head>
   <body>
     <head>
     </head>
     <main>
       <textarea id="hiddeninput"></textarea>
+      <nth-editor>
+        <nth-modelist>
+          <nth-modeitem>foo</nth-modeitem>
+          <nth-modeitem selected>bar</nth-modeitem>
+          <nth-modeitem>baz</nth-modeitem>
+        </nth-modelist>
+        <nth-area>
+          <nth-expression>
+            <nth-symbol>a</nth-symbol>
+            <nth-symbol>b</nth-symbol>
+            <nth-string>foobarbaz biff botch fizzle fup boo</nth-string>
+            <nth-expression>
+              <nth-symbol>bye</nth-symbol>
+            </nth-expression>
+          </nth-expression>
+        </nth-area>
     </main>
     <footer>
     </footer>
   </body>
   <script>
+    hiddeninput.style.display = "none";
     hiddeninput.style.background = 'pink' //for da lulz
+    hiddeninput.click()
+    hiddeninput.focus()
   </script>
 </html>

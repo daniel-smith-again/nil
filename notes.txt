@@ -811,3 +811,17 @@ You can constrain stuff by using abstract data.
 
 (define (M : (fooable T)) T)
 (define foo ((x t) → ...))
+
+
+How do I make parsers the same as printers?
+I need reversible functions.
+How do I make reversible functions?
+Make them total.
+Is this even a useful property?
+There may be data with no printable representation, or data that shouldn't be
+read in.
+What about secrets?
+Secrets shouldn't be read in and they shouldn't be printed out.
+There should be a way to overload stuff.
+I should have character hooks which will engage parsers.
+Parsers can issue errors.

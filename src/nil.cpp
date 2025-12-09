@@ -3,16 +3,14 @@
  *                          Copyright © Daniel Smith
  */
 
-/*
-Features:
-
-Debugger
-
- */
 
 #include <fstream>
 #include <stdlib>
+#ifdef Linux
+void InitInput(void)
+{
 
+}
 void main (int argv, char** argc)
 {
 

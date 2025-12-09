@@ -2,6 +2,83 @@
                          Copyright © Daniel Smith, 2025
 
 
+Introduction
+─────────────────────────────────────────────────────────────────────────────────
+This document provides the formal definition of "NIL", an algorithmic language 
+for computer programming.
+
+NIL is a recursive acronym which stands for "NIL Isn't Lisp".
+
+The purpose of this document is to promote the portability of NIL programs 
+across a variety of implementations and hosts.
+
+
+Scope
+─────────────────────────────────────────────────────────────────────────────────
+This document specifies the format, meaning, validation, and interpretation of 
+NIL programs.
+
+This document does not specify requirements for the host system, hardware, or 
+the internal mechanisms of an implementation.
+
+
+Conformance
+─────────────────────────────────────────────────────────────────────────────────
+A conforming implementation is one which fulfills all requirements set out in 
+this document.
+
+This document expresses requirements of an implementation via a set of key 
+phrases. They are as follows...
+
+· IS / IS NOT
+· MUST / MUST NOT
+· WILL / WILL NOT
+· REQUIRED / NOT REQUIRED
+  Signifies an absolute requirement whereby a conforming implementation will
+  demonstrate a property or will provably lack that property in the case of 
+  a negative requirement.
+
+· MAY / MAY NOT
+  Signifies a soft requirement or recommendation whereby a conforming 
+  implementation will optionally demonstrate a property or will lack that 
+  property in the case of a negative recommendation.
+
+
+Overview
+─────────────────────────────────────────────────────────────────────────────────
+The NIL language is realized as an interactive program, running continuously on
+a host system, which will accept input from an agent and will affect the host
+system according to the input.
+
+The interactive program which facilitates the NIL language is referred to as a
+Session.
+
+A Session accepts input in the format of programs written in the NIL langauge. It
+will affect the host via the process of evaluation.
+
+Evaluation is the dynamic process where the Session interprets the meaning of an
+input program and carries out the meaning by affecting the host system.
+
+Sessions must have at least the following capabilities...
+· The ability to provide a semiduplex communication channel whereby an external
+  agent can submit NIL programs for evaluation.
+· The ability to evaluate NIL programs such that the correct result is effected.
+· The ability to engage the resources of the host system as required to
+  correctly evaluate a NIL program.
+· The ability to export NIL programs to a format such that the effects of their
+  evaluation can be performed directly without first engaging with a Session or
+  requiring input from an agent. (This is more commonly referred to as a "stand-
+  alone executable".)
+
+
+
+
+
+
+
+
+
+
                                   Introduction
 ─────────────────────────────────────────────────────────────────────────────────
 This document provides the formal definition of "NIL", an algorithmic language
@@ -41,8 +118,8 @@ NIL is both a language and a set of capabilities which together provide an
 environment which a programmer will interact with to create, evaluate, and 
 reason about programs.
 
-NIL as a language provides functions, recursive data, natural and integer numbers
-of both fixed and arbitrary precision, modules, and first class continuations.
+The NIL language provides functions, recursive data, fixed and arbitrary
+precision numbers, modules, and first class delimited continuations.
 
 NIL as a programming environment provides an image-based, live environment which
 includes an interpreter, debugger, compiler, linker, and extractor. 
@@ -90,8 +167,23 @@ HexDigit → Digit
          | "F" | "f"
 Bit → "0" | "1"
 
+It should be noted that any two adjacent Symbols shall be treated as a single
+occurrence of Symbol.
 
 
+                                    Parsing
+─────────────────────────────────────────────────────────────────────────────────
+Written programs have a direct correspondence with program data. The above
+grammar is used to construct data according to its written form.
+
+The data is 
+
+This syntax allows for the following types to be stored in a written form,
+· Symbols
+· Numbers
+· Expressions
+· Program Data
+· String Data
 
 
 
@@ -99,6 +191,10 @@ Bit → "0" | "1"
 ─────────────────────────────────────────────────────────────────────────────────
 NIL provides a range of numeric types with various guarantees and behavior.
 The type hierarchy of NIL is as follows...
+
+Number
+
+Interval
 
 Number
         Integer
@@ -129,3 +225,12 @@ in order for evaluation to take place.
 The host should...
 
 ⋅ provide a 
+
+
+
+
+
+
+How do I express asynchronous programming?
+Erlang style?
+Ada style?

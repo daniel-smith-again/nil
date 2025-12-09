@@ -1,0 +1,15 @@
+Everything is a file...
+The language runtime is a virtual filesystem.
+All resources have r/w/x permissions.
+All resources support the functions
+* read 
+* write
+* exec
+
+The filesystem is as follows...
+
+_ /
+   surface / 
+   storage /
+   memory / 
+   work /

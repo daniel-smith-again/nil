@@ -1,4 +1,0 @@
-include:
-  - project: 'LIEF/ci'
-    ref: main
-    file: 'main.yml'

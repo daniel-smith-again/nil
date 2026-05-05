@@ -10,38 +10,62 @@
     <style>
       @font-face { font-family:MonoSpaced; src:url('./assets/FreeMono.woff'); }
       @font-face { font-family:BackupMono; src:url('./style/NotoSansMonoVariable.ttf'); }
-      :root { --size:calc(7px + ((1vw + 1vh) / 2));}
-      html * {font-family:Monospaced, BackupMono;font-size:var(--size);user-select:none;color:var(--foreground);background-color:var(--background);}
-      body {display:grid;grid-template-areas: 't' 'm';grid-template-rows: 3lh auto;touch-action:none;min-height:100vh;padding:0;margin:0;}
-      header {grid-area:t;height:1lh;display:grid;width:fit-content;margin:auto;justify-content:center;align-items:center;padding:1ch;border-radius:1ch;}
+      :root { --size:calc(13px + ((1vw + 1vh) / 2));}
+      html{scrollbar-color:var(--foregroundsecond) var(--backgroundsecond);}
+      html * {font-family:Monospaced, BackupMono;font-size:var(--size);user-select:none;color:var(--foregroundsecond);background-color:var(--backgroundsecond);}
+      body {display:grid;width:calc(100vw - 3ch);grid-template-areas: 't' 'm';grid-template-rows: 3lh auto;touch-action:none;min-height:100vh;padding:0;margin:0;}
+      header {grid-area:t;height:5lh;width:100%;display:flex;margin:auto;justify-content:flex-start;align-items:center;padding:1ch;border-radius:1ch;}
       header:hover{color:var(--foregroundsecond);background-color:var(--backgroundsecond);}
       main {grid-area:m;display:flex;flex-flow:column nowrap;justify-content:center;align-items:center;min-height:3lh;width:90vw;margin:auto;justify-self:center;padding-bottom:7lh;margin-bottom:auto;margin-top:7%;}
-      nil-atom, nil-list, nil-break {display:inline-block;vertical-align:top;min-width:1ch;line-height:1lh;min-height:1lh;padding:0;scroll-padding:7lh;scroll-margin:7lh;scroll-snap-align:center;}
-      nil-atom{transition: all 0.2s;padding:0;white-space:pre;border-radius:0.3ch;background-color:none;height:1lh;}
-      nil-atom:empty, nil-list:empty{height:1lh;width:1ch;}
-      nil-atom:empty{border-bottom:dashed 0.2ch var(--foregroundsecond)}
-      nil-atom + nil-atom, nil-atom + nil-list, nil-list + nil-atom{margin-left:1ch;}
-      nil-list{border-radius:0.7ch;}
-      nil-list:has(> nil-atom[focused]){outline:solid 0.3ch var(--backgroundsecond);}
-      main > nil-list {outline-style:none;}
-      main > nil-list[focused]{outline-style:none;}
-      main > nil-list:empty{outline-style:solid;}
-      nil-break{display:inline;border-radius:0.3ch;width:1ch;height:1lh;color:var(--backgroundthird);height:1lh;}
-      * + nil-break{margin-left:1ch;}
-      *[focused]{outline:solid 0.3ch var(--backgroundsecond);}
-      nil-list[focused]{outline-color:var(--backgroundthird);}
-      nil-break[focused]::before{content:'↵'}
-      #Options{position:absolute;display:block;min-width:7ch;min-height:3lh;border:solid var(--foreground) 0.2ch;border-radius:0.5ch;padding:0;}
-      #Options > * {display:grid;text-align:center;align-items:center;justify-content:center;border-collapse:collapse;cursor:pointer;}
+      nil-atom, nil-tab, nil-list, nil-break {display:inline-block;position:relative;vertical-align:top;min-width:1ch;line-height:1lh;min-height:1lh;padding:0;scroll-padding:7lh;scroll-margin:7lh;scroll-snap-align:center;z-index:1;background-color:unset;border-radius:0.3ch;}
+      nil-atom, nil-tab{transition: all 0.2s;padding:0;white-space:pre;border-radius:0.3ch;background-color:unset;height:1lh;}
+      nil-atom:empty, nil-tab:empty, nil-list:empty, nil-break{height:2ch ;width:1ch;}
+      nil-atom:empty, nil-tab:empty{background-color:var(--backgroundthird);}
+      nil-list > * + * {margin-left:1ch;}
+      nil-break + *, * + nil-break {margin-left:0;}
+      * + nil-break[focused]{margin-left:1ch;}
+      nil-list{border-radius:0.3ch;outline:0;line-height:2ch;}
+      nil-list:has(> *[focused]){outline:solid 0.3ch var(--backgroundthird);}
+      main > nil-list, main > nil-list[focused] {outline-style:none;background-color:unset;}
+      main > nil-list:empty{outline:solid 0.3ch var(--backgroundthird);background-color:unset;}
+      nil-break{display:inline;}
+      * + nil-break[focused]{margin-left:1ch;}
+      *[focused]{background-color:var(--backgroundthird);z-index:2;}
+      nil-break[focused]{color:var(--diminished);}
+      nil-list > nil-list[focused] > nil-break{color:var(--diminished);}
+      nil-list:empty[focused] {outline:solid 0.3ch var(--backgroundthird);background-color:unset;}
+      nil-break[focused]::before{content:'↵';display:inline-block;line-height:2ch;width:1ch;height:2ch;background-color:unset;}
+      #Options{position:absolute;display:block;z-index:100;min-width:7ch;min-height:3lh;border:solid var(--foreground) 0.2ch;border-radius:0.5ch;padding:0;}
+      #Options > * {display:grid;text-align:center;align-items:center;justify-content:center;border-collapse:collapse;cursor:pointer;height:1.5lh;}
       #Options > * + * {border-top:solid var(--foreground) 0.2ch;}
       #Options > *:hover {background-color:var(--backgroundthird);}
-      #Options > *:first-child {border-radius: 0.5ch 0.5ch 0 0;}
-      #Options > *:last-child {border-radius: 0 0 0.5ch 0.5ch;}
+      #Options > *:first-child {border-radius: 0.3ch 0.3ch 0 0;}
+      #Options > *:last-child {border-radius: 0 0 0.3ch 0.3ch;}
+      #Logo {height:5ch;width:5ch;z-index:100;cursor:pointer;}
+      #Slideout {transition:left 0.5s;position:fixed;left:100vw;width:calc(100% - 9ch);display:flex;justify-content:space-between;}
+      header:hover #Slideout{left:7ch;}
+      #HelpButton{cursor:pointer;width:3ch;height:3ch;display:inline-grid;align-items:center;justify-content:center;text-align:center;border-radius:1ch;}
+      #HelpButton:hover {background-color:var(--backgroundthird);}
     </style>
   </head>
   <body>
-      <header onclick="setColorTheme()">
-        NIL Reference Implementation
+      <header >
+        <div id="Logo" onclick="setColorTheme()">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMin" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+              <defs id="defs54" />
+              <ellipse style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:var(--foreground);stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+              ry="15.550441" rx="38.556782" cy="-1.5364231" cx="62.654388" transform="matrix(0.8,0.6,-0.70710678,0.70710678,0,0)" id="ellipse45" />
+              <path style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:var(--foreground);stroke-linejoin:round;stroke-miterlimit:5;stroke-dasharray:none;stroke-opacity:1"
+              d="M 66.489828,62.06793 A 18.564376,18.564376 0 0 1 47.925452,82.060335 18.564376,18.564376 0 0 1 30.789107,62.06793 18.564376,18.564376 0 0 1 47.925452,43.503554 18.564376,18.564376 0 0 1 66.489828,63.495959"
+              id="path47" />
+              <path style="fill:none;stroke:var(--foreground);stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+              d="M 60.777712,2.0907162 37.92925,97.768652" id="path49" />
+            </svg>
+        </div>
+        <div id="Slideout">
+          <span>NIL Reference Implementation</span>
+          <span id="HelpButton" onclick="ShowHelp(event)">?</span>
+        </div>
       </header>
       <main id="NIL">
         <p></p>
@@ -225,6 +249,13 @@
           {
             atom.type = "list"
           }
+          else if (atom.type == "list" && atom.data == undefined)
+          {
+            atom.data = this.makeAtom(undefined, atom, undefined, undefined, undefined)
+            atom.data.next = atom.data
+            atom.data.previous = atom.data
+            this.focus(atom.data)
+          }
           else
           {
             if (atom.parent != undefined)
@@ -234,7 +265,7 @@
               atom.next.next.previous = atom.next
             }
             this.focus(atom.next)
-          }          
+          }
         },
         appendCharacter : function(character)
         {
@@ -244,25 +275,34 @@
             atom.type = "atom"
             atom.data = ""
           }
-          else if (atom.type == "list")
-          {
-            atom.data = this.makeAtom("atom", atom, undefined, undefined, "")
-            atom.data.next = atom.data
-            atom.data.previous = atom.data
-            this.focus(atom.data)
-          }
-          else if (atom.type == "break")
+          else if (atom.type == "break" || atom.type == "tab")
           {
             this.insertAtom()
             this.focus().type = "atom"
             this.focus().data = ""
+          }
+          else if (atom.type == "list")
+          {
+            if (atom.data == undefined)
+            {
+              atom.data = this.makeAtom("atom", atom, undefined, undefined, "")
+              atom.data.next = atom.data
+              atom.data.previous = atom.data
+              this.focus(atom.data)
+            }
+            else
+            {
+              this.insertAtom()
+              this.focus().type = "atom"
+              this.focus().data = ""
+            }
           }
           this.focus().data = this.focus().data + character
         },
         deleteCharacter : function()
         {
           var atom = this.focus()
-          if (atom.type == "atom")
+          if (atom.type == "atom" || atom.type == "tab")
           {
             if (atom.data.length > 0)
             {
@@ -320,7 +360,23 @@
           {
             this.insertAtom()
             this.focus().type = "break"
-            //this.insertAtom()
+          }
+          else 
+          {
+            this.submit()
+          }
+        },
+        insertTab : function()
+        {
+          if (this.focus().type == "tab")
+          {
+            this.focus().data = this.focus().data + " "
+          }
+          else
+          {
+            this.insertAtom()
+            this.focus().type = "tab"
+            this.focus().data = " "
           }
         },
         moveCursorForward : function()
@@ -350,15 +406,39 @@
         },
         sampleAtom : function()
         {
-
+          this.sample = structuredClone(this.focus())
         },
         putAtom : function()
         {
-
+          this.sample.next = this.focus().next
+          this.sample.previous = this.focus()
+          this.focus().next.previous = this.sample
+          this.focus().next = this.sample
+          this.sample.parent = this.focus().parent
+          this.sample = undefined
         },
         spreadAtom : function()
         {
-
+          if (this.sample.type == "list")
+          {
+            var head = this.sample.data
+            var tail = this.sample.data.previous
+            var x = head
+            do 
+            {
+              x.parent = this.focus().parent
+              x = x.next
+            } while (x != tail)
+            tail.next = this.focus().next
+            head.previous = this.focus()
+            this.focus().next.previous = tail
+            this.focus().next = head
+            this.sample = undefined
+          }
+          else 
+          {
+            this.putAtom()
+          }
         },
         showModel : function()
         {
@@ -376,6 +456,16 @@
                 break;
               case "atom":
                 element = document.createElement('nil-atom')
+                element.appendChild(document.createTextNode(n.data))
+                element.style.cursor = "pointer"
+                element.onclick = (e) => {
+                  const atom = n
+                  window.NIL.editor.focus(atom)
+                  window.NIL.editor.showModel()
+                }
+                break;
+              case "tab":
+                element = document.createElement('nil-tab')
                 element.appendChild(document.createTextNode(n.data))
                 element.style.cursor = "pointer"
                 element.onclick = (e) => {
@@ -432,6 +522,9 @@
               case 'Enter':
                 this.insertBreak()
                 break;
+              case 'Tab':
+                this.insertTab()
+                break;
               case 'Backspace':
                 this.deleteCharacter()
                 break;
@@ -448,10 +541,13 @@
                 this.moveCursorForward()
                 break;
               case 'Sample':
+                this.sampleAtom()
                 break;
               case 'Put':
+                this.putAtom()
                 break;
               case 'Spread':
+                this.spreadAtom()
                 break;
             }
           }
@@ -460,11 +556,45 @@
             this.appendCharacter(input)
           }
           this.showModel()
+        },
+        submit : function()
+        {
+          const serialize = (n) => 
+          {
+            var atom = undefined
+            switch(n.type)
+            {
+              case "atom":
+                return n.data
+                break;
+              case "list":
+                var atom = []
+                var a = n.data
+                do
+                {
+                  var result = serialize(a)
+                  if (result != undefined)
+                  {
+                    atom.push(result)
+                  }
+                  a = a.next
+                } while(a != n.data)
+                return atom
+                break;
+              default:
+                return undefined
+            }
+          }
+          var src = serialize(this.model)
+          window.NIL.interpreter.submit(src)
         }
       },
       interpreter : 
       {
+        submit : function(src)
+        {
 
+        },
       },
       Init(element)
       {
@@ -488,6 +618,7 @@
           switch(e.inputType)
           {
             case 'insertText':
+            case 'insertCompositionText':
               if (e.data != ' ')
               {
                 window.NIL.editor.processCommand(false, e.data)
@@ -638,7 +769,7 @@
               e.preventDefault()
               break;
             case 'Enter':
-              if (e.shiftKey)
+              if (e.ctrlKey)
               {
                 window.NIL.editor.processCommand(true, "Down")
                 e.preventDefault()
@@ -649,30 +780,37 @@
                 e.preventDefault()
               }
               break;
-            case 'Backspace':
-              window.NIL.editor.processCommand(true, "Backspace")
+            case 'Tab':
               e.preventDefault()
+              window.NIL.editor.processCommand(true, "Tab")
+              break;
+            case 'Backspace':
+              e.preventDefault()
+              window.NIL.editor.processCommand(true, "Backspace")
               break;
             case ' ':
-              if (e.shiftKey)
+              e.preventDefault()
+              if (e.ctrlKey)
               {
                 window.NIL.editor.processCommand(true, "Up")
-                e.preventDefault()
               }
               else
               {
                 window.NIL.editor.processCommand(true, "Space")
-                e.preventDefault()
               }
               break;
           }
         }
         document.body.onkeyup = function(e)
         {
-
+          undefined
         }
       }
     }
     window.NIL.Init(document.getElementById("NIL"))
+    function ShowHelp(e)
+    {
+      e.preventDefault()
+    }
   </script>
 </html>

@@ -23,18 +23,16 @@
       nil-atom:empty, nil-tab:empty{background-color:var(--backgroundthird);}
       nil-list > * + * {margin-left:1ch;}
       nil-break + *, * + nil-break {margin-left:0;}
-      * + nil-break[focused]{margin-left:1ch;}
       nil-list{border-radius:0.3ch;outline:0;line-height:2ch;}
       nil-list:has(> *[focused]){outline:solid 0.3ch var(--backgroundthird);}
       main > nil-list, main > nil-list[focused] {outline-style:none;background-color:unset;}
       main > nil-list:empty{outline:solid 0.3ch var(--backgroundthird);background-color:unset;}
       nil-break{display:inline;}
-      * + nil-break[focused]{margin-left:1ch;}
       *[focused]{background-color:var(--backgroundthird);z-index:2;}
       nil-break[focused]{color:var(--diminished);}
       nil-list > nil-list[focused] > nil-break{color:var(--diminished);}
       nil-list:empty[focused] {outline:solid 0.3ch var(--backgroundthird);background-color:unset;}
-      nil-break[focused]::before{content:'↵';display:inline-block;line-height:2ch;width:1ch;height:2ch;background-color:unset;}
+      nil-break[focused]::before{content:'↵';display:inline-block;position:absolute;line-height:2ch;width:1ch;height:2ch;background-color:var(--backgroundthird);color:var(--diminished);border-radius:0.2ch;box-shadow:0 0 0 0 var(--foregroundsecond);margin-left:1ch;outline:solid 0.3ch var(--backgroundthird);}
       #Options{position:absolute;display:block;z-index:100;min-width:7ch;min-height:3lh;border:solid var(--foreground) 0.2ch;border-radius:0.5ch;padding:0;}
       #Options > * {display:grid;text-align:center;align-items:center;justify-content:center;border-collapse:collapse;cursor:pointer;height:1.5lh;}
       #Options > * + * {border-top:solid var(--foreground) 0.2ch;}
@@ -101,8 +99,8 @@
         'bg_1': '#184956',
         'bg_2': '#2d5b69',
         'dim_0': '#72898f',
-        'fg_0': '#adbcbc',
-        'fg_1': '#cad8d9',
+        'fg_0': '#fbf3db',
+        'fg_1': '#ece3cc',
         'red': '#fa5750',
         'green': '#75b938',
         'yellow': '#dbb32d',
@@ -218,6 +216,78 @@
         */
         cursor : undefined,
         sample: undefined,
+        sequences: 
+        {
+          ",multiply" : '\u00d7',
+          ",divide" : '\u00f7',
+          ",neq" : '\u2260',
+          ",leq" : '\u2264',
+          ",geq" : '\u2265',
+          ",and" : '\u2227',
+          ",or" : '\u2228',
+          ",not" : '\u00ac',
+          ",intersection" : '\u2229',
+          ",union" : '\u222a',
+          ",integral" : '\u222b',
+          ",function" : '\u2192',
+          ",leftarrow" : '\u2190',
+          ",uparrow" : '\u2191',
+          ",rightarrow" : '\u2192',
+          ",downarrow" : '\u2193',
+          ",Leftarrow" : '\u21d0',
+          ",Uparrow" : '\u21d1',
+          ",Rightarrow" : '\u21d2',
+          ",Downarrow" : '\u21d3',
+          ",Alpha" : 'Α',
+          ",alpha" : 'α',
+          ",Beta" : 'Β',
+          ",beta" : 'β',
+          ",Gamma" : 'Γ',
+          ",gamma" : 'γ',
+          ",Delta" : 'Δ',
+          ",delta" : 'δ',
+          ",Epsilon" : 'Ε',
+          ",epsilon" : 'ε',
+          ",Zeta" : 'Ζ',
+          ",zeta" : 'ζ',
+          ",Eta" : 'Η',
+          ",eta" : 'η',
+          ",Theta" : 'Θ',
+          ",theta" : 'θ',
+          ",Iota" : 'Ι',
+          ",iota" : 'ι',
+          ",Kappa" : 'Κ',
+          ",kappa" : 'κ',
+          ",Lambda" : 'Λ',
+          ",lambda" : 'λ',
+          ",Mu" : 'Μ',
+          ",mu" : 'μ',
+          ",Nu" : 'Ν',
+          ",nu" : 'ν',
+          ",Xi" : 'Ξ',
+          ",xi" : 'ξ',
+          ",Omicron" : 'Ο',
+          ",omicron" : 'ο',
+          ",Pi" : 'Π',
+          ",pi" : 'π',
+          ",Rho" : 'Ρ',
+          ",rho" : 'ρ',
+          ",Sigma" : 'Σ',
+          ",sigma" : 'σ',
+          ",sigma-alt" : 'ς',
+          ",Tau" : 'Τ',
+          ",tau" : 'τ',
+          ",Upsilon" : 'Υ',
+          ",upsilon" : 'υ',
+          ",Phi" : 'Φ',
+          ",phi" : 'φ',
+          ",Chi" : 'Χ',
+          ",chi" : 'χ',
+          ",Psi" : 'Ψ',
+          ",psi" : 'ψ',
+          ",Omega" : 'Ω',
+          ",omega" : 'ω',
+        },
         makeAtom : function(type, parent, previous, next, data)
         {
           return {  type: type,
@@ -231,6 +301,13 @@
         {
           if (atom)
           {
+            if (this.cursor.type == "atom")
+            {
+              if (this.sequences[this.cursor.data])
+              {
+                this.cursor.data = this.sequences[this.cursor.data]
+              }
+            }
             this.cursor = atom
           }
           if (this.model == undefined)

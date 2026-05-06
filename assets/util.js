@@ -123,6 +123,14 @@ function setTheme()
   r.style.setProperty('--brightorange', c.br_orange)
   r.style.setProperty('--brightviolet', c.br_violet)
   r.style.setProperty('--hgl', c.dim_0 + '40')
+  if (Theme == 0 || Theme == 1)
+  {
+    r.style.setProperty('--shadow', c.bg_0)
+  }
+  else
+  {
+    r.style.setProperty('--shadow', c.fg_1)
+  }
   Theme = Theme + 1
   if (Theme >= 4) 
   {

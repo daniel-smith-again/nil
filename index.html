@@ -24,14 +24,16 @@
       nil-list > * + * {margin-left:1ch;}
       nil-break + *, * + nil-break {margin-left:0;}
       nil-list{border-radius:0.3ch;outline:0;line-height:2ch;}
-      nil-list:has(> *[focused]){outline:solid 0.3ch var(--backgroundthird);}
+      nil-list:before{content:'(';color:var(--diminished);}
+      nil-list:after{content:')';color:var(--diminished);}
+      /*nil-list:has(> *[focused]){outline:solid 0.3ch var(--backgroundthird);}*/
       main > nil-list, main > nil-list[focused] {outline-style:none;background-color:unset;}
-      main > nil-list:empty{outline:solid 0.3ch var(--backgroundthird);background-color:unset;}
+      /*main > nil-list:empty{outline:solid 0.3ch var(--backgroundthird);background-color:unset;}*/
       nil-break{display:inline;}
       *[focused]{background-color:var(--backgroundthird);z-index:2;}
       nil-break[focused]{color:var(--diminished);}
       nil-list > nil-list[focused] > nil-break{color:var(--diminished);}
-      nil-list:empty[focused] {outline:solid 0.3ch var(--backgroundthird);background-color:unset;}
+      /*nil-list:empty[focused] {outline:solid 0.3ch var(--backgroundthird);background-color:unset;}*/
       nil-break[focused]::before{content:'↵';display:inline-block;position:absolute;line-height:2ch;width:1ch;height:2ch;background-color:var(--backgroundthird);color:var(--diminished);border-radius:0.2ch;box-shadow:0 0 0 0 var(--foregroundsecond);margin-left:1ch;outline:solid 0.3ch var(--backgroundthird);}
       #Options{position:absolute;display:block;z-index:100;min-width:7ch;min-height:3lh;border:solid var(--foreground) 0.2ch;border-radius:0.5ch;padding:0;}
       #Options > * {display:grid;text-align:center;align-items:center;justify-content:center;border-collapse:collapse;cursor:pointer;height:1.5lh;}
@@ -668,21 +670,76 @@
       },
       interpreter : 
       {
-        submit : function(src)
+        top: {},
+        submit : function(src) 
         {
-
+          console.log(src)
+          console.log(this.evaluate(this.expand(src)))
         },
-        eval : function(n)
+        expand : function(src)
         {
-          const primitives = 
+          return src
+        },
+        infer : function(src)
+        {
+          return undefined
+        },
+        check : function(src)
+        {
+          return src
+        },
+        evaluate : function(src)
+        {
+          switch (src[0])
           {
-            "?" : function () {},
-            "'" : function () {},
-            "function" : function () {},
-            "let" : function () {},
-            "do" : function () {},
-            "=" : function () {},
-            
+            case "define": //symbolic binding ; variables or functions
+              break;
+            case "data": //ADT definition
+              break;
+            case "syntax": //macro definition
+              break;
+            case "use": //symbolic import
+              break;
+            case "apply": //function application
+              break;
+            case "list": //list constructor
+              break;
+            case "type": //type constructor
+              break;
+            case "function": //function constructor
+              break;
+            case "with": //effect handler
+              break;
+            case "module": //module constructor
+              break;
+            case "enter": //set new top level
+              break;
+            case "exit": //move to previous top level
+              if (this.context == this.toplevel)
+              {
+                this.toplevel = {}
+              }
+              else
+              {
+                this.context = this.context.parent
+              }
+              break;
+            case "'": //quotation
+              break;
+            case "?": //conditional
+              break;
+            case "=": //equality comparison
+              break;
+            case "<": //subtype comparison
+              break;
+            case ">": //supertype comparison
+              break;
+            case "and": //logical and
+              break;
+            case "or": //logical or
+              break;
+            case "not": //logical not
+              break;
           }
         }
       },
@@ -843,32 +900,24 @@
           switch(e.key)
           {
             case 'ArrowLeft':
-              window.NIL.editor.processCommand(true, "Left")
               e.preventDefault()
+              window.NIL.editor.processCommand(true, "Left")
               break;
             case 'ArrowRight':
-              window.NIL.editor.processCommand(true, "Right")
               e.preventDefault()
+              window.NIL.editor.processCommand(true, "Right")
               break;
             case 'ArrowUp':
-              window.NIL.editor.processCommand(true, "Up")
               e.preventDefault()
+              window.NIL.editor.processCommand(true, "Up")
               break;
             case 'ArrowDown':
-              window.NIL.editor.processCommand(true, "Down")
               e.preventDefault()
+              window.NIL.editor.processCommand(true, "Down")
               break;
             case 'Enter':
-              if (e.ctrlKey)
-              {
-                window.NIL.editor.processCommand(true, "Down")
-                e.preventDefault()
-              }
-              else
-              {
-                window.NIL.editor.processCommand(true, "Enter")
-                e.preventDefault()
-              }
+              e.preventDefault()
+              window.NIL.editor.processCommand(true, "Enter")
               break;
             case 'Tab':
               e.preventDefault()
@@ -880,14 +929,7 @@
               break;
             case ' ':
               e.preventDefault()
-              if (e.ctrlKey)
-              {
-                window.NIL.editor.processCommand(true, "Up")
-              }
-              else
-              {
-                window.NIL.editor.processCommand(true, "Space")
-              }
+              window.NIL.editor.processCommand(true, "Space")
               break;
           }
         }

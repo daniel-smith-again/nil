@@ -19,7 +19,8 @@
       main {grid-area:m;display:flex;flex-flow:column nowrap;justify-content:center;align-items:center;min-height:3lh;width:90vw;margin:auto;justify-self:center;padding-bottom:7lh;margin-bottom:auto;margin-top:7%;}
       nil-atom, nil-tab, nil-list, nil-break {display:inline-block;position:relative;vertical-align:top;min-width:1ch;line-height:1lh;min-height:1lh;padding:0;scroll-padding:7lh;scroll-margin:7lh;scroll-snap-align:center;z-index:1;background-color:unset;border-radius:0.3ch;}
       nil-atom, nil-tab{transition: all 0.2s;padding:0;white-space:pre;border-radius:0.3ch;background-color:unset;height:1lh;}
-      nil-atom:empty, nil-tab:empty, nil-list:empty, nil-break{height:2ch ;width:1ch;}
+      nil-atom:empty, nil-tab:empty, nil-break{height:2ch ;width:1ch;}
+      nil-list:empty{height:2ch;width:2ch;}
       nil-atom:empty, nil-tab:empty{background-color:var(--backgroundthird);}
       nil-list > * + * {margin-left:1ch;}
       nil-break + *, * + nil-break {margin-left:0;}

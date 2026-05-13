@@ -1,0 +1,243 @@
+@font-face { font-family:PrimaryFont; src:url('./FreeMono.woff'); }
+@font-face { font-family:BackupFont; src:url('./NotoSansMonoVariable.ttf'); }
+:root { --size:calc(13px + ((1vw + 1vh) / 3)); }
+html
+{
+  scrollbar-color:var(--foregroundsecond) var(--backgroundsecond);
+}
+html * 
+{
+  font-family:PrimaryFont, BackupFont;
+  font-size:var(--size);
+  user-select:none;
+  color:var(--foregroundsecond);
+  background-color:var(--backgroundsecond);
+}
+body
+{
+  display:grid;
+  width:calc(100vw - 3ch);
+  grid-template-areas: 't' 'm';
+  grid-template-rows: 2lh auto;
+  touch-action:none;
+  min-height:100vh;
+  padding:0;
+  margin:0;
+}
+header 
+{
+  grid-area:t;
+  height:5lh;
+  width:100%;
+  display:flex;
+  margin:auto;
+  justify-content:flex-start;
+  align-items:center;
+  padding:1ch;
+  border-radius:1ch;
+}
+header:hover
+{
+  color:var(--foregroundsecond);
+  background-color:var(--backgroundsecond);
+}
+main 
+{
+  grid-area:m;
+  display:flex;
+  flex-flow:column nowrap;
+  justify-content:center;
+  align-items:center;
+  min-height:3lh;
+  width:90vw;
+  margin:auto;
+  justify-self:center;
+  padding-bottom:7lh;
+  margin-bottom:auto;
+  margin-top:7%;
+}
+nil-atom, nil-tab, nil-list, nil-break 
+{
+  display:inline-block;
+  position:relative;
+  vertical-align:bottom;
+  min-width:1ch;
+  line-height:1lh;
+  min-height:1lh;
+  padding:0;
+  scroll-padding:7lh;
+  scroll-margin:7lh;
+  scroll-snap-align:center;
+  z-index:1;
+  background-color:unset;
+  border-radius:0.3ch;
+}
+nil-atom, nil-tab
+{
+  transition: all 0.2s;
+  padding:0;
+  white-space:pre;
+  border-radius:0.3ch;
+  background-color:unset;
+  height:1lh;
+}
+nil-atom:empty, nil-tab:empty, nil-break
+{
+  height:2ch;
+  width:1ch;
+}
+nil-list:empty
+{
+  height:2ch;
+  width:2ch;
+}
+nil-atom:empty, nil-tab:empty
+{
+  background-color:var(--backgroundthird);
+}
+nil-list > * + * 
+{
+  margin-left:1ch;
+}
+nil-break + nil-tab
+{
+  vertical-align:top;
+}
+nil-break + *, * + nil-break, nil-tab + * 
+{
+  margin-left:0;
+}
+nil-list
+{
+  border-radius:0.3ch;
+  outline:0;
+  line-height:2ch;
+}
+nil-list:before
+{
+  content:'(';
+  color:var(--backgroundthird);
+}
+nil-list:after
+{
+  content:')';
+  color:var(--backgroundthird);
+  vertical-align:bottom;
+}
+main > nil-list, main > nil-list[focused] 
+{
+  outline-style:none;
+  background-color:unset;
+}
+nil-break
+{
+  display:inline;
+}
+*[focused]
+{
+  background-color:var(--backgroundthird);
+  z-index:2;
+}
+nil-break[focused]
+{
+  color:var(--diminished);
+}
+nil-list > nil-list[focused]:before, 
+nil-list > nil-list[focused]:after, 
+nil-list > nil-list[focused] nil-list:before, 
+nil-list > nil-list[focused] nil-list:after
+{
+  color:var(--diminished)
+}
+nil-list > nil-list[focused] > nil-break
+{
+  color:var(--diminished);
+}
+/*nil-list:empty[focused] {outline:solid 0.3ch var(--backgroundthird);background-color:unset;}*/
+nil-break[focused]::before
+{
+  content:'↵';
+  display:inline-block;
+  position:absolute;
+  line-height:2ch;
+  width:1ch;
+  height:2ch;
+  background-color:var(--backgroundthird);
+  color:var(--diminished);
+  border-radius:0.2ch;
+  box-shadow:0 0 0 0 var(--foregroundsecond);
+  margin-left:1ch;
+  outline:solid 0.3ch var(--backgroundthird);
+}
+#Options
+{
+  position:absolute;
+  display:block;
+  z-index:100;
+  min-width:7ch;
+  min-height:3lh;
+  border:solid var(--foreground) 0.2ch;
+  border-radius:0.5ch;
+  padding:0;
+}
+#Options > * 
+{
+  display:grid;
+  text-align:center;
+  align-items:center;
+  justify-content:center;
+  border-collapse:collapse;
+  cursor:pointer;
+  height:1.5lh;
+}
+#Options > * + * 
+{
+  border-top:solid var(--foreground) 0.2ch;
+}
+#Options > *:hover 
+{
+  background-color:var(--backgroundthird);
+}
+#Options > *:first-child 
+{
+  border-radius: 0.3ch 0.3ch 0 0;
+}
+#Options > *:last-child 
+{
+  border-radius: 0 0 0.3ch 0.3ch;
+}
+#Logo 
+{
+  height:5ch;
+  width:5ch;
+  z-index:100;
+  cursor:pointer;
+}
+#Slideout 
+{
+  transition:left 0.5s;
+  position:fixed;
+  left:100vw;
+  width:calc(100% - 9ch);
+  display:flex;
+  justify-content:space-between;
+}
+header:hover #Slideout
+{
+  left:7ch;
+}
+#HelpButton
+{
+  cursor:pointer;
+  width:3ch;
+  height:3ch;
+  display:inline-grid;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border-radius:1ch;
+}
+#HelpButton:hover 
+{
+  background-color:var(--backgroundthird);
+}

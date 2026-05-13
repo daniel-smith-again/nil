@@ -93,48 +93,60 @@ const colors =
     'br_violet': '#6b40c3'
   },
 ]
-var Theme = 2
-function setTheme()
+var Theme = 3
+if (localStorage.getItem('Theme'))
 {
-  console.log("setting theme")
-  index = Theme
-  var c = colors[index % 4]
-  var r = document.querySelector(':root')
-  r.style.setProperty('--background', c.bg_0)
-  r.style.setProperty('--backgroundsecond', c.bg_1)
-  r.style.setProperty('--backgroundthird', c.bg_2)
-  r.style.setProperty('--diminished', c.dim_0)
-  r.style.setProperty('--foreground', c.fg_0)
-  r.style.setProperty('--foregroundsecond', c.fg_1)
-  r.style.setProperty('--red', c.red)
-  r.style.setProperty('--green', c.green)
-  r.style.setProperty('--yellow', c.yellow)
-  r.style.setProperty('--blue', c.blue)
-  r.style.setProperty('--magenta', c.magenta)
-  r.style.setProperty('--cyan', c.cyan)
-  r.style.setProperty('--orange', c.orange)
-  r.style.setProperty('--violet', c.violet)
-  r.style.setProperty('--brightred', r.br_red)
-  r.style.setProperty('--brightgreen', c.br_green)
-  r.style.setProperty('--brightyellow', c.br_yellow)
-  r.style.setProperty('--brightblue', c.br_blue)
-  r.style.setProperty('--brightmagenta', c.br_magenta)
-  r.style.setProperty('--brightcyan', c.br_cyan)
-  r.style.setProperty('--brightorange', c.br_orange)
-  r.style.setProperty('--brightviolet', c.br_violet)
-  r.style.setProperty('--hgl', c.dim_0 + '40')
+  Theme = Number(localStorage.getItem('Theme'))
+}
+export function setColorTheme(firstRun)
+{
+  if (firstRun != true)
+  {
+    Theme = (Theme + 1) % 4
+    localStorage.setItem('Theme', Theme)
+  }
+  var c = colors[Theme % 4]
+  var r_ = document.querySelector(':root')
+  r_.style.setProperty('--background', c.bg_0)
+  r_.style.setProperty('--backgroundsecond', c.bg_1)
+  r_.style.setProperty('--backgroundthird', c.bg_2)
+  r_.style.setProperty('--diminished', c.dim_0)
+  r_.style.setProperty('--foreground', c.fg_0)
+  r_.style.setProperty('--foregroundsecond', c.fg_1)
+  r_.style.setProperty('--red', c.red)
+  r_.style.setProperty('--green', c.green)
+  r_.style.setProperty('--yellow', c.yellow)
+  r_.style.setProperty('--blue', c.blue)
+  r_.style.setProperty('--magenta', c.magenta)
+  r_.style.setProperty('--cyan', c.cyan)
+  r_.style.setProperty('--orange', c.orange)
+  r_.style.setProperty('--violet', c.violet)
+  r_.style.setProperty('--brightred', c.br_red)
+  r_.style.setProperty('--brightgreen', c.br_green)
+  r_.style.setProperty('--brightyellow', c.br_yellow)
+  r_.style.setProperty('--brightblue', c.br_blue)
+  r_.style.setProperty('--brightmagenta', c.br_magenta)
+  r_.style.setProperty('--brightcyan', c.br_cyan)
+  r_.style.setProperty('--brightorange', c.br_orange)
+  r_.style.setProperty('--brightviolet', c.br_violet)
+  r_.style.setProperty('--hgl', c.dim_0 + '40')
   if (Theme == 0 || Theme == 1)
   {
-    r.style.setProperty('--shadow', c.bg_0)
+    r_.style.setProperty('--shadow', c.bg_0)
   }
   else
   {
-    r.style.setProperty('--shadow', c.fg_1)
+    r_.style.setProperty('--shadow', c.fg_1)
   }
-  Theme = Theme + 1
-  if (Theme >= 4) 
+  if (firstRun == true) 
   {
-    Theme = 0
+    return
   }
+  
 }
-setTheme(Theme);
+var list = document.querySelectorAll("[ChangesTheme]")
+for (var n of list)
+{
+  n.onclick = setColorTheme
+}
+setColorTheme(true)

@@ -1,9 +1,60 @@
-export function Compute(src, stack, context, continuation)
+const machine =
 {
-  var atom = undefined
-  while (atom = src.shift())
+  stack : [],
+  environment : [],
+  control : undefined,
+  dump : undefined,
+  operations : 
   {
-    
+    Bits : (e) => {return {type : "bits", value : e}},
+    Num : (e) => {return {type : "number", value : e}},
+    Symbol : (e) => {return {type : "symbol", value : e}},
+    List : (e) => {return {type : "list", value : e}},
+    Function : (e) => {return {type : "function", value : e}},
+
+  }
+}
+
+
+const machine = 
+{
+  control : undefined,
+  environment : [],
+  continuation : undefined,
+  operations : 
+  {
+    compare : () => {} 
+  },
+}
+
+
+const compute =
+{
+  control : undefined,
+  environment : [],
+  continuation : undefined,
+  Any : () => {return {type : "type", value : "any"}},
+  Nil : () => {return {type : "type", value : "nil"}},
+  start : (program, bindings) =>
+  {
+    control = program
+    environment.push(bindings)
+    continuation = undefined
+    for(;;)
+    {
+      switch(control[0])
+      {
+        case "compare":
+          if (control[1].value == control[2].value)
+          {
+            
+          }
+          else
+          {
+
+          }
+      }
+    }
   }
 }
 
@@ -344,7 +395,6 @@ const editor =
           break;
         case "tab":
           element = document.createElement('nil-tab')
-          element.appendChild(document.)
       }
     }
   }

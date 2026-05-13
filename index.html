@@ -494,157 +494,29 @@
           }
           var src = serialize(this.model)
           //var result = window.NIL.interpreter.submit(src)
-          var result = window.NIL.eval(src)
-
+          var result = window.NIL.compute(src)
           console.log(result)
         }
       },
+      default : 
+      {
+           
+      },
       topLevel : 
       {
-        " default" :
-        {
-          
-        }
+        " parent" : this.default
       },
-      eval : function(src)
+      compute : function(s, e, c, d)
       {
 
-        const primitives = 
-        {
-          type : function(src, context, stack)
-          {
-
-          },
-          list : function(src, context, stack)
-          {
-
-          },
-          function : function(src, context, stack)
-          {
-
-          },
-          let : function(src, context, stack)
-          {
-            var expression = src.pop()
-            var new_context = {" parent": context}
-            src.shift()
-            for (var n = src.shift(); n != undefined; n = src.shift())
-            {
-              new_context[n[0]] = this.eval(n[1], context, stack)[0]
-            }
-            return this.eval(expression, new_context, [])
-          },
-          and : function(src, context, stack)
-          {
-
-          },
-          or : function(src, context, stack)
-          {
-
-          },
-          not : function(src, context, stack)
-          {
-
-          }
-        }
       },
-      interpreter : 
+      machine : 
       {
-        top: {},
-        submit : function(src) 
-        {
-          return this.evaluate(this.expand(src))
-        },
-        expand : function(src)
-        {
-          return src
-        },
-        infer : function(src)
-        {
-          return undefined
-        },
-        check : function(src)
-        {
-          return src
-        },
-        evaluate : function(src, stack, context)
-        {
-          
-          switch (src[0])
-          {
-            case {type: 'function'}:
-          }
-          switch (src[0])
-          {
-            case {type: "function"}:
-              break;
-            case "define": //symbolic binding ; variables or functions
-              break;
-            case "data": //ADT definition
-              break;
-            case "syntax": //macro definition
-              break;
-            case "use": //symbolic import
-              break;
-            case "list": //list constructor
-              break;
-            case "type": //type constructor
-              break;
-            case "function": //function constructor
-              break;
-            case "with": //effect handler
-              break;
-            case "module": //module constructor
-              break;
-            case "enter": //set new top level
-              break;
-            case "exit": //move to previous top level
-              break;
-            case "let":
-              break;
-            case "'": //quotation
-              return src[1]
-              break;
-            case "?": //conditional
-              break;
-            case "=": //equality comparison
-              break;
-            case "<": //subtype comparison
-              break;
-            case ">": //supertype comparison
-              break;
-            case "and": //logical and
-              if (src[1] == "Any" && src[2] == "Any")
-              {
-                return "Any"
-              }
-              else
-              {
-                return "Nil"
-              }
-              break;
-            case "or": //logical or
-              if (src[1] == "Any" || src[2] == "Any")
-              {
-                return "Any"
-              }
-              else
-              {
-                return "Nil"
-              }
-              break;
-            case "not": //logical not
-              if (src[1] == "Any")
-              {
-                return "Nil"
-              }
-              else
-              {
-                return "Any"
-              }
-              break;
-          }
-        }
+        stack : [],
+        environment : [],
+        control : undefined,
+        dump : undefined
+        
       },
       Init(element)
       {

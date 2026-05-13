@@ -60,7 +60,7 @@ nil-atom, nil-tab, nil-list, nil-break
 {
   display:inline-block;
   position:relative;
-  vertical-align:bottom;
+  vertical-align:top;
   min-width:1ch;
   line-height:1lh;
   min-height:1lh;
@@ -116,12 +116,12 @@ nil-list
 nil-list:before
 {
   content:'(';
-  color:var(--backgroundthird);
+  color:var(--diminished);
 }
 nil-list:after
 {
   content:')';
-  color:var(--backgroundthird);
+  color:var(--diminished);
   vertical-align:bottom;
 }
 main > nil-list, main > nil-list[focused] 

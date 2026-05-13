@@ -825,3 +825,68 @@ Secrets shouldn't be read in and they shouldn't be printed out.
 There should be a way to overload stuff.
 I should have character hooks which will engage parsers.
 Parsers can issue errors.
+
+
+
+vocab
+
+atom    a single element in a list
+form    a list which denotes evaluation
+list    the data structure
+type    a choice between some values
+
+
+what's my base language?
+special forms?
+
+
+Define
+(define _ ...)
+  Define is used to establish symbolic bindings.
+  Symbolic bindings are names of constant values, names of functions, and 
+  names of polymorphic functions.
+
+  The form which defines a constant is the keyword "define" followed by a 
+  symbol which is used as the name, followed by a form which is evaluated to 
+  obtain the value which the name binds.
+
+  The form which defines a function is the keyword "define" followed by a 
+  symbol which is used as the name, followed by a function definition which is 
+  evaluated to obtain the function which the name binds.
+
+  The form which defines a polymorhpic function is the keyword "define" 
+  followed by a form which contains the function signature, followed by one or 
+  more definitions.
+  The signature is a single form where the first symbol represents the function 
+  name, and the following symbols represent parameter names.
+  The definition is a form containing two list atoms.
+  The first contains a list of types which correspond to the list of parameters.
+  The second contains a function body which is evaluated when the function 
+  is called with those parameters.
+
+
+
+
+What do I need to interpret?
+
+"define" 
+add a new binding to the current module
+
+"data"
+add a new data definition to the current module
+
+"syntax"
+add a new macro definition to the current module
+
+"module"
+evaluate and return a module definition
+
+"function"
+evaluate and return a function object
+
+"list"
+evaluate and return a list object
+
+"?"
+evaluate subject and conditionally evaluate subexpressions
+

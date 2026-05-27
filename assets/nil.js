@@ -12,20 +12,3 @@ export const NIL =
   Compile : (src) => {},
   Compute : (src) => {}
 }
-
-export const Submit = (src) => 
-{
-
-}
-
-
-
-
-
-
-
-
-const machine =
-{
-
-}

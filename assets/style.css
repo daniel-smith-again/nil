@@ -219,6 +219,7 @@ nil-break[focused]::before
   width:calc(100% - 9ch);
   display:flex;
   justify-content:space-between;
+  padding-left:3ch;
 }
 /*
 #Slideout 
@@ -249,4 +250,15 @@ header:hover #Slideout
 #HelpButton:hover 
 {
   background-color:var(--backgroundthird);
+}
+
+[NILEditor] 
+{
+  outline-style:none;
+  border-style:none;
+  font-family: PrimaryFont, BackupFont;
+  min-height:25lh;
+  height:calc(100vh - 13lh);
+  width:90vw;
+  margin:auto;
 }

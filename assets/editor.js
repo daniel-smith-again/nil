@@ -1,121 +1,27 @@
-import { submit } from "./nil.js"
+import { NIL } from "./nil.js"
 
-
-
-const createEditor = (node) =>
+const initEdit = (node) => 
 {
-  console.log("Setting Up NIL")
-  console.log(node)
-  node['nil editor'] = 
-  {
-    element : node,
-    model : undefined,
-    cursor : undefined,
-    sample : undefined,
-    sequences : sequences,
-  }
-  var t = document.createElement("textarea")
-  t['nil editor'] = node 
-  t.id = "NIL Editor" + String(Math.random())
-  t.style.cssText = "autocapitalize:false;autocomplete:off;spellcheck:false;resize:none;overflow:auto;position:absolute;left:-100vw;top:-100vh;"
-  t.oninput = function(e)
-  {
-    if (e['nil editor'])
-    {
-      e.preventDefault()
-      console.log(e, e.target['nil editor'])
-      t.value = "##\n##\n##"
-      switch(e.inputType)
-      {
-        case 'insertText':
-        case 'insertCompositionText':
-        case 'deleteContentBackward':
-        case 'insertLineBreak':
-      }
-      t.selectionEnd = 4
-      t.selectionStart = 4
-    }
-  }
-  node.appendChild(t)
-  t.focus()
-  t.click()
-}
-
-createEditor(document.querySelector("[NIL]"))
-
-const makeAtom = (type, parent, previous, next, data) =>
-{
-  return {
-    type : type,
-    parent : parent,
-    previous : previous,
-    next : next,
-    data : data
-  }
-}
-
-const cursor = (editor, atom) =>
-{
-  editor.element = element
-  var t = document.createElement("textarea")
-  t.id = "nil-editor"
-  t.autocapitalize = "false"
-  t.autocomplete = "off"
-  t.spellcheck = "false"
-  t.style.resize = "none"
-  t.style.overflow = "auto"
-  t.style.position = "absolute"
-  t.style.left = "-100vw"
-  t.style.top = "-100vh"
-  t.oninput = function(e)
+  var editor = document.createElement("textarea")
+  editor.id = "NIL Editor" + String(Math.random())
+  editor.setAttribute('NILEditor', 'true')
+  editor.style.cssText = "autocapitalize:false;autocomplete:off;spellcheck:false;resize:none;overflow:auto;"
+  editor.oninput = (e) =>
   {
     e.preventDefault()
-    t.value = "##\n##\n##"
-    t.selectionEnd = 4
-    t.selectionStart = 4
-    switch(e.inputType)
-    {
-      case 'insertText':
-      case 'insertCompositionText':
-        switch(e.data)
-        {
-          case ' ':
-            edit("atom")
-            break
-          case '(':
-            edit("open")
-            break
-          case ')':
-            edit("close")
-            break
-          default:
-            insert(e.data)
-        }        
-        break;
-      case 'deleteContentBackward':
-        edit("delete")
-        break;
-      case 'insertLineBreak':
-        edit("break")
-        break;
-    }
-    editor.cursor = atom
+    console.log(e)
   }
-  if (editor.model == undefined)
-  {
-    editor.model = makeAtom(undefined, undefined, undefined, undefined, undefined)
-    editor.model.next = editor.model
-    editor.model.previous = editor.model
-    editor.cursor = editor.model
-  }
-  return editor.cursor
+  node.appendChild(editor)
 }
 
-const insertAtom = (editor) =>
+console.log("initializing NIL editor environments")
+
+for (var x of document.querySelectorAll("[nil]"))
 {
-  var atom = focus(editor)
-
+  console.log(x)
+  initEdit(x)
 }
+
 
 var sequences = 
 {

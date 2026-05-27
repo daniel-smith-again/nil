@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>The Standard Definition of NIL</title>
     <link rel="icon" href="icon/icon.svg" type="image/x-icon">
-    <script src="./assets/util.js"></script>
+    <script type="module">import { setColorTheme } from './assets/util.js';</script>
     <style>
       @font-face { font-family:NIL-FONT; src:url('./assets/FreeMono.woff'); }
       body
@@ -92,9 +92,9 @@
       }
     </style>
   </head>
-  <body onload="setTheme()">
+  <body>
    <pre>
-Revision 1                             <span theme onclick="setColorTheme()">▒</span>                    20th September, 2025
+Revision 1                             <span ChangesTheme>▒</span>                    20th September, 2025
    </pre>
    <pre style="margin-top:33vh;margin-bottom:69vh;">
 

@@ -148,5 +148,6 @@ var list = document.querySelectorAll("[ChangesTheme]")
 for (var n of list)
 {
   n.onclick = setColorTheme
+  n.style.cursor = 'pointer';
 }
 setColorTheme(true)

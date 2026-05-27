@@ -114,20 +114,6 @@ nil-list
   line-height:2ch;
   background-color:unset;
 }
-/*
-nil-list:before
-{
-  content:'(';
-  color:var(--diminished);
-}
-nil-list:after
-{
-  content:')';
-  color:var(--diminished);
-  vertical-align:bottom;
-}
-*/
-
 main > nil-list[focused] 
 {
   outline-style:none;

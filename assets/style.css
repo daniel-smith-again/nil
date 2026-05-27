@@ -110,21 +110,10 @@ nil-break + *, * + nil-break, nil-tab + *
 nil-list
 {
   border-radius:0.3ch;
-  outline:0;
+  outline:solid var(--backgroundthird) 0.2ch;
   line-height:2ch;
 }
-nil-list:before
-{
-  content:'(';
-  color:var(--diminished);
-}
-nil-list:after
-{
-  content:')';
-  color:var(--diminished);
-  vertical-align:bottom;
-}
-main > nil-list, main > nil-list[focused] 
+main > nil-list[focused] 
 {
   outline-style:none;
   background-color:unset;

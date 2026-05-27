@@ -890,3 +890,46 @@ evaluate and return a list object
 "?"
 evaluate subject and conditionally evaluate subexpressions
 
+
+
+how should my interpreter work?
+
+
+
+
+
+
+how bad is it if I have to use "(open-paren) foo bar (close-paren)"
+to escape strings in my lang?
+not that bad.
+it's similar for latex
+I don't need typesetting because I'm not typesetting
+or adding comments in this way.
+
+that said, can't I just escape character anything?
+
+this is two symbols (foo bar)
+but this is just one (foo\ bar)
+yeah that works
+what about adding quotes?
+
+'foo '(foo bar) '''(foo bar baz)
+vs.
+'foo (' foo bar) (' (' (' foo bar baz)))
+
+what about escape quotations?
+
+('' foo)
+
+(''' bar)
+
+
+that works.
+
+
+
+
+Octet oriented bytecode.
+
+Bitsets
+Arbitrary precision integers

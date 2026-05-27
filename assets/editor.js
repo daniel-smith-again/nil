@@ -78,32 +78,75 @@ const editor =
   }
 }
 
-function makeAtom(type, parent, previous, next, data)
-{
-  return { 
-    type : type,
-    parent : parent,
-    previous : previous,
-    next : next, 
-    data : data
-  }
-}
 
-function focus(atom)
+export function Setup(element)
 {
-  if (atom)
+  editor.element = element
+  var t = document.createElement("textarea")
+  t.id = "nil-editor"
+  t.autocapitalize = "false"
+  t.autocomplete = "off"
+  t.spellcheck = "false"
+  t.style.resize = "none"
+  t.style.overflow = "auto"
+  t.style.position = "absolute"
+  t.style.left = "-100vw"
+  t.style.top = "-100vh"
+  t.oninput = function(e)
   {
-    if (editor.cursor.type == "atom")
+    e.preventDefault()
+    t.value = "##\n##\n##"
+    t.selectionEnd = 4
+    t.selectionStart = 4
+    switch(e.inputType)
     {
-      if (editor.sequences[editor.cursor.data])
-      {
-        editor.cursor.data = editor.sequences[editor.cursor.data]
-      }
+      case 'insertText':
+      case 'insertCompositionText':
+        switch(e.data)
+        {
+          case ' ':
+            edit("atom")
+            break
+          case '(':
+            edit("open")
+            break
+          case ')':
+            edit("close")
+            break
+          default:
+            insert(e.data)
+        }        
+        break;
+      case 'deleteContentBackward':
+        edit("delete")
+        break;
+      case 'insertLineBreak':
+        edit("break")
+        break;
     }
+    t.selectionEnd = 4
+    t.selectionStart = 4
   }
 }
 
-function insertAtom()
+function insert(c)
 {
-  
+
+}
+
+function edit(which)
+{
+  switch(which)
+  {
+    case "atom":
+      break
+    case "open":
+      break
+    case "close":
+      break
+    case "delete":
+      break
+    case "break":
+      break
+  }
 }

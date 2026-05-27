@@ -110,9 +110,11 @@ nil-break + *, * + nil-break, nil-tab + *
 nil-list
 {
   border-radius:0.3ch;
-  outline:0;
+  outline:solid var(--backgroundthird) 0.2ch;
   line-height:2ch;
+  background-color:unset;
 }
+/*
 nil-list:before
 {
   content:'(';
@@ -124,9 +126,16 @@ nil-list:after
   color:var(--diminished);
   vertical-align:bottom;
 }
-main > nil-list, main > nil-list[focused] 
+*/
+
+main > nil-list[focused] 
 {
   outline-style:none;
+  background-color:unset;
+}
+main > nil-list:empty[focused]
+{
+  outline:solid 0.2ch var(--backgroundthird);
   background-color:unset;
 }
 nil-break
@@ -142,6 +151,11 @@ nil-break[focused]
 {
   color:var(--diminished);
 }
+nil-list[focused]:empty
+{
+  background-color:unset;
+}
+
 nil-list > nil-list[focused]:before, 
 nil-list > nil-list[focused]:after, 
 nil-list > nil-list[focused] nil-list:before, 
@@ -149,11 +163,12 @@ nil-list > nil-list[focused] nil-list:after
 {
   color:var(--diminished)
 }
+
 nil-list > nil-list[focused] > nil-break
 {
   color:var(--diminished);
 }
-/*nil-list:empty[focused] {outline:solid 0.3ch var(--backgroundthird);background-color:unset;}*/
+
 nil-break[focused]::before
 {
   content:'↵';
@@ -213,6 +228,13 @@ nil-break[focused]::before
   z-index:100;
   cursor:pointer;
 }
+#Slideout
+{
+  width:calc(100% - 9ch);
+  display:flex;
+  justify-content:space-between;
+}
+/*
 #Slideout 
 {
   transition:left 0.5s;
@@ -226,6 +248,7 @@ header:hover #Slideout
 {
   left:7ch;
 }
+*/
 #HelpButton
 {
   cursor:pointer;

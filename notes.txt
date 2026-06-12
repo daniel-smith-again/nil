@@ -933,3 +933,77 @@ Octet oriented bytecode.
 
 Bitsets
 Arbitrary precision integers
+
+
+
+Bytecode
+Should be executable or compilable.
+256 registers.
+
+
+Instruction format is fixed width, four octet.
+The first octet is the instruction.
+The second octet is the type
+The third and fourth octets are register parameters.
+
+VM has stacks and frames
+Frames are fixed length stack space 
+Stacks are bump-allocated memory spaces
+
+
+
+Instructions: 
+
+
+
+NOP
+
+PUSH    Claim part of the stack
+CALL    Call function
+RET     Return from function
+PUSH    Claim next available space in the program stack
+TOP     Get last claimed space in the program stack
+GROW    Claim new stack frame
+DROP    Release current stack frame
+
+
+JMP   Jump 
+JEQ   Jump if equal
+JNE   Jump if not equal
+JGT   Jump if greater than
+JGE   Jump if greater than or equal
+JLT   Jump if less than
+JLE   Jump if less than or equal
+
+
+ADD   Addition
+SUB   Subtraction
+MUL   Multiplication
+QUO   Quotient
+REM   Remainder
+AND   bitwise and
+OR    bitwise or
+NOT   bitwise not
+SHU   Shift up
+SHD   Shift Down
+RTL   Rotate Left
+RTR   Rotate Right
+TST   Test bit
+CNT   Count set bits
+SET   Set bit
+ZRO   Zero bits
+
+
+
+
+What are my rules for significant whitespace syntax?
+
+a.) A line break followed by trailing space is called an indentation
+b.) Each indent has a length which is the contiguous number of trailing spaces
+b.) An expression is anything that may be grouped inside a closed pair of parentheses
+
+1. A line is an expression.
+2. A line is terminated with a line break.
+3. Any two lines with indentation of the same length are considered to be adjacent expressions.
+4. Lines with larger indentations are nested inside expressions with smaller indentations.
+

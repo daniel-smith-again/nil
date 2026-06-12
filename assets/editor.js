@@ -1,17 +1,38 @@
-import { NIL } from "./nil.js"
+export const Editor = 
+{
+
+}
 
 const initEdit = (node) => 
 {
-  var editor = document.createElement("textarea")
-  editor.id = "NIL Editor" + String(Math.random())
-  editor.setAttribute('NILEditor', 'true')
-  editor.style.cssText = "autocapitalize:false;autocomplete:off;spellcheck:false;resize:none;overflow:auto;"
-  editor.oninput = (e) =>
+  var input = document.createElement("textarea")
+  var editor = document.createElement("nil-display")
+
+  input.id = "NIL Input " + String(Math.random())
+  input.setAttribute('NILEditor', 'true')
+  input.autocapitalize = false
+  input.autocomplete = false
+  input.spellcheck = false
+  input.style.cssText =   `resize:none;
+                          overflow:auto;
+                          white-space:pre;
+                          border:none;
+                          outline:none;
+                          display:none;
+                          position:absolute;
+                          top:0;
+                          height:1ch;
+                          width:1ch;`
+  input.oninput = (e) =>
   {
     e.preventDefault()
     console.log(e)
   }
+  window.onclick = (e) => {input.click(); input.focus(); console.log("focused ", input);}
+  node.appendChild(input)
   node.appendChild(editor)
+  input.click()
+  input.focus()
 }
 
 console.log("initializing NIL editor environments")

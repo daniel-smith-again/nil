@@ -1,14 +1,23 @@
 export const NIL = 
 {
-  List : (...items) => {return {type : "List", data : items}},
-  Symbol : (atom) => {return {type : "Symbol", data : String(atom)}},
-  Submit : (src) => 
+  Constructors :
   {
-    this.Check(src)
-    this.Compile(src)
-    this.Compute(src)
+    Symbol : (s) => {return {type: NIL.Constructors.Symbol, value: s}},
+    List : (...l) => {return {type: NIL.Constructors.List, value: l}},
+    //Number : (n) => {return {type: NIL.Constructors.Number, value: n}},
+    Function : (parameters, effects, result, body) => {return {type: NIL.Constructors.Function, value: {parameters: parameters, result: result, effects: effects, body: body}}},
+    Type : (...t) => {return {type: NIL.Constructors.Type, value: t}},
+    Abstract : (...constructors) => {return {type: NIL.Constructors.Abstract, value: constructors}},
   },
-  Check : (src) => {},
-  Compile : (src) => {},
-  Compute : (src) => {}
+  Operators : 
+  {
+    Let : () => {},
+    Concatenate : () => {},
+    If : () => {},
+
+  },
+  Eval :
+  {
+
+  }
 }

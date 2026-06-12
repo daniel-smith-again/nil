@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#ffffff"/>
     <link rel="stylesheet" href="./assets/style.css"/>
     <script type="module" src="./assets/util.js"></script>
-    <script type="module" defer>import {} from "./assets/editor.js";</script>
+    <script type="module">import { } from "./assets/editor.js";</script>    
   </head>
   <body>
       <header >
@@ -31,6 +31,678 @@
         </div>
       </header>
       <main id="NIL" NIL>
+        <p></p>
       </main>
   </body>
+  <script>
+    console.log(NILModule)
+    window['NIL'] = 
+    {
+      editor : 
+      {
+        element : undefined,
+        model : undefined,
+        /*
+        tree of [<type>, <parent>, <data>]
+        */
+        cursor : undefined,
+        sample: undefined,
+        sequences: 
+        {
+          ",multiply" : '\u00d7',
+          ",divide" : '\u00f7',
+          ",neq" : '\u2260',
+          ",leq" : '\u2264',
+          ",geq" : '\u2265',
+          ",and" : '\u2227',
+          ",or" : '\u2228',
+          ",not" : '\u00ac',
+          ",intersection" : '\u2229',
+          ",union" : '\u222a',
+          ",integral" : '\u222b',
+          ",function" : '\u2192',
+          ",leftarrow" : '\u2190',
+          ",uparrow" : '\u2191',
+          ",rightarrow" : '\u2192',
+          ",downarrow" : '\u2193',
+          ",Leftarrow" : '\u21d0',
+          ",Uparrow" : '\u21d1',
+          ",Rightarrow" : '\u21d2',
+          ",Downarrow" : '\u21d3',
+          ",Alpha" : 'Α',
+          ",alpha" : 'α',
+          ",Beta" : 'Β',
+          ",beta" : 'β',
+          ",Gamma" : 'Γ',
+          ",gamma" : 'γ',
+          ",Delta" : 'Δ',
+          ",delta" : 'δ',
+          ",Epsilon" : 'Ε',
+          ",epsilon" : 'ε',
+          ",Zeta" : 'Ζ',
+          ",zeta" : 'ζ',
+          ",Eta" : 'Η',
+          ",eta" : 'η',
+          ",Theta" : 'Θ',
+          ",theta" : 'θ',
+          ",Iota" : 'Ι',
+          ",iota" : 'ι',
+          ",Kappa" : 'Κ',
+          ",kappa" : 'κ',
+          ",Lambda" : 'Λ',
+          ",lambda" : 'λ',
+          ",Mu" : 'Μ',
+          ",mu" : 'μ',
+          ",Nu" : 'Ν',
+          ",nu" : 'ν',
+          ",Xi" : 'Ξ',
+          ",xi" : 'ξ',
+          ",Omicron" : 'Ο',
+          ",omicron" : 'ο',
+          ",Pi" : 'Π',
+          ",pi" : 'π',
+          ",Rho" : 'Ρ',
+          ",rho" : 'ρ',
+          ",Sigma" : 'Σ',
+          ",sigma" : 'σ',
+          ",sigma-alt" : 'ς',
+          ",Tau" : 'Τ',
+          ",tau" : 'τ',
+          ",Upsilon" : 'Υ',
+          ",upsilon" : 'υ',
+          ",Phi" : 'Φ',
+          ",phi" : 'φ',
+          ",Chi" : 'Χ',
+          ",chi" : 'χ',
+          ",Psi" : 'Ψ',
+          ",psi" : 'ψ',
+          ",Omega" : 'Ω',
+          ",omega" : 'ω',
+        },
+        makeAtom : function(type, parent, previous, next, data)
+        {
+          return {  type: type,
+                    parent: parent,
+                    previous: previous,
+                    next: next,
+                    data: data
+                 }
+        },
+        focus : function(atom)
+        {
+          if (atom)
+          {
+            if (this.cursor.type == "atom")
+            {
+              if (this.sequences[this.cursor.data])
+              {
+                this.cursor.data = this.sequences[this.cursor.data]
+              }
+            }
+            this.cursor = atom
+          }
+          if (this.model == undefined)
+          {
+            this.model = this.makeAtom(undefined, undefined, undefined, undefined, undefined)
+            this.model.next = this.model
+            this.model.previous = this.model
+            this.cursor = this.model
+          }
+          return this.cursor
+        },
+        insertAtom : function()
+        {
+          var atom = this.focus()
+          if (atom.type == undefined)
+          {
+            atom.type = "list"
+          }
+          else
+          {
+            if (atom.parent != undefined)
+            {
+              atom.next = this.makeAtom(undefined, atom.parent, atom, atom.next, undefined)
+              atom.next.previous = atom
+              atom.next.next.previous = atom.next
+            }
+            this.focus(atom.next)
+          }
+        },
+        appendCharacter : function(character)
+        {
+          var atom = this.focus()
+          if (atom.type == undefined)
+          {
+            atom.type = "atom"
+            atom.data = ""
+          }
+          else if (atom.type == "list")
+          {
+            atom.data = this.makeAtom("atom", atom, undefined, undefined, "")
+            atom.data.next = atom.data
+            atom.data.previous = atom.data
+            this.focus(atom.data)
+          }
+          else if (atom.type != "atom")
+          {
+            this.insertAtom()
+            this.focus().type = "atom"
+            this.focus().data = ""
+          }
+          this.focus().data = this.focus().data + character
+        },
+        deleteCharacter : function()
+        {
+          var atom = this.focus()
+          if (atom.type == "atom" || atom.type == "tab")
+          {
+            if (atom.data.length > 0)
+            {
+              atom.data = atom.data.slice(0, atom.data.length - 1)
+              if (atom.data.length == 0)
+              {
+                atom.type = undefined
+                atom.data = undefined
+              }
+            }
+            else
+            {
+              this.deleteAtom()
+            }
+          }
+          else
+          {
+            this.deleteAtom()
+          }
+        },
+        deleteAtom : function()
+        {
+          var atom = this.focus()
+          if (atom.next === atom.previous && atom.previous === atom && atom === atom.next)
+          {
+            if (atom.parent != undefined)
+            {
+              this.focus(atom.parent)
+              this.focus().data = undefined
+            }
+            else
+            {
+              this.model = undefined
+              this.cursor = undefined
+            }
+          }
+          else
+          {
+            atom.previous.next = atom.next
+            atom.next.previous = atom.previous
+            if (atom.parent.data === atom)
+            {
+              atom.parent.data = atom.next
+              this.focus(atom.next)
+            }
+            else
+            {
+              this.focus(atom.previous)
+            }
+          }
+        },
+        insertBreak : function()
+        {
+          if (this.focus().parent != undefined)
+          {
+            this.insertAtom()
+            this.focus().type = "break"
+          }
+          else 
+          {
+            this.submit()
+          }
+        },
+        insertTab : function()
+        {
+          if (this.focus().type == "tab")
+          {
+            this.focus().data = this.focus().data + " "
+          }
+          else
+          {
+            this.insertAtom()
+            this.focus().type = "tab"
+            this.focus().data = " "
+          }
+        },
+        moveCursorForward : function()
+        {
+          this.focus(this.focus().next)
+        },
+        moveCursorBackward : function()
+        {
+          this.focus(this.focus().previous)
+        },
+        moveCursorInward : function()
+        {
+          if (this.focus().type == "list")
+          {
+            if (this.focus().data != undefined)
+            {
+              this.focus(this.focus().data)
+            }
+          }
+        },
+        moveCursorOutward : function()
+        {
+          if (this.focus().parent != undefined)
+          {
+            this.focus(this.focus().parent)
+          }
+        },
+        sampleAtom : function()
+        {
+          this.sample = structuredClone(this.focus())
+        },
+        putAtom : function()
+        {
+          this.sample.next = this.focus().next
+          this.sample.previous = this.focus()
+          this.focus().next.previous = this.sample
+          this.focus().next = this.sample
+          this.sample.parent = this.focus().parent
+          this.sample = undefined
+        },
+        spreadAtom : function()
+        {
+          if (this.sample.type == "list")
+          {
+            var head = this.sample.data
+            var tail = this.sample.data.previous
+            var x = head
+            do 
+            {
+              x.parent = this.focus().parent
+              x = x.next
+            } while (x != tail)
+            tail.next = this.focus().next
+            head.previous = this.focus()
+            this.focus().next.previous = tail
+            this.focus().next = head
+            this.sample = undefined
+          }
+          else 
+          {
+            this.putAtom()
+          }
+        },
+        showModel : function()
+        {
+          const display = function(n)
+          {
+            var element = undefined
+            if (n === undefined)
+            {
+              return undefined
+            }
+            switch(n.type)
+            {
+              case undefined:
+                element = document.createElement('nil-atom')
+                break;
+              case "atom":
+                element = document.createElement('nil-atom')
+                element.appendChild(document.createTextNode(n.data))
+                element.style.cursor = "pointer"
+                element.onclick = (e) => {
+                  const atom = n
+                  window.NIL.editor.focus(atom)
+                  window.NIL.editor.showModel()
+                }
+                break;
+              case "tab":
+                element = document.createElement('nil-tab')
+                element.appendChild(document.createTextNode(n.data))
+                element.style.cursor = "pointer"
+                element.onclick = (e) => {
+                  const atom = n
+                  window.NIL.editor.focus(atom)
+                  window.NIL.editor.showModel()
+                }
+                break;
+              case "break":
+                element = document.createElement('nil-break')
+                //element.appendChild(document.createTextNode('\u21b5'))
+                element.appendChild(document.createTextNode(''))
+                element.appendChild(document.createElement('br'))
+                break;
+              case "list":
+                element = document.createElement('nil-list')
+                if (n.data != undefined)
+                {
+                  var x = n.data
+                  do
+                  {
+                    element.appendChild(display(x))
+                    x = x.next
+                  }
+                  while (x != n.data)
+                }
+                break;
+            }
+            if (window.NIL.editor.focus() === n)
+            {
+              element.setAttribute("focused", "true")
+              element.id = "FocusedAtom"
+            }
+            return element
+          }
+          var tree = display(this.model)
+          if (tree == undefined) tree = document.createElement('p')
+          this.element.firstChild.replaceWith(tree)
+          //window.scrollTo(FocusedAtom.offsetLeft, FocusedAtom.offsetTop)
+          if (document.getElementById("FocusedAtom"))
+          {
+            FocusedAtom.scrollIntoView(true)
+          }
+        },
+        processCommand : function(edit, input)
+        {
+          if (edit)
+          {
+            switch(input)
+            {
+              case 'Space':
+                this.insertAtom()
+                break;
+              case 'Enter':
+                this.insertBreak()
+                break;
+              case 'Tab':
+                this.insertTab()
+                break;
+              case 'Backspace':
+                this.deleteCharacter()
+                break;
+              case 'Up':
+                this.moveCursorOutward()
+                break;
+              case 'Down':
+                this.moveCursorInward()
+                break;
+              case 'Left':
+                this.moveCursorBackward()
+                break;
+              case 'Right':
+                this.moveCursorForward()
+                break;
+              case 'Sample':
+                this.sampleAtom()
+                break;
+              case 'Put':
+                this.putAtom()
+                break;
+              case 'Spread':
+                this.spreadAtom()
+                break;
+            }
+          }
+          else
+          {
+            this.appendCharacter(input)
+          }
+          this.showModel()
+        },
+        submit : function()
+        {
+          const serialize = (n) => 
+          {
+            var atom = undefined
+            switch(n.type)
+            {
+              case "atom":
+                return n.data
+                break;
+              case "list":
+                var atom = []
+                var a = n.data
+                do
+                {
+                  var result = serialize(a)
+                  if (result != undefined)
+                  {
+                    atom.push(result)
+                  }
+                  a = a.next
+                } while(a != n.data)
+                return atom
+                break;
+              default:
+                return undefined
+            }
+          }
+          var src = serialize(this.model)
+          //var result = window.NIL.interpreter.submit(src)
+          var result = window.NIL.compute(src)
+          console.log(result)
+        }
+      },
+      default : 
+      {
+           
+      },
+      topLevel : 
+      {
+        " parent" : this.default
+      },
+      compute : function(s, e, c, d)
+      {
+
+      },
+      machine : 
+      {
+        stack : [],
+        environment : [],
+        control : undefined,
+        dump : undefined
+        
+      },
+      Init(element)
+      {
+        this.editor.element = element
+        var t = document.createElement("textarea")
+        t.id = "nil-editor"
+        t.autocapitalize = "false"
+        t.autocomplete = "off"
+        t.spellcheck = "false"
+        t.style.resize = "none"
+        t.style.overflow = "auto"
+        t.style.position = "absolute"
+        t.style.left = "-100vw"
+        t.style.top = "-100vh"
+        t.oninput = function(e)
+        {
+          e.preventDefault()
+          t.value = "##\n##\n##"
+          t.selectionEnd = 4
+          t.selectionStart = 4
+          switch(e.inputType)
+          {
+            case 'insertText':
+            case 'insertCompositionText':
+              if (e.data != ' ')
+              {
+                window.NIL.editor.processCommand(false, e.data)
+              }
+              else
+              {
+                window.NIL.editor.processCommand(true, "Space")
+              }
+              break;
+            case 'deleteContentBackward':
+              window.NIL.editor.processCommand(true, "Backspace")
+              break;
+            case 'insertLineBreak':
+              window.NIL.editor.processCommand(true, "Enter")
+              break;
+          }
+        }
+        //t.onselectionchange = function(e)
+        //{
+        //  t.selectionEnd = 4
+        //  t.selectionStart = 4
+        //}
+        this.editor.element.appendChild(t)
+        t.focus()
+        t.click()
+
+        document.body.onclick = function(e)
+        {
+          t.focus()
+          t.click()
+          e.preventDefault()
+        }
+        document.body.onpointerdown = function(e)
+        {
+          e.preventDefault()
+          const DragData = {x : e.clientX, y : e.clientY}
+          const DragDetection = function(e)
+          {
+            var vdim = Math.floor(window.screen.height / 7)
+            var wdim = Math.floor(window.screen.width / 7)
+            var vertical = e.clientY - DragData.y
+            var horizontal = e.clientX - DragData.x
+            if (vertical > vdim)
+            {
+              if (navigator.vibrate) {navigator.vibrate(10)}
+              DragData.y = e.clientY
+              window.NIL.editor.processCommand(true, "Down")
+            }
+            else if (vertical < 0 && Math.abs(vertical) > vdim)
+            {
+              if (navigator.vibrate) {navigator.vibrate(10)}
+              DragData.y = e.clientY
+              window.NIL.editor.processCommand(true, "Up")
+            }
+            if (horizontal > wdim)
+            {
+              if (navigator.vibrate) {navigator.vibrate(10)}
+              DragData.x = e.clientX
+              window.NIL.editor.processCommand(true, "Right")
+            }
+            else if (horizontal < 0 && Math.abs(horizontal) > wdim)
+            {
+              if (navigator.vibrate) {navigator.vibrate(10)}
+              DragData.x = e.clientX
+              window.NIL.editor.processCommand(true, "Left")
+            }
+            
+          }
+          document.body.addEventListener("pointermove", DragDetection)
+          const DragDetectionOff = function(e)
+          {
+            document.body.removeEventListener("pointermove", DragDetection)
+            document.body.removeEventListener("pointerup", DragDetectionOff)
+            document.body.removeEventListener("pointercancel", DragDetectionOff)
+          }
+          document.body.addEventListener("pointerup", DragDetectionOff)
+          document.body.addEventListener("pointercancel", DragDetectionOff)
+        }
+        document.body.onpointerup = function(e)
+        {
+          e.preventDefault()
+        }
+        document.body.onpointermove = function(e)
+        {
+          e.preventDefault()
+        }
+        document.body.oncontextmenu = function(e)
+        {
+          e.preventDefault()
+          if (document.getElementById("Options"))
+          {
+            return;
+          }
+          if (window.NIL.editor.cursor != undefined)
+          {
+            var atom = document.getElementById('FocusedAtom').getBoundingClientRect()
+            var menu = document.createElement('div')
+            menu.id = "Options"
+            menu.appendChild(document.createElement('div'))
+            menu.lastChild.appendChild(document.createTextNode('\u29c9'))
+            menu.lastChild.onclick = function(e)
+            {
+              window.NIL.editor.processCommand(true, "Sample")
+              menu.remove()
+            }
+            menu.appendChild(document.createElement('div'))
+            menu.lastChild.appendChild(document.createTextNode('\u2193'))
+            menu.lastChild.onclick = function(e)
+            {
+              window.NIL.editor.processCommand(true, "Put")
+              menu.remove()
+            }
+            menu.appendChild(document.createElement('div'))
+            menu.lastChild.appendChild(document.createTextNode('\u21e3'))
+            menu.lastChild.onclick = function(e)
+            {
+              window.NIL.editor.processCommand(true, "Spread")
+              menu.remove()
+            }
+            menu.style.position = "fixed"
+            document.body.appendChild(menu)
+            menu.style.top = "" + (e.y - 5) + "px"
+            menu.style.left = "" + (e.x - 5) + "px"
+            menu.onpointerleave = function(e)
+            {
+              menu.remove()
+            }
+          }
+        }
+        document.body.onkeydown = function(e)
+        {
+          switch(e.key)
+          {
+            case 'ArrowLeft':
+              e.preventDefault()
+              window.NIL.editor.processCommand(true, "Left")
+              break;
+            case 'ArrowRight':
+              e.preventDefault()
+              window.NIL.editor.processCommand(true, "Right")
+              break;
+            case 'ArrowUp':
+              e.preventDefault()
+              window.NIL.editor.processCommand(true, "Up")
+              break;
+            case 'ArrowDown':
+              e.preventDefault()
+              window.NIL.editor.processCommand(true, "Down")
+              break;
+            case 'Enter':
+              e.preventDefault()
+              window.NIL.editor.processCommand(true, "Enter")
+              break;
+            case 'Tab':
+              e.preventDefault()
+              window.NIL.editor.processCommand(true, "Tab")
+              break;
+            case 'Backspace':
+              e.preventDefault()
+              window.NIL.editor.processCommand(true, "Backspace")
+              break;
+            case ' ':
+              e.preventDefault()
+              window.NIL.editor.processCommand(true, "Space")
+              break;
+          }
+        }
+        document.body.onkeyup = function(e)
+        {
+          undefined
+        }
+      }
+    }
+    window.NIL.Init(document.getElementById("NIL"))
+    function ShowHelp(e)
+    {
+      e.preventDefault()
+    }
+  </script>
 </html>

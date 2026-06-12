@@ -133,10 +133,12 @@ export function setColorTheme(firstRun)
   if (Theme == 0 || Theme == 1)
   {
     r_.style.setProperty('--shadow', c.bg_0)
+    r_.style.setProperty('--shadowsecond', c.bg_1)
   }
   else
   {
-    r_.style.setProperty('--shadow', c.fg_1)
+    r_.style.setProperty('--shadow', c.fg_0)
+    r_.style.setProperty('--shadowsecond', c.fg_1)
   }
   if (firstRun == true) 
   {

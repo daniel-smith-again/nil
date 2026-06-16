@@ -1007,3 +1007,11 @@ b.) An expression is anything that may be grouped inside a closed pair of parent
 3. Any two lines with indentation of the same length are considered to be adjacent expressions.
 4. Lines with larger indentations are nested inside expressions with smaller indentations.
 
+what's the word for my delimited continuation algebraic effect handlers?
+is it handle?
+is it limit?
+is it mark?
+is it contain?
+is it delimit?
+
+it's provide

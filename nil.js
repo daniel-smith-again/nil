@@ -64,6 +64,8 @@ class NilInstance extends HTMLElement
         input.setAttribute('contenteditable', 'plaintext-only')
         shadow.appendChild(input)
 
+        input.spellcheck = false;
+
         this.#internals.role = 'textbox'
         this.#internals.ariaMultiLine = 'true'
 
@@ -71,9 +73,13 @@ class NilInstance extends HTMLElement
 
         this.value = this.textContent || ''
 
-        const syncDomToValue = () => console.log(this.value = input.textContent || "")
+        const syncDomToValue = () => this.value = input.textContent || ""
 
         this.addEventListener('input', () => syncDomToValue())
+
+        this.addEventListener('beforeinput', (e) => {
+          console.log(e)
+        })
 
         let previousValue = undefined
         this.addEventListener('focus', () => previousValue=this.#value)

@@ -3,8 +3,140 @@
     <meta charset="utf-8">
     <title>NIL</title>
     <link rel="icon" href="./icon/icon.gif" type="image/x-icon"/>
+    <style>
+
+    </style>
 </head>
 <body>
     <nil-instance></nil-instance>
 </body>
-<script type="module" src="nil.js"></script>
+<script>
+  class NIL 
+  {
+    #model
+    constructor()
+    {
+      this.#model = undefined
+    }
+    Input(e) 
+    {
+      console.log(e)
+    }
+  }
+  class NilInstance extends HTMLElement
+  {
+    static formAsasociated = true;
+    #shadow
+    #internals;
+    #value;
+    #input;
+    #NIL = new NIL()
+    #content = ''
+    #caret = 0
+    #display
+
+    get value() { return this.#value; }
+    set value(v) 
+    {
+      if (v !== this.#value) 
+      { this.#value = v; }
+      this.#internals.setFormValue(this.#value)
+      if (v !== this.#input.textContent)
+      { this.#input.textContent = newValue }
+    }
+
+    constructor() 
+    {
+      super()
+      this.#internals = this.attachInternals()
+    }
+
+    
+
+    connectedCallback()
+    {
+      const shadow = this.#shadow = this.attachShadow({mode : 'closed', delegatesFocus : true});
+
+      const input = this.#input = document.createElement('div')
+      input.setAttribute('part', 'input')
+      input.setAttribute('contenteditable', 'plaintext-only')
+      shadow.appendChild(input)
+
+      input.spellcheck = false
+
+      this.#internals.role = 'textbox'
+      this.#internals.ariaMultiLine = 'true'
+
+      this.addEventListener('input', () => {})
+      this.addEventListener('beforeinput', () => {})
+      this.addEventListener('keydown', this.editorInput)
+      this.addEventListener('selectionchange', this.selectionChanged)
+
+      const style = document.createElement('style')
+      style.textContent = `
+      :host{display:block;background:Field;white-space:pre;font-family:monospace;width:fit-content;min-width:7ch;min-height:13lh;margin:auto;user-select:none;}
+      :host(:focus){outline:none;}
+      :host::part(input){min-height:3lh;min-width:7ch;tab-size:2;}
+      :host::part(input):focus{outline:none;}
+      `
+
+      shadow.appendChild(style)
+    }
+
+    selectionChanged(e)
+    {
+      console.log(e)
+    }
+
+    insertCharacter(c) 
+    {
+      let range = this.#shadow.getSelection().getRangeAt(0)
+      let start = range.startOffset
+      let end = range.endOffset
+      let value = this.#input.textContent
+      let firstchunk = value.substring(0, start)
+      let lastchunk = value.substring(end)
+      let newvalue = value.substring(0, start) + c + value.substring(end)
+      this.#input.textContent = newvalue
+      console.log(newvalue)
+      range.setStart(this.#input.childNodes[0], start + 1)
+      range.setEnd(this.#input.childNodes[0], start + 1)
+      this.#shadow.getSelection().removeAllRanges()
+      this.#shadow.getSelection().addRange(range)
+    }
+    
+    editorInput(e)
+    {
+      //console.log(e)
+      let k = e.key
+      //console.log(k)
+      switch(k)
+      {
+        case 'Tab':
+          e.preventDefault()
+          this.insertCharacter('\t')
+          break;
+        case 'Enter':
+          e.preventDefault()
+          this.insertCharacter('\n\n')
+        case 'Backspace':
+        case 'ArrowUp':
+        case 'ArrowDown':
+        case 'ArrowLeft':
+        case 'ArrowRight':
+          break;
+        default:
+          if (k.length > 1)
+          e.preventDefault()
+      }
+    }
+
+    renderContent()
+    {
+      
+      this.#input.textContent = this.#content
+    }
+  }
+  customElements.define('nil-instance', NilInstance)
+  window.onkeydown = (e) => {if (e.key == "Tab") {e.preventDefault()}}
+</script>

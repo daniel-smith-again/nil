@@ -3,12 +3,36 @@
     <meta charset="utf-8">
     <title>NIL</title>
     <link rel="icon" href="./icon/icon.gif" type="image/x-icon"/>
+    <script type="module" src="./assets/theme.js"></script>
     <style>
-
+        @font-face { font-family:PrimaryFont; src:url('./assets/FreeMono.woff'); }
+        @font-face { font-family:BackupFont; src:url('./assets/NotoSansMonoVariable.ttf'); }
+        :root { --size:calc(13px + ((1vw + 1vh) / 3)); }
+        html 
+        {
+            scrollbar-color:var(--foregroundsecond) var(--backgroundsecond)
+        }
+        html *
+        {
+            font-family:PrimaryFont, BackupFont;
+            font-size:var(--size);
+            color:var(--foregroundsecond);
+            background-color:var(--backgroundsecond);
+        }
+        body
+        {
+            display:grid;
+            width:calc(100vw - 9ch);
+            min-height:calc(100vh - 6ch);
+            padding:3ch;
+            margin:0;
+            align-items:start;
+            justify-content:center;
+        }
     </style>
 </head>
 <body>
-    <nil-instance></nil-instance>
+    <nil-instance placeholder="describe nil"></nil-instance>
 </body>
 <script>
   class NIL 
@@ -18,9 +42,39 @@
     {
       this.#model = undefined
     }
-    Input(e) 
+    Input(src)
     {
-      console.log(e)
+      return this.parse(src)
+    } 
+    parse(src)
+    {
+      let output = ''
+      let lines = src.split(/(\n.*)/)
+      lines = lines.filter((l) => !(l == "\n" || l == "" || l == "\n\u200b"))
+      console.log(lines)
+      for (let x in lines)
+      {
+        if (lines[x][1] == ' ')
+        {
+          if (x > 0)
+          {
+            lines[x - 1] += ' ' + lines[x].split(/\n */)[1]
+            lines.splice(x, 1)
+          }
+        }
+      }
+      console.log(lines)
+      lines = lines.reduce((o, l) => o + l, '')
+      console.log(lines)
+      return lines
+      /*
+       lines to sexpr algorithm
+
+       1. count the tabs between a sequental pair of lines, A, B
+       2. if A has a higher indent than B, A is wrapped in parentheses
+          if B has a higher indent than B, B is wrapped in parentheses
+          if A and B have the same indent, wrap both A and B unless the parentheses count is higher than 1
+      */
     }
   }
   class NilInstance extends HTMLElement
@@ -30,6 +84,7 @@
     #internals;
     #value;
     #input;
+    #output;
     #NIL = new NIL()
     #content = ''
     #caret = 0
@@ -55,17 +110,32 @@
 
     connectedCallback()
     {
-      const shadow = this.#shadow = this.attachShadow({mode : 'closed', delegatesFocus : true});
+      const placeholder = this.getAttribute('placeholder')
+      console.log(placeholder)
+
+      const shadow = this.#shadow = this.attachShadow({mode : 'closed', delegatesFocus : true}); 
 
       const input = this.#input = document.createElement('div')
       input.setAttribute('part', 'input')
       input.setAttribute('contenteditable', 'plaintext-only')
       shadow.appendChild(input)
+      if (placeholder != '')
+      {
+        input.textContent = placeholder + '\n\u200b'
+        let s = shadow.getSelection()
+        s.setPosition(input.childNodes[0], input.textContent.length)
+      }
 
       input.spellcheck = false
 
       this.#internals.role = 'textbox'
       this.#internals.ariaMultiLine = 'true'
+
+      const output = this.#output = document.createElement('div')
+      output.style.cssText = `
+      display:min-height:3lh;min-width:7ch;tab-size:2;color:var(--diminished);margin-top:2lh
+      `
+      shadow.appendChild(output)
 
       this.addEventListener('input', () => {})
       this.addEventListener('beforeinput', () => {})
@@ -74,7 +144,7 @@
 
       const style = document.createElement('style')
       style.textContent = `
-      :host{display:block;background:Field;white-space:pre;font-family:monospace;width:fit-content;min-width:7ch;min-height:13lh;margin:auto;user-select:none;}
+      :host{display:inline-block;background:Field;white-space:pre;white-space-collapse:preserve;font-family:monospace;width:fit-content;min-width:7ch;min-height:7lh;margin-top:5lh;caret-color:var(--foregroundsecond);}
       :host(:focus){outline:none;}
       :host::part(input){min-height:3lh;min-width:7ch;tab-size:2;}
       :host::part(input):focus{outline:none;}
@@ -90,19 +160,38 @@
 
     insertCharacter(c) 
     {
-      let range = this.#shadow.getSelection().getRangeAt(0)
-      let start = range.startOffset
-      let end = range.endOffset
+      let selection = this.#shadow.getSelection()
+      let start = selection.anchorOffset
+      let end = selection.anchorOffset
       let value = this.#input.textContent
       let firstchunk = value.substring(0, start)
       let lastchunk = value.substring(end)
-      let newvalue = value.substring(0, start) + c + value.substring(end)
+      let newvalue = firstchunk + c + lastchunk
+      if ((value.length == end) || (value.length - 1 == end) && (value.slice(-1) != '\u200b'))
+      {
+        newvalue += '\u200b'
+      }
       this.#input.textContent = newvalue
-      console.log(newvalue)
-      range.setStart(this.#input.childNodes[0], start + 1)
-      range.setEnd(this.#input.childNodes[0], start + 1)
-      this.#shadow.getSelection().removeAllRanges()
-      this.#shadow.getSelection().addRange(range)
+      selection.setPosition(selection.anchorNode, start + 1)
+      let range = selection.getRangeAt(0)
+      let x = range.getBoundingClientRect().x
+      let y = range.getBoundingClientRect().y
+      window.scrollTo(x, y)
+    }
+
+    matchIndent()
+    {
+      let text = this.#input.textContent
+      let pos = this.#shadow.getSelection().getRangeAt(0).startOffset - 2
+      var tabcount = 0
+      var p = pos
+      for (var p = pos; p > 0 && text.charAt(p) != '\n'; p--)
+      {
+        if (text.charAt(p) == '\t') tabcount++
+        else tabcount = 0
+      }
+      for (var t = 0; t < tabcount; t++)
+      { this.insertCharacter('\t') }
     }
     
     editorInput(e)
@@ -118,7 +207,21 @@
           break;
         case 'Enter':
           e.preventDefault()
-          this.insertCharacter('\n\n')
+          if (this.#input.textContent.slice(-2) == '\n\u200b')
+          {
+            let output = this.#NIL.Input(this.#input.textContent)
+            //this.#output.insertBefore(document.createTextNode(output + '\n\u200b'), this.#output.firstChild)
+            //console.log(this.#output)
+            //this.#output.scrollIntoView(true)
+            this.#output.textContent = output
+            this.#input.textContent = ''
+          }
+          else
+          {
+            this.insertCharacter('\n')
+            //this.matchIndent()
+          }
+          break;
         case 'Backspace':
         case 'ArrowUp':
         case 'ArrowDown':
@@ -131,12 +234,9 @@
       }
     }
 
-    renderContent()
-    {
-      
-      this.#input.textContent = this.#content
-    }
+    
   }
   customElements.define('nil-instance', NilInstance)
   window.onkeydown = (e) => {if (e.key == "Tab") {e.preventDefault()}}
+  ((n) => {n.focus(); n.click()})(document.getElementsByTagName('nil-instance')[0])
 </script>

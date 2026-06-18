@@ -42,30 +42,204 @@
     {
       this.#model = undefined
     }
+    Result = class extends Event 
+    {
+      #result
+      constructor(output)
+      {
+        super('nil-result')
+        this.#result = output
+      }
+      get data()
+      {
+        return this.#result
+      }
+    }
+    Error = class extends Event
+    {
+      #message
+      #data
+      constructor(message, data)
+      {
+        super('nil-error')
+        this.#message = message
+        this.#data = data
+      }
+      get message()
+      {
+        return this.#message
+      }
+      get data()
+      {
+        return this.#data
+      }
+
+    }
+    Attach(result, error)
+    {
+      addEventListener('nil-result', result)
+      addEventListener('nil-error', error)
+    }
     Input(src)
     {
-      return this.parse(src)
+      let e = new this.Result(this.parse(src))
+      if (e.data != undefined) dispatchEvent(e)
     } 
     parse(src)
     {
       let output = ''
-      let lines = src.split(/(\n.*)/)
-      lines = lines.filter((l) => !(l == "\n" || l == "" || l == "\n\u200b"))
-      console.log(lines)
-      for (let x in lines)
+      //collapse parentheses + scan for unbalanced parentheses
+      let nesting = 0
+      let spaceindent = false
+      for (let c of src)
       {
-        if (lines[x][1] == ' ')
+        if (c == '(')
+        { nesting++}
+        if (c == ')')
+        { nesting-- }
+        if (nesting < 0) 
+        { dispatchEvent(new this.Error("Parentheses are not balanced", undefined)); return undefined; }
+
+        //console.log(`current character is ${c}, spaceindent is ${spaceindent}, nesting level is ${nesting}`)
+
+        if (nesting > 0)
         {
-          if (x > 0)
+          if (c == '\n')
+          { spaceindent = true }
+          else 
           {
-            lines[x - 1] += ' ' + lines[x].split(/\n */)[1]
-            lines.splice(x, 1)
+            if (spaceindent)
+            {
+              if (c != ' ')
+              {
+                spaceindent = false
+                output += ' '
+                if (c != '\t' && c != '\n')
+                { output += c}
+              }
+            }
+            else
+            {
+              if (c != '\t' && c != '\n')
+              { output += c }
+            }
           }
         }
+        else 
+        { output += c }
+      }
+      if (nesting > 0)
+      { dispatchEvent(new this.Error("Parentheses are not balanced", undefined)); return undefined; }
+
+      src = output
+
+      let lines = src.split(/(\n.*)/)
+      lines = lines.filter((l) => !(l == "\n" || l == "" || l == "\n\u200b"))
+      //lines that begin with a space are combined with their preceding lines
+      for (let n in lines)
+      {
+        if (lines[n][1] == ' ')
+        {
+          if (n > 0)
+          {
+            lines[n - 1] += ' ' + lines[n].split(/\n */)[1]
+            lines.splice(n, 1)
+          }
+        }
+        console.log(lines[n])
       }
       console.log(lines)
+      //count indentation size of each line
+      let indentcount = []
+      for (let l of lines)
+      {
+        let count = 0
+        for (let c of l)
+        {
+          if (c == '\t') count++
+        }
+        indentcount.push(count)
+      }
+      //normalize indentation to sequential ordinals by discrete relative difference 
+      //(i.e. convert [20, 35, 1, 17] to [2, 3, 0, 1])
+      let ordinality = []
+      for (let n of indentcount)
+      {
+        if (!ordinality.includes(n)) ordinality.push(n)
+      }
+      ordinality.sort((a, b) => a - b)
+      for (let i in indentcount)
+      {
+        indentcount[i] = ordinality.indexOf(indentcount[i])
+      }
+
+      for (let n in lines)
+      {
+        let chunks = lines[n].split(/(\n\t*)/)
+        if (chunks.length > 1)
+        {
+          lines[n] = chunks[1] + "(".repeat(indentcount[n]) + chunks[2]
+        }
+        console.log(lines[n])
+      }
+
+      /*
+      let span = []
+      for (let i of indentcount)
+      { if (!span.includes(i)) span.push(i) }
+      span.sort()
+      let nestinglevels = []
+      for (let i of indentcount)
+      { nestinglevels.push(span.indexOf(i)) }
+      console.log(nestinglevels)
+      */
+      /*
+      //insert parens for indentation
+      nesting = 0
+      for (let n in lines)
+      {
+        for (let c of lines[n])
+        {
+          if (c == '(') nesting++;
+          if (c == ')') nesting--;
+        }
+        if (n > 0)
+        {
+          //compare indentations
+          let countA = 0
+          let countB = 0
+          for (let c of lines[n - 1])
+          {
+            if (c == '\t') countA++
+          }
+          for (let c of lines[n])
+          {
+            if (c == '\t') countB++
+          }
+          let chunksA = lines[n - 1].split(/(\n\t*)/)
+          let chunksB = lines[n].split(/(\n\t*)/)
+          if (countA > countB)
+          {
+            lines[n - 1] = chunksA[1] + '((' + chunksA[2] + ')'
+            nesting++
+          }
+          else if (countA < countB)
+          {
+            lines[n - 1] = chunksA[1] + '(' + chunksA[2]
+            lines[n] = chunksB[1] + '(' + chunksB[2] + ')'
+          }
+          else
+          {
+
+          }
+          console.log(chunksB)
+          //console.log(`line ${n-1} has ${countA} tabs, and line ${n} has ${countB}.`)
+        }
+      }
+        */
+
+      //turn lines back into single string
       lines = lines.reduce((o, l) => o + l, '')
-      console.log(lines)
       return lines
       /*
        lines to sexpr algorithm
@@ -104,6 +278,7 @@
     {
       super()
       this.#internals = this.attachInternals()
+      this.#NIL.Attach()
     }
 
     
@@ -111,7 +286,6 @@
     connectedCallback()
     {
       const placeholder = this.getAttribute('placeholder')
-      console.log(placeholder)
 
       const shadow = this.#shadow = this.attachShadow({mode : 'closed', delegatesFocus : true}); 
 
@@ -135,6 +309,16 @@
       output.style.cssText = `
       display:min-height:3lh;min-width:7ch;tab-size:2;color:var(--diminished);margin-top:2lh
       `
+      this.#NIL.Attach(
+        (e) => {
+          output.textContent = e.data
+          input.textContent = ''
+        },
+        (e) => {
+          console.log(e.message)
+          output.textContent = e.message
+          console.log(output)
+        } )
       shadow.appendChild(output)
 
       this.addEventListener('input', () => {})
@@ -209,12 +393,7 @@
           e.preventDefault()
           if (this.#input.textContent.slice(-2) == '\n\u200b')
           {
-            let output = this.#NIL.Input(this.#input.textContent)
-            //this.#output.insertBefore(document.createTextNode(output + '\n\u200b'), this.#output.firstChild)
-            //console.log(this.#output)
-            //this.#output.scrollIntoView(true)
-            this.#output.textContent = output
-            this.#input.textContent = ''
+            this.#NIL.Input(this.#input.textContent)
           }
           else
           {

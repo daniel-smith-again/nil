@@ -87,6 +87,7 @@
     } 
     parse(src)
     {
+      src = '\n' + src
       let output = ''
       //collapse parentheses + scan for unbalanced parentheses
       let nesting = 0
@@ -172,71 +173,29 @@
       {
         indentcount[i] = ordinality.indexOf(indentcount[i])
       }
-
+      console.log(indentcount)
       for (let n in lines)
       {
+        
+        /*
         let chunks = lines[n].split(/(\n\t*)/)
-        if (chunks.length > 1)
+        let i = (n > 0) ? indentcount[n] - indentcount[n - 1] : indentcount[n]
+        console.log(i)
+        if (i == 0 && n > 0)
         {
-          lines[n] = chunks[1] + "(".repeat(indentcount[n]) + chunks[2]
+          lines[n] = chunks[1] + '(' + chunks[2] + ')'
         }
+        else if (i > 0)
+        {
+          lines[n] = chunks[1] + "(".repeat(i) + chunks[2]
+        }
+        else if (i < 0)
+        {
+          lines[n] = chunks[1] + chunks[2] + ")".repeat(i * -1)
+        }
+          */
         console.log(lines[n])
       }
-
-      /*
-      let span = []
-      for (let i of indentcount)
-      { if (!span.includes(i)) span.push(i) }
-      span.sort()
-      let nestinglevels = []
-      for (let i of indentcount)
-      { nestinglevels.push(span.indexOf(i)) }
-      console.log(nestinglevels)
-      */
-      /*
-      //insert parens for indentation
-      nesting = 0
-      for (let n in lines)
-      {
-        for (let c of lines[n])
-        {
-          if (c == '(') nesting++;
-          if (c == ')') nesting--;
-        }
-        if (n > 0)
-        {
-          //compare indentations
-          let countA = 0
-          let countB = 0
-          for (let c of lines[n - 1])
-          {
-            if (c == '\t') countA++
-          }
-          for (let c of lines[n])
-          {
-            if (c == '\t') countB++
-          }
-          let chunksA = lines[n - 1].split(/(\n\t*)/)
-          let chunksB = lines[n].split(/(\n\t*)/)
-          if (countA > countB)
-          {
-            lines[n - 1] = chunksA[1] + '((' + chunksA[2] + ')'
-            nesting++
-          }
-          else if (countA < countB)
-          {
-            lines[n - 1] = chunksA[1] + '(' + chunksA[2]
-            lines[n] = chunksB[1] + '(' + chunksB[2] + ')'
-          }
-          else
-          {
-
-          }
-          console.log(chunksB)
-          //console.log(`line ${n-1} has ${countA} tabs, and line ${n} has ${countB}.`)
-        }
-      }
-        */
 
       //turn lines back into single string
       lines = lines.reduce((o, l) => o + l, '')

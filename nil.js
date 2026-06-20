@@ -51,57 +51,80 @@ export class NIL
     Eval(src)
     {
       let tree = this.parse(src)
-      console.log(tree)
-      return JSON.stringify(tree)
+      return JSON.stringify(
+        tree,
+        (k, v) => v instanceof Array && ! v.some((i) => i instanceof Array) ? JSON.stringify(v) : v,
+        2
+      ) .replace(/\\/g, '')
+        .replace(/\"\[/g, '[')
+        .replace(/\]\"/g,']')
+        .replace(/\"\{/g, '{')
+        .replace(/\}\"/g,'}');
+
+      
+    }
+    checkbalanced(src)
+    {
+      let nesting = 0
+      let spaceindent = false
+      let insidestring = false
+      let insidestringescape = false
+      let insidestringembed = false
+      let escapenesting = 0
+      for (let c of src)
+      {
+        if (!insidestring)
+        {
+          if (c == '(') nesting++
+          if (c == ')') nesting--
+          if (nesting < 0) 
+          {
+            dispatchEvnet(new this.Error("Parentheses are not balanced", undefined))
+            return false
+          }
+          if (insidestringembed && nesting == escapenesting) 
+          {
+            insidestring = true
+            insidestringembed = false
+          }
+          if (c == '"') insidestring = true
+        }
+        else
+        {
+          if (c == '"') insidestring = false
+          if (insidestringescape)
+          {
+            if (c == '(') 
+            {
+              insidestringembed = true
+              insidestring = false
+              escapenesting = nesting
+              nesting++
+            }
+          }
+          else
+          {
+            if (c == '\\') insidestringescape = true
+          }
+        }
+      }
+      if (nesting > 0)
+      {
+        dispatchEvent(new this.Error("Parentheses are not balanced", undefined))
+        return false
+      }
+      return true
+    }
+
+    parenifyparens(src)
+    {
+
     }
     parenify(src)
     {
       src = '\n' + src
-      let output = ''
-      //collapse parentheses + scan for unbalanced parentheses
-      let nesting = 0
-      let spaceindent = false
-      for (let c of src)
-      {
-        if (c == '(')
-        { nesting++}
-        if (c == ')')
-        { nesting-- }
-        if (nesting < 0) 
-        { dispatchEvent(new this.Error("Parentheses are not balanced", undefined)); return undefined; }
-
-        //console.log(`current character is ${c}, spaceindent is ${spaceindent}, nesting level is ${nesting}`)
-
-        if (nesting > 0)
-        {
-          if (c == '\n')
-          { spaceindent = true }
-          else 
-          {
-            if (spaceindent)
-            {
-              if (c != ' ')
-              {
-                spaceindent = false
-                output += ' '
-                if (c != '\t' && c != '\n')
-                { output += c}
-              }
-            }
-            else
-            {
-              if (c != '\t' && c != '\n')
-              { output += c }
-            }
-          }
-        }
-        else 
-        { output += c }
-      }
-      if (nesting > 0)
-      { dispatchEvent(new this.Error("Parentheses are not balanced", undefined)); return undefined; }
-
-      src = output
+      if (!this.checkbalanced(src)) return undefined
+      console.log(src)
 
       let lines = src.split(/(\n.*)/)
       lines = lines.filter((l) => !(l == "\n" || l == "" || l == "\n\u200b"))
@@ -172,6 +195,7 @@ export class NIL
     }
     parse(src)
     {
+      console.log(src)
       let text = 
       {
         source : this.parenify(src),
@@ -185,6 +209,7 @@ export class NIL
           return n ? this.source[this.pos + n] : this.source[this.pos]
         }
       }
+      console.log(text.source)
       const read = () =>
       {
         while(/\s/.test(text.peek()) && text.peek() != undefined)
@@ -244,6 +269,10 @@ export class NIL
             while(!/\s|\(|\)/.test(text.peek()) && text.peek() != undefined)
             {
               atom += text.next()
+            }
+            while(/\s/.test(text.peek()) && text.peek() != undefined)
+            {
+              text.next()
             }
             return atom
             break;
@@ -391,14 +420,13 @@ export class NIL
           break;
         case 'Enter':
           e.preventDefault()
-          if (this.#input.textContent.slice(-2) == '\n\u200b')
+          if (e.shiftKey)
           {
             this.#NIL.Input(this.#input.textContent)
           }
           else
           {
             this.insertCharacter('\n')
-            //this.matchIndent()
           }
           break;
         case 'Backspace':

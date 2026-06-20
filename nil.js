@@ -51,17 +51,20 @@ export class NIL
     Eval(src)
     {
       let tree = this.parse(src)
-      return JSON.stringify(
-        tree,
-        (k, v) => v instanceof Array && ! v.some((i) => i instanceof Array) ? JSON.stringify(v) : v,
-        2
-      ) .replace(/\\/g, '')
-        .replace(/\"\[/g, '[')
-        .replace(/\]\"/g,']')
-        .replace(/\"\{/g, '{')
-        .replace(/\}\"/g,'}');
-
-      
+      let result = undefined
+      if (tree != undefined)
+      {
+        tree = JSON.stringify(
+                      tree,
+                      (k, v) => v instanceof Array && ! v.some((i) => i instanceof Array) ? JSON.stringify(v) : v,
+                      2
+                    ) .replace(/\\/g, '')
+                      .replace(/\"\[/g, '[')
+                      .replace(/\]\"/g,']')
+                      .replace(/\"\{/g, '{')
+                      .replace(/\}\"/g,'}');
+      }
+      return tree
     }
     checkbalanced(src)
     {
@@ -79,7 +82,7 @@ export class NIL
           if (c == ')') nesting--
           if (nesting < 0) 
           {
-            dispatchEvnet(new this.Error("Parentheses are not balanced", undefined))
+            dispatchEvent(new this.Error("Parentheses are not balanced", undefined))
             return false
           }
           if (insidestringembed && nesting == escapenesting) 
@@ -115,16 +118,10 @@ export class NIL
       }
       return true
     }
-
-    parenifyparens(src)
-    {
-
-    }
     parenify(src)
     {
       src = '\n' + src
       if (!this.checkbalanced(src)) return undefined
-      console.log(src)
 
       let lines = src.split(/(\n.*)/)
       lines = lines.filter((l) => !(l == "\n" || l == "" || l == "\n\u200b"))
@@ -195,7 +192,6 @@ export class NIL
     }
     parse(src)
     {
-      console.log(src)
       let text = 
       {
         source : this.parenify(src),
@@ -209,7 +205,7 @@ export class NIL
           return n ? this.source[this.pos + n] : this.source[this.pos]
         }
       }
-      console.log(text.source)
+      if (text.source == undefined) return
       const read = () =>
       {
         while(/\s/.test(text.peek()) && text.peek() != undefined)
@@ -319,16 +315,19 @@ export class NIL
     {
       const placeholder = this.getAttribute('placeholder')
 
-      const shadow = this.#shadow = this.attachShadow({mode : 'closed', delegatesFocus : true}); 
+      //const shadow = this.#shadow = this.attachShadow({mode : 'open', delegatesFocus : true}); 
+      
+      //const shadow = this.#shadow = document.createElement('div')
 
       const input = this.#input = document.createElement('div')
       input.setAttribute('part', 'input')
       input.setAttribute('contenteditable', 'plaintext-only')
-      shadow.appendChild(input)
+      //shadow.appendChild(input)
+      this.appendChild(input)
       if (placeholder != '')
       {
-        input.textContent = placeholder + '\n\u200b'
-        let s = shadow.getSelection()
+        input.textContent = placeholder
+        let s = window.getSelection()
         s.setPosition(input.childNodes[0], input.textContent.length)
       }
 
@@ -348,7 +347,7 @@ export class NIL
         (e) => {
           output.textContent = e.message
         } )
-      shadow.appendChild(output)
+      this.appendChild(output)
 
       this.addEventListener('input', () => {})
       this.addEventListener('beforeinput', () => {})
@@ -357,13 +356,11 @@ export class NIL
 
       const style = document.createElement('style')
       style.textContent = `
-      :host{display:inline-block;background:Field;white-space:pre;white-space-collapse:preserve;font-family:monospace;width:fit-content;min-width:7ch;min-height:7lh;margin-top:5lh;caret-color:var(--foregroundsecond);}
-      :host(:focus){outline:none;}
-      :host::part(input){min-height:3lh;min-width:7ch;tab-size:2;}
-      :host::part(input):focus{outline:none;}
+      nil-instance{display:inline-block;background-color:var(--backgroundsecond);white-space:pre;white-space-collapse:preserve;font-family:monospace;width:fit-content;min-width:7ch;min-height:7lh;margin-top:5lh;caret-color:var(--foregroundsecond);}
+      nil-instance *{tab-size:2}
+      nil-instance *:focus{outline:none;}
       `
-
-      shadow.appendChild(style)
+      this.appendChild(style)
     }
 
     selectionChanged(e)
@@ -373,7 +370,8 @@ export class NIL
 
     insertCharacter(c) 
     {
-      let selection = this.#shadow.getSelection()
+      //let selection = this.#shadow.getSelection()
+      let selection = document.getSelection()
       let start = selection.anchorOffset
       let end = selection.anchorOffset
       let value = this.#input.textContent
@@ -385,7 +383,7 @@ export class NIL
         newvalue += '\u200b'
       }
       this.#input.textContent = newvalue
-      selection.setPosition(selection.anchorNode, start + 1)
+      selection.setPosition(this.#input.childNodes[0], start + 1)
       let range = selection.getRangeAt(0)
       let x = range.getBoundingClientRect().x
       let y = range.getBoundingClientRect().y

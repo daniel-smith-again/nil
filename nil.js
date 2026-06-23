@@ -256,21 +256,61 @@ export class NIL
       }
       if (text.source == undefined) return
       console.log(text.source)
-      const lists = []
-      const atom = ''
-      const whitespace = false
+      let lists = []
+      let atom = ''
+      let string = ''
+      let insidestring = false
       for (let c of text.source)
       {
-        switch(c)
+        if (insidestring)
         {
-          case '(':
-          case ')':
-          case ' ':
-          case '"':
-          case "'":
-          
+          switch(c)
+          {
+            case '"':
+              lists.at(-1).push(string)
+              insidestring = false
+              break;
+            default:
+              string += c
+          }
+        }
+        else
+        {
+          switch(c)
+          {
+            case '(':
+              lists.push([])
+              break;
+            case ')':
+              if (atom.length > 0)
+              {
+                lists.at(-1).push(atom)
+                atom = ''
+              }
+              if (lists.length > 1)
+              {
+                lists.at(-2).push(lists.pop())
+              }
+              break;
+            case '"':
+              insidestring = true
+              break;
+            case ' ':
+            case '\t':
+            case '\n':
+              if (atom.length > 0)
+              {
+                lists.at(-1).push(atom)
+                atom = ''
+              }
+              break;
+            default:
+              atom += c  
+          }
         }
       }
+      console.log(lists)
+      return lists[0]
 
       const read = () =>
       {

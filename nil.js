@@ -38,6 +38,55 @@ export class NIL
       }
 
     }
+    Primitives = 
+    {
+      Module()
+      {
+        return {
+          _Type : this.Module,
+          Links : {},
+          Names : {},
+          Syntax : {},
+          lookup(symbol)
+          {
+            return this.Names[symbol] ? this.Names[symbol] : undefined
+          }
+        }
+      },
+      Function()
+      {
+        return {
+          _Type : this.Function,
+          Parameters : [],
+          Result : [],
+          Effects : [],
+          Body : undefined,
+          Closure : {}
+        }
+      },
+      Type(parent, ...members)
+      {
+        return {
+          _Type : this.Type,
+          Members : members,
+          Parent : parent
+        }
+      },
+      List(...elements)
+      {
+        return {
+          _Type : this.List,
+          Elements : elements
+        }
+      },
+      Symbol (symbol)
+      {
+        return {
+          _Type : this.Symbol,
+          Value : String(symbol)
+        }
+      }
+    }
     Attach(result, error)
     {
       addEventListener('nil-result', result)
@@ -206,6 +255,23 @@ export class NIL
         }
       }
       if (text.source == undefined) return
+      console.log(text.source)
+      const lists = []
+      const atom = ''
+      const whitespace = false
+      for (let c of text.source)
+      {
+        switch(c)
+        {
+          case '(':
+          case ')':
+          case ' ':
+          case '"':
+          case "'":
+          
+        }
+      }
+
       const read = () =>
       {
         while(/\s/.test(text.peek()) && text.peek() != undefined)
@@ -262,6 +328,10 @@ export class NIL
             break;
           default:
             atom = text.next()
+            while(/\s/.test(text.peek()) && text.peek() != undefined)
+            {
+              text.next()
+            }
             while(!/\s|\(|\)/.test(text.peek()) && text.peek() != undefined)
             {
               atom += text.next()

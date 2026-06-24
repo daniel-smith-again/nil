@@ -76,7 +76,7 @@ export class NIL
       {
         return {
           _Type : this.List,
-          Elements : elements
+          Elements : elements ? elements : []
         }
       },
       Symbol (symbol)
@@ -84,6 +84,20 @@ export class NIL
         return {
           _Type : this.Symbol,
           Value : String(symbol)
+        }
+      },
+      String(contents)
+      {
+        return {
+          _Type : this.String,
+          Contents : String(contents)
+        }
+      },
+      Character(value)
+      {
+        return {
+          _Type : this.Character,
+          Value : codePointAt(value)
         }
       }
     }
@@ -170,7 +184,7 @@ export class NIL
     parenify(src)
     {
       src = '\n' + src
-      if (!this.checkbalanced(src)) return undefined
+      //if (!this.checkbalanced(src)) return undefined
 
       let lines = src.split(/(\n.*)/)
       lines = lines.filter((l) => !(l == "\n" || l == "" || l == "\n\u200b"))
@@ -260,18 +274,32 @@ export class NIL
       let atom = ''
       let string = ''
       let insidestring = false
+      let stringescape = false
+      let nesting = 0
       for (let c of text.source)
       {
         if (insidestring)
         {
-          switch(c)
+          if (stringescape)
           {
-            case '"':
-              lists.at(-1).push(string)
-              insidestring = false
-              break;
-            default:
-              string += c
+            string += c
+            stringescape = false
+          }
+          else
+          {
+            switch(c)
+            {
+              case '"':
+                console.log(this.Primitives.String(string))
+                lists.at(-1).push(string)
+                insidestring = false
+                break;
+              case '\\':
+                stringescape = true
+                break;
+              default:
+                string += c
+            }
           }
         }
         else
@@ -279,18 +307,20 @@ export class NIL
           switch(c)
           {
             case '(':
-              lists.push([])
+              lists.push(this.Primitives.List())
+              nesting++
               break;
             case ')':
               if (atom.length > 0)
               {
-                lists.at(-1).push(atom)
+                lists.at(-1).Elements.push(this.Primitives.Symbol(atom))
                 atom = ''
               }
               if (lists.length > 1)
               {
-                lists.at(-2).push(lists.pop())
+                lists.at(-2).Elements.push(lists.pop())
               }
+              nesting--
               break;
             case '"':
               insidestring = true
@@ -300,7 +330,7 @@ export class NIL
             case '\n':
               if (atom.length > 0)
               {
-                lists.at(-1).push(atom)
+                lists.at(-1).Elements.push(this.Primitives.Symbol(atom))
                 atom = ''
               }
               break;
@@ -310,8 +340,8 @@ export class NIL
         }
       }
       console.log(lists)
+      if (nesting != 0) dispatchEvent(new this.Error("Parentheses are not balanced", undefined));
       return lists[0]
-
       const read = () =>
       {
         while(/\s/.test(text.peek()) && text.peek() != undefined)

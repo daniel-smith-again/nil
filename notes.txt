@@ -1038,3 +1038,27 @@ which gives you
 find unique values
 sort them according to magnitude
 use their positioning as new values
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+what is my typechecking algorithm?
+
+I have to check function signatures mostly.
+
+walk the tree recursively from smallest to largest
+bubble up error or type.
+call with expected type.
+also need to pay attention to bidirectional type checking.
+If the type is not any, then the type must match.
+Also have to deal with algebraic type constructors which are functions but not really.

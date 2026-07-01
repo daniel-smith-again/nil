@@ -6,3 +6,101 @@ NIL is a language for describing computer programs.
 
 NIL syntax is described by the following grammar diagram.
 
+List -> "(" Atoms ")"
+Atoms -> Atoms Atoms | List | Symbol | " "
+
+Additionally, the grammar is sensitive to the relative indentation of the source text.
+A line break followed by one or more tabs will imply the contents of that line are nested within
+a List.
+
+The automatic nesting from indentation is decided by the following algorithm...
+
+1. For each line, count the number of sequential horizontal tabs occurring at the start of the line.
+2. Derive a set from the tab counts such that there are only unique counts excluding tab counts of zero.
+3. Derive a mapping from sequential numbers to counts such that the lowest count corresponds to 1 and 
+   the highest count corresponds to the cardinality of the set. This numbering is referred to as the
+   "nesting". Each line will have a "nesting" which its tab count will correspond to.
+4. Iterate through the lines of text applying the following transformations...
+  a. Obtain a difference by subtracting the nesting of the previous line from the nesting of the 
+     current line.
+  b. If the nesting difference is greater than zero, prepend a number of opening parentheses 
+     equivalent to the difference to the beginning of the current line.
+     Alternatively, if the nesting difference is less than zero, append a number of closing 
+     parentheses equivalent to the difference to the end of the previous line.
+     Otherwise, when there is no difference, append a closing parenthese to the end of the previous 
+     line and prepend an opening parenthese to the beginning of the current line.
+5. Append a number of closing parentheses to the last line equivalent to the absolute value of the 
+   nesting of the last line.
+6. Enclose the entire text in a nested pair of parenthese such that the entire text constitutes a 
+   List.
+
+As a demonstration of this grammar and indentation, regard the follwing text...
+
+a
+🅃 🅃 🅃 🅃 🅃 🅃 🅃 b
+🅃 🅃 c
+🅃 🅃 d (e 
+🅃 🅃 🅃 🅃 f    g
+  h)
+🅃 🅃 🅃 🅃 i
+🅃 j
+
+which can be transformed to the following text with no indentation...
+
+(a 
+              ((((b)) 
+    c)
+    (d (e 
+        (f g 
+  h))
+        (i))
+  j))
+
+This transformation is performed by taking the tab counts of the eight lines in the text.
+0
+7
+2
+2
+3
+0
+3
+1
+
+Then obtaining the ordered set, {1, 2, 4, 7},
+creating a mapping, {(1, 1), (2, 2), (4, 3), (7, 4)},
+and walking each line.
+
+When walking each line, the parentheses are inserted as such.
+Line 1: no indentation
+Line 2: 4 - 0 = 4, prefix "(((("
+Line 3: 2 - 4 = -2, suffix "))" on Line 2
+Line 4: 2 - 2 = 0, prefix of "(" and suffix of ")" on Line 3
+Line 5: 3 - 2 = 1, prefix of "("
+Line 6: continuation of Line 5
+Line 7: 3 - 3 = 0, prefix of ")" and suffix of ")" on Line 6
+Line 8: 1 - 3 = -2, suffix of "))" on Line 7
+
+Line 8 is the last line, with a nesting of 1, so a suffix of ")" is appended.
+
+Finally, the entire text is enclosed in a closed pair of parentheses.
+
+
+NIL semantics rely on the composition of Lists and Symbols to represent the structure of programs.
+Nesting Lists is used to imply semantic dependence and ordering of effects.
+The NIL language is comprised of a number of specific combinations of Lists and Symbols which 
+correspond to components of a complete program.
+These combinations are referred to as primitive expressions.
+
+The primitive expressions are...
+
+Symbolic Definition
+
+Data Declaration
+
+Let Binding
+
+Control Inversion
+
+Function Application
+
+Selective Evaluation

@@ -40,66 +40,54 @@ export class NIL
     }
     Primitives = 
     {
-      Module()
+      Display(s, e, c, d)
       {
-        return {
-          _Type : this.Module,
-          Links : {},
-          Names : {},
-          Syntax : {},
-          lookup(symbol)
-          {
-            return this.Names[symbol] ? this.Names[symbol] : undefined
-          }
-        }
+
       },
-      Function()
+      Define(s, e, c, d)
       {
-        return {
-          _Type : this.Function,
-          Parameters : [],
-          Result : [],
-          Effects : [],
-          Body : undefined,
-          Closure : {}
-        }
+
       },
-      Type(parent, ...members)
+      Let(s, e, c, d)
       {
-        return {
-          _Type : this.Type,
-          Members : members,
-          Parent : parent
-        }
+
       },
-      List(...elements)
+      Apply(s, e, c, d)
       {
-        return {
-          _Type : this.List,
-          Elements : elements ? elements : []
-        }
+
       },
-      Symbol (symbol)
+      Conditional(s, e, c, d)
       {
-        return {
-          _Type : this.Symbol,
-          Value : String(symbol)
-        }
+
       },
-      String(contents)
+      Capture(s, e, c, d)
       {
-        return {
-          _Type : this.String,
-          Contents : String(contents)
-        }
+
       },
-      Character(value)
+      Module(s, e, c, d)
       {
-        return {
-          _Type : this.Character,
-          Value : codePointAt(value)
-        }
-      }
+
+      },
+      Function(s, e, c, d)
+      {
+
+      },
+      List(s, e, c, d)
+      {
+
+      },
+      Symbol(s, e, c, d)
+      {
+
+      },
+      Type(s, e, c, d)
+      {
+
+      },
+      Quote(s, e, c, d)
+      {
+
+      },
     }
     Attach(result, error)
     {
@@ -111,10 +99,39 @@ export class NIL
       let e = new this.Result(this.Eval(src))
       if (e.data != undefined) dispatchEvent(e)
     }
+    SECD(stack, environment, control, dump)
+    {
+      let primitive = control.shift()
+
+      for (let atom of control)
+      {
+        if (atom instanceof Array)
+        {
+          this.SECD()
+        }
+        else
+        {
+
+        }
+      }
+    }
+    Expand(src)
+    {
+      let op = src.shift()
+      switch(op)
+      {
+        case 'Apply':
+
+        default:
+          undefined
+      }
+    }
     Eval(src)
     {
       let tree = this.parse(src)
       let result = undefined
+      let check = this.Expand(src)
+      
       if (tree != undefined)
       {
         tree = JSON.stringify(
@@ -186,8 +203,12 @@ export class NIL
       src = '\n' + src
       //if (!this.checkbalanced(src)) return undefined
 
+      //split according to line breaks
       let lines = src.split(/(\n.*)/)
+      //drop any extraneous empty lines
       lines = lines.filter((l) => !(l == "\n" || l == "" || l == "\n\u200b"))
+
+      //lines that begin with white space are joined with the previous line
       for (let n in lines)
       {
         if (lines[n][1] == ' ')
@@ -269,152 +290,48 @@ export class NIL
         }
       }
       if (text.source == undefined) return
-      console.log(text.source)
       let lists = []
       let atom = ''
-      let string = ''
-      let insidestring = false
-      let stringescape = false
       let nesting = 0
+      let pushAtom = () => 
+      {
+        if (atom.length > 0)
+        {
+          let l = lists.pop()
+          l.push(atom)
+          lists.push(l)
+          atom = ''
+        }
+      }
       for (let c of text.source)
       {
-        if (insidestring)
-        {
-          if (stringescape)
-          {
-            string += c
-            stringescape = false
-          }
-          else
-          {
-            switch(c)
-            {
-              case '"':
-                console.log(this.Primitives.String(string))
-                lists.at(-1).push(string)
-                insidestring = false
-                break;
-              case '\\':
-                stringescape = true
-                break;
-              default:
-                string += c
-            }
-          }
-        }
-        else
-        {
-          switch(c)
-          {
-            case '(':
-              lists.push(this.Primitives.List())
-              nesting++
-              break;
-            case ')':
-              if (atom.length > 0)
-              {
-                lists.at(-1).Elements.push(this.Primitives.Symbol(atom))
-                atom = ''
-              }
-              if (lists.length > 1)
-              {
-                lists.at(-2).Elements.push(lists.pop())
-              }
-              nesting--
-              break;
-            case '"':
-              insidestring = true
-              break;
-            case ' ':
-            case '\t':
-            case '\n':
-              if (atom.length > 0)
-              {
-                lists.at(-1).Elements.push(this.Primitives.Symbol(atom))
-                atom = ''
-              }
-              break;
-            default:
-              atom += c  
-          }
-        }
-      }
-      console.log(lists)
-      if (nesting != 0) dispatchEvent(new this.Error("Parentheses are not balanced", undefined));
-      return lists[0]
-      const read = () =>
-      {
-        while(/\s/.test(text.peek()) && text.peek() != undefined)
-        {
-          text.next()
-        }
-        let atom = undefined
-        switch(text.peek())
+        switch(c)
         {
           case '(':
-            atom = []
-            text.next()
-            while(text.peek() != ')' && text.peek() != undefined)
+            pushAtom()
+            lists.push([])
+            nesting++
+            break
+          case ')':
+            pushAtom()
+            if (lists.length > 1)
             {
-              atom.push(read())
+              let l1 = lists.pop()
+              let l2 = lists.pop()
+              l2.push(l1)
+              lists.push(l2)
             }
-            text.next()
-            return atom
-            break;
-          case '"':
-            let stringlist = []
-            text.next()
-            atom = ''
-            while(text.peek() != '"' && text.peek() != undefined)
-            {
-              if (text.peek() == '\\')
-              {
-                text.next()
-                switch(text.peek())
-                {
-                  case '\\':
-                  case '"':
-                    atom += text.next()
-                    break;
-                  case '(':
-                    stringlist.push(atom)
-                    atom = ''
-                    stringlist.push(read())
-                    break;
-                  default:
-                    atom += text.next()
-                }
-              }
-              else
-              {
-                atom += text.next()
-              }
-            }
-            text.next()
-            let returnlist = ["string"]
-            for (let a of stringlist) returnlist.push(a);
-            returnlist.push(atom)
-            return returnlist
-            break;
+            nesting--
+            break
+          case '\n': case '\t': case ' ':
+            pushAtom()
+            break
           default:
-            atom = text.next()
-            while(/\s/.test(text.peek()) && text.peek() != undefined)
-            {
-              text.next()
-            }
-            while(!/\s|\(|\)/.test(text.peek()) && text.peek() != undefined)
-            {
-              atom += text.next()
-            }
-            while(/\s/.test(text.peek()) && text.peek() != undefined)
-            {
-              text.next()
-            }
-            return atom
-            break;
+            atom += c
         }
       }
-      return read()
+      if (nesting != 0) dispatchEvent(new this.Error("Parentheses are not balanced", undefined));
+      return lists[0]
     }
   }
 

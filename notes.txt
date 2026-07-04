@@ -1062,3 +1062,16 @@ call with expected type.
 also need to pay attention to bidirectional type checking.
 If the type is not any, then the type must match.
 Also have to deal with algebraic type constructors which are functions but not really.
+
+
+
+
+define syntax
+bind a symbol to a set of choices.
+how are these choices different than a type or a data?
+(define x 1 2 3)
+doesnt create a type
+(x < Number) fails because x is ambiguous
+
+(define x 1)
+(define foo (x -> ))

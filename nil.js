@@ -130,7 +130,6 @@ export class NIL
     {
       let tree = this.parse(src)
       let result = undefined
-      let check = this.Expand(src)
       
       if (tree != undefined)
       {

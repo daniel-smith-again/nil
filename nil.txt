@@ -9,6 +9,8 @@ NIL syntax is described by the following grammar diagram.
 List -> "(" Atoms ")"
 Atoms -> Atoms Atoms | List | Symbol | " "
 
+Where Symbol is any consecutive sequence not including "(", ")", and " ".
+
 Additionally, the grammar is sensitive to the relative indentation of the source text.
 A line break followed by one or more tabs will imply the contents of that line are nested within
 a List.
@@ -34,7 +36,7 @@ The automatic nesting from indentation is decided by the following algorithm...
 6. Enclose the entire text in a nested pair of parenthese such that the entire text constitutes a 
    List.
 
-As a demonstration of this grammar and indentation, regard the follwing text...
+As a demonstration of this grammar and indentation, regard the following indented text...
 
 a
 🅃 🅃 🅃 🅃 🅃 🅃 🅃 b
@@ -45,7 +47,7 @@ a
 🅃 🅃 🅃 🅃 i
 🅃 j
 
-which can be transformed to the following text with no indentation...
+which can be transformed to the following text without tab indentation...
 
 (a 
               ((((b)) 
@@ -91,16 +93,28 @@ The NIL language is comprised of a number of specific combinations of Lists and 
 correspond to components of a complete program.
 These combinations are referred to as primitive expressions.
 
-The primitive expressions are...
+The primitive expressions are Symbolic Definition, Modular Encapsulation, Data Declaration, 
+Let Binding, Control Inversion, Function Application, Selective Evaluation, and Reflection.
 
-Symbolic Definition
+Symbolic Definition provides the capability to abstract various things through naming.
+There are two forms of symbolic definition, single and complex.
+Both forms of symbolic definition are represented by a list beginning with the symbol, 'define.
 
-Data Declaration
+Single symbolic definition associates a symbol with a choice of entities.
+The list structure of single symbolic definition is given by this list,
+(define name entities...)
+Where "name" is a symbol which will represent the choice, and "entities" is one or more atoms.
+Wherever "name" occurs in a program, it may be replaced with one of the entities given.
+For example, given (define a 'x 'y), and a function ((x 'y) -> x), the program (((x 'y) -> x) a)
+results in 'y being chosen and the symbol "a" being replaced with it.
 
-Let Binding
+Complex symbolic definition creates an association between certain pairs of list structures.
+The list structure of complex symbolic definition is given by this list,
+(define (keywords...) associations...)
+where "keywords" is a list of symbols and "associations" is an even numbered list of lists.
+Each association is formed from two lists, the first list matches certain structural patterns, and 
+the second applies a structural transformation to any list matching the pattern of the first list.
+An example of complex symbolic definition is as follows,
+(define (n) (n x) (' m ''x))
 
-Control Inversion
 
-Function Application
-
-Selective Evaluation

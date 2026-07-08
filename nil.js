@@ -38,56 +38,124 @@ export class NIL
       }
 
     }
-    Primitives = 
+    Primitives =
+    /*
+    Primitive types are 
+    Modules, Functions, Constructors, Types, Lists, Quotes, Numbers, Symbols
+    */
     {
-      Display(s, e, c, d)
+      Module(use, define, data)
+      {
+        this.type = "Module"
+        this.using = use
+        this.definitions = define
+        this.datatypes = data
+        return this
+      },
+      Function(parameters, effects, body)
+      {
+        this.type = "Function"
+        this.parameters = parameters
+        this.effects = effects
+        this.body = body
+        return this
+      },
+      Data(family, constructors)
+      {
+        this.type = "Data"
+        this.family = family
+        this.constructors = constructors
+        return this
+      },
+      Type(members)
+      {
+        this.type = "Type"
+        this.members = members
+        return this
+      },
+      List(elements)
+      {
+        this.type = "List"
+        this.elements = elements
+        return this
+      },
+      Quote(structure)
+      {
+        this.type = "Quote"
+        this.structure = structure
+        return this
+      },
+      Number(value)
+      {
+        this.type = "Number"
+        this.value = value
+        return this
+      },
+      Symbol(value)
+      {
+        this.type = "Symbol"
+        this.value = value
+        return this
+      }
+    }
+    AST = 
+    {
+      Define(src)
       {
 
       },
-      Define(s, e, c, d)
+      Data(src)
       {
 
       },
-      Let(s, e, c, d)
+      Use(src)
       {
 
       },
-      Apply(s, e, c, d)
+      Let(src)
       {
 
       },
-      Conditional(s, e, c, d)
+      Conditional(src)
       {
 
       },
-      Capture(s, e, c, d)
+      Control(src)
       {
 
       },
-      Module(s, e, c, d)
+      Module(src)
       {
 
       },
-      Function(s, e, c, d)
+      Function(src)
       {
 
       },
-      List(s, e, c, d)
+      Type(src)
       {
 
       },
-      Symbol(s, e, c, d)
+      List(src)
       {
 
       },
-      Type(s, e, c, d)
+      Symbol(src)
       {
 
       },
-      Quote(s, e, c, d)
+      Quote(src)
       {
 
       },
+      Application(src)
+      {
+
+      },
+      Constructor(src)
+      {
+
+      }
     }
     Attach(result, error)
     {
@@ -117,19 +185,21 @@ export class NIL
     }
     Expand(src)
     {
-      let op = src.shift()
-      switch(op)
+      for (let s in src)
       {
-        case 'Apply':
 
-        default:
-          undefined
       }
+      return src
+    }
+    Compute(src)
+    {
+
     }
     Eval(src)
     {
       let tree = this.parse(src)
-      let result = undefined
+      let program = this.Expand(tree)
+      let result = this.Compute(program)
       
       if (tree != undefined)
       {
@@ -291,7 +361,9 @@ export class NIL
       if (text.source == undefined) return
       let lists = []
       let atom = ''
+      let string = ''
       let nesting = 0
+      let insidestring = false
       let pushAtom = () => 
       {
         if (atom.length > 0)
@@ -304,29 +376,51 @@ export class NIL
       }
       for (let c of text.source)
       {
-        switch(c)
+        if (insidestring)
         {
-          case '(':
-            pushAtom()
-            lists.push([])
-            nesting++
-            break
-          case ')':
-            pushAtom()
-            if (lists.length > 1)
-            {
-              let l1 = lists.pop()
-              let l2 = lists.pop()
-              l2.push(l1)
-              lists.push(l2)
-            }
-            nesting--
-            break
-          case '\n': case '\t': case ' ':
-            pushAtom()
-            break
-          default:
-            atom += c
+          switch(c)
+          {
+            case '"':
+              insidestring = false;
+              let l = lists.pop()
+              l.push(string)
+              lists.push(l)
+              string = ''
+              break;
+            default:
+              string += c
+          }
+        }
+        else
+        {
+          switch(c)
+          {
+            case '(':
+              pushAtom()
+              lists.push([])
+              nesting++
+              break
+            case ')':
+              pushAtom()
+              if (lists.length > 1)
+              {
+                let l1 = lists.pop()
+                let l2 = lists.pop()
+                l2.push(l1)
+                lists.push(l2)
+              }
+              nesting--
+              break
+            case '"':
+              pushAtom()
+              insidestring = true
+              break;
+            case '\n': case '\t': case ' ':
+              pushAtom()
+              break
+            default:
+              atom += c
+          }
         }
       }
       if (nesting != 0) dispatchEvent(new this.Error("Parentheses are not balanced", undefined));
@@ -343,6 +437,7 @@ export class NIL
     #value;
     #input;
     #output;
+    #dialog;
     #NIL = new NIL()
     #content = ''
     #caret = 0
@@ -405,18 +500,79 @@ export class NIL
         } )
       this.appendChild(output)
 
-      this.addEventListener('input', () => {})
-      this.addEventListener('beforeinput', () => {})
-      this.addEventListener('keydown', this.editorInput)
-      this.addEventListener('selectionchange', this.selectionChanged)
+      input.addEventListener('input', () => {})
+      input.addEventListener('beforeinput', (e) => {
+        if (e.targetElement == this.input)
+        {
+          switch(e.inputType)
+          {
+            case 'insertLineBreak':
+              this.insertCharacter('\n')
+              e.preventDefault()
+          }
+        }
+      })
+      input.addEventListener('keydown', (e) => {if (e.target === input) { this.editorInput(e) }} )
+      input.addEventListener('selectionchange', this.selectionChanged)
 
       const style = document.createElement('style')
       style.textContent = `
       nil-instance{display:inline-block;background-color:var(--backgroundsecond);white-space:pre;white-space-collapse:preserve;font-family:monospace;width:fit-content;min-width:7ch;min-height:7lh;margin-top:5lh;caret-color:var(--foregroundsecond);}
       nil-instance *{tab-size:2}
       nil-instance *:focus{outline:none;}
+      nil-instance dialog::backdrop{background-color:#00000055;backdrop-filter:blur(5px);}
+      nil-instance dialog > input {display:inline;}
       `
       this.appendChild(style)
+
+      /*
+      const dialog = this.#dialog = document.createElement('dialog')
+      const charactername = document.createElement('input')
+      charactername.type = 'text'
+      charactername.id = 'characterSelector'
+      dialog.appendChild(document.createElement('form'))
+      dialog.lastChild.appendChild(charactername)
+      dialog.lastChild.addEventListener('submit', (e) => {
+        e.preventDefault()
+        console.log(e)
+        dialog.lastChild.reset()
+        dialog.close()
+      })
+
+      dialog.appendChild(document.createElement('datalist'))
+      for (let v of CharacterNames)
+      {
+
+      }
+
+      input.addEventListener('contextmenu', (e) => {
+        e.preventDefault()
+        dialog.showModal()
+      })
+
+      this.appendChild(dialog)
+      */
+      window.addEventListener('pointerdown', (e) => {
+        if (!this.#input.contains(e.target))
+        {
+          if (e.x > window.innerWidth * 0.75)
+          {
+            this.insertCharacter('\n')
+            e.preventDefault()
+          }
+          else if (e.x < window.innerWidth * 0.25)
+          {
+            this.insertCharacter('\t')
+            e.preventDefault()
+          }
+          else if (e.y > window.innerHeight * 0.75)
+          {
+            this.#NIL.Input(this.#input.textContent)
+            e.preventDefault()
+          }
+        }
+      })
+
     }
 
     selectionChanged(e)
@@ -463,9 +619,7 @@ export class NIL
     
     editorInput(e)
     {
-      //console.log(e)
       let k = e.key
-      //console.log(k)
       switch(k)
       {
         case 'Tab':
@@ -473,14 +627,10 @@ export class NIL
           this.insertCharacter('\t')
           break;
         case 'Enter':
-          e.preventDefault()
           if (e.shiftKey)
           {
             this.#NIL.Input(this.#input.textContent)
-          }
-          else
-          {
-            this.insertCharacter('\n')
+            e.preventDefault()
           }
           break;
         case 'Backspace':
@@ -488,6 +638,8 @@ export class NIL
         case 'ArrowDown':
         case 'ArrowLeft':
         case 'ArrowRight':
+        case 'Home':
+        case 'End':
           break;
         default:
           if (k.length > 1)

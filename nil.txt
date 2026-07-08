@@ -87,7 +87,7 @@ Line 8 is the last line, with a nesting of 1, so a suffix of ")" is appended.
 Finally, the entire text is enclosed in a closed pair of parentheses.
 
 
-NIL semantics rely on the composition of Lists and Symbols to represent the structure of programs.
+NIL relies on the composition of Lists and Symbols to represent the structure of programs.
 Nesting Lists is used to imply semantic dependence and ordering of effects.
 The NIL language is comprised of a number of specific combinations of Lists and Symbols which 
 correspond to components of a complete program.

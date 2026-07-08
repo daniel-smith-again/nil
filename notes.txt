@@ -1075,3 +1075,31 @@ doesnt create a type
 
 (define x 1)
 (define foo (x -> ))
+
+this is different than a type which is an object in itself consumed by the type checking algorithm.
+
+
+
+
+
+
+What are my primitive bindings?
+
+"define"
+  used to define bindings and macros
+"data"
+  used to define abstract types
+"use"
+  used to link a module to another
+"module"
+  used to create a module object
+"in"
+  used to evaluate an expression in the context of a module
+"open"
+  use a module as the scope of the top level
+"close"
+  move the scope of the top level to the parent module of the current top level
+"describe"
+  print some information about an entity
+"let"
+  make a temporary symbolic binding potentially destructuring some data

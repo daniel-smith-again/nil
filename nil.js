@@ -38,124 +38,261 @@ export class NIL
       }
 
     }
-    Primitives =
-    /*
-    Primitive types are 
-    Modules, Functions, Constructors, Types, Lists, Quotes, Numbers, Symbols
-    */
+    Evaluate(program)
     {
-      Module(use, define, data)
+      const Primitives = this.Primitives
+      function evaluate_(program, context)
       {
-        this.type = "Module"
-        this.using = use
-        this.definitions = define
-        this.datatypes = data
-        return this
-      },
-      Function(parameters, effects, body)
-      {
-        this.type = "Function"
-        this.parameters = parameters
-        this.effects = effects
-        this.body = body
-        return this
-      },
-      Data(family, constructors)
-      {
-        this.type = "Data"
-        this.family = family
-        this.constructors = constructors
-        return this
-      },
-      Type(members)
-      {
-        this.type = "Type"
-        this.members = members
-        return this
-      },
-      List(elements)
-      {
-        this.type = "List"
-        this.elements = elements
-        return this
-      },
-      Quote(structure)
-      {
-        this.type = "Quote"
-        this.structure = structure
-        return this
-      },
-      Number(value)
-      {
-        this.type = "Number"
-        this.value = value
-        return this
-      },
-      Symbol(value)
-      {
-        this.type = "Symbol"
-        this.value = value
-        return this
+        if (program.constructor && program.constructor == String)
+        {
+          if (program[0] =='\'')
+          {
+            return Primitives.Symbol(program.slice(1))
+          }
+          else
+          {
+            console.log(program)
+            return resolve_(program, context)
+          }
+        }
+        let operation = program.shift()
+        console.log(operation)
+        switch(operation)
+        {
+          case 'symbol':
+            return Primitives.Symbol(program.shift())
+          case 'list':
+            let elements = []
+            for (let atom of program)
+            {
+              elements.push(evaluate_(atom, context))
+            }
+            return Primitives.List(...elements)
+            break
+          /*
+          case 'data':
+            let family = program.shift()
+            let elements = []
+            for (let atom of program)
+            {
+              elements.push(evaluate_(atom, context))
+            }
+            return this.Primitives.Data(family, elements)
+            break
+          */
+          case 'let':
+            let c = {parent : context, bindings : {}}
+            let locals = []
+            while (program.length > 1)
+            {
+              locals.push(program.shift())
+            }
+            let result = program.shift()
+            for (let binding of locals)
+            {
+              if (binding[1].constructor && binding[1].constructor == Array)
+              {
+                if (binding[1].length == 1)
+                {
+                  binding[1] = evaluate_(binding[1])
+                }
+                else
+                {
+                  let value = Primitives.List()
+                  for (let atom of binding[1])
+                  {
+                    let v = evaluate_(atom, c)
+                    if (v.type == "List")
+                    { value.value.concat(v.value) }
+                    else
+                    { value.value.push(v) }
+                  }
+                  binding[1] = value
+                }
+              }
+              else
+              {
+                binding[1] = evaluate_(binding[1])
+              }
+              if (binding[0].constructor == Array)
+              {
+                for (let b of destructure_(binding[0], binding[1]))
+                {
+                  c.bindings[b[0]] = b[1]
+                }
+              }
+              else
+              { c.bindings[binding[0]] = binding[1] }
+            }
+            console.log(c)
+            return evaluate_(result, c)
+            break
+          case 'function':
+            let parameters = program.shift()
+            let body = program.shift()
+            console.log(parameters, body)
+            return Primitives.Function(parameters, body)
+            break
+          case 'conditional':
+            let subject = evaluate_(program.shift())
+            let matches = []
+            let tail = undefined
+            while(program.length > 1)
+            {
+              matches.push([evaluate_(program.shift(), context), program.shift()])
+            }
+            if (program.length == 1)
+            { tail = program.shift() }
+            for (let test of matches)
+            {
+              if (subtype_(subject, test[0]))
+              {
+                return evaluate_(test[1], context)
+              }
+            }
+            if (tail)
+            {
+              return evaluate_(tail, context)
+            }
+            else
+            {
+              return Primitives.Nil()
+            }
+            break
+          case '\'':
+
+            break
+          case 'display':
+            return "PRIMTING"
+            break
+          case 'describe':
+            return "DESCRIMBING"
+            break
+          default: 
+            if (operation.type == 'Function')
+            {
+              console.log("Applying Function")
+              let c = {parent : context, bindings : {}}
+              for (let parameter of operation.value.parameters)
+              {
+                c.bindings[parameter] = program.shift()
+              }
+              return evaluate_(operation.value.body, c)
+            }
+            else
+            { return evaluate_(operation, context) }
+        }
       }
+      function resolve_(atom, context)
+      {
+        console.log("resolving ", atom, " inside ", context)
+        return context.bindings[atom]
+      }
+      function destructure_(bindings, list)
+      {
+        let bindings_ = []
+        for (let binding of bindings)
+        {
+          bindings_.push([binding, list.value.shift()])
+        }
+        bindings_.at(-1).concat(list.value)
+      }
+      function subtype_(a, b)
+      {
+        if (a === b) { return true }
+        if (a.type == 'Nil') { return true }
+        switch(b.type)
+        {
+          case 'Nil': 
+            return false 
+            break
+          case 'Any':
+            if (a.type == 'Any')
+            {
+              if (a.value == b.value)
+              { return true }
+            }
+            if (a.type == b.value)
+            { return true }
+            break
+          case 'Symbol':
+            if (a.value == b.value)
+            { return true }
+            else
+            { return false }
+            break
+          case 'List':
+            return false
+            break
+          case 'Type':
+            if (a.type == 'Type')
+            {
+              for (let member of a.value)
+              {
+                let included = false
+                for (let othermember of b.value)
+                {
+                  if (subtype_(member, othermember))
+                  {
+                    included = true
+                    break
+                  }
+                }
+                if (included)
+                { return true }
+                else
+                { return false }
+              }
+            }
+            else
+            {
+              for (let member of b.value)
+              {
+                if (subtype_(a, member))
+                {
+                  return true
+                }
+              }
+              return false
+            }
+            break
+          case 'Data':
+            break
+          case 'Function':
+           return false
+            break
+          case 'Quote':
+            return false
+            break
+        }
+      }
+      const initialContext = 
+      {
+        parent : undefined,
+        bindings : {
+          "Nil" : this.Primitives.Nil(),
+          "Any" : this.Primitives.Any("Any"),
+          "Symbol" : this.Primitives.Any("Symbol"),
+          "List" : this.Primitives.Any("List"),
+          "Type": this.Primitives.Any("Type"),
+          "Data" : this.Primitives.Any("Data"),
+          "Function" : this.Primitives.Any("Function"),
+          "Quote" : this.Primitives.Any("Quote")
+        }
+      }
+      
+      return evaluate_(program, initialContext)
     }
-    AST = 
+    Primitives =
     {
-      Define(src)
-      {
-
-      },
-      Data(src)
-      {
-
-      },
-      Use(src)
-      {
-
-      },
-      Let(src)
-      {
-
-      },
-      Conditional(src)
-      {
-
-      },
-      Control(src)
-      {
-
-      },
-      Module(src)
-      {
-
-      },
-      Function(src)
-      {
-
-      },
-      Type(src)
-      {
-
-      },
-      List(src)
-      {
-
-      },
-      Symbol(src)
-      {
-
-      },
-      Quote(src)
-      {
-
-      },
-      Application(src)
-      {
-
-      },
-      Constructor(src)
-      {
-
-      }
+      Nil()                          { return { type : "Nil", value : undefined } },
+      Any(type)                     { return { type : "Any", value : type } },
+      Symbol(value)                 { return { type : "Symbol", value : String(value) } },
+      List(...elements)             { return { type : "List", value : elements } },
+      Type(...members)              { return { type : "Type", value : members } },
+      Data(family, ...elements)     { return { type : "Data", value : {family : family, elements : elements} } },
+      Function(parameters, body)    { return { type : "Function", value : {parameters : parameters, body : body} } },
+      Quote(value)                  { return { type : "Quote", value : value}},
     }
     Attach(result, error)
     {
@@ -164,108 +301,89 @@ export class NIL
     }
     Input(src)
     {
-      let e = new this.Result(this.Eval(src))
+      console.log(src)
+      let tree = this.parse(src)
+      let tree_ = structuredClone(tree)
+      console.log(tree_)
+      let result = this.Evaluate(tree)
+      console.log(result)
+      let e = undefined
+      let string = ""
+      if (result != undefined)
+      {
+        string = JSON.stringify(
+          result,
+          (k, v) => v instanceof Array && ! v.some((i) => i instanceof Array) ? JSON.stringify(v) : v,
+          2
+        ) .replace(/\\/g, '')
+          .replace(/\"\[/g, '[')
+          .replace(/\]\"/g, ']')
+          .replace(/\"\{/g, '{')
+          .replace(/\"\}/g, '}');
+      }
+
+      e = new this.Result(this.PrettyPrint(result))
+      console.log(e.data)
       if (e.data != undefined) dispatchEvent(e)
     }
-    SECD(stack, environment, control, dump)
+    PrettyPrint(entity)
     {
-      let primitive = control.shift()
-
-      for (let atom of control)
+      if (entity.constructor)
       {
-        if (atom instanceof Array)
+        if (entity.constructor == Array)
         {
-          this.SECD()
+          let arraystring = '('
+          for (let atom of entity)
+          {
+            arraystring += this.PrettyPrint(atom)
+            arraystring += ' '
+          }
+          return arraystring.slice(0, arraystring.length - 1) + ')'
         }
-        else
+        else if (entity.constructor == String)
         {
-
+          return entity
         }
-      }
-    }
-    Expand(src)
-    {
-      for (let s in src)
-      {
-
-      }
-      return src
-    }
-    Compute(src)
-    {
-
-    }
-    Eval(src)
-    {
-      let tree = this.parse(src)
-      let program = this.Expand(tree)
-      let result = this.Compute(program)
       
-      if (tree != undefined)
-      {
-        tree = JSON.stringify(
-                      tree,
-                      (k, v) => v instanceof Array && ! v.some((i) => i instanceof Array) ? JSON.stringify(v) : v,
-                      2
-                    ) .replace(/\\/g, '')
-                      .replace(/\"\[/g, '[')
-                      .replace(/\]\"/g,']')
-                      .replace(/\"\{/g, '{')
-                      .replace(/\}\"/g,'}');
-      }
-      return tree
-    }
-    checkbalanced(src)
-    {
-      let nesting = 0
-      let spaceindent = false
-      let insidestring = false
-      let insidestringescape = false
-      let insidestringembed = false
-      let escapenesting = 0
-      for (let c of src)
-      {
-        if (!insidestring)
+        switch(entity.type)
         {
-          if (c == '(') nesting++
-          if (c == ')') nesting--
-          if (nesting < 0) 
-          {
-            dispatchEvent(new this.Error("Parentheses are not balanced", undefined))
-            return false
-          }
-          if (insidestringembed && nesting == escapenesting) 
-          {
-            insidestring = true
-            insidestringembed = false
-          }
-          if (c == '"') insidestring = true
-        }
-        else
-        {
-          if (c == '"') insidestring = false
-          if (insidestringescape)
-          {
-            if (c == '(') 
+          case 'Nil':
+            return 'Nil'
+            break
+          case 'Any':
+            return entity.value
+            break
+          case 'Symbol':
+              return '\'' + entity.value
+            break
+          case 'List':
+              let liststring = '(list '
+              for (let atom of entity.value)
+              {
+                liststring += this.PrettyPrint(atom)
+                liststring += ' '
+              }
+              return liststring.slice(0, liststring.length - 1) + ')'
+            break
+          case 'Type':
+            break
+          case 'Data':
+            break
+          case 'Function':
+            let funcstring = '(function ('
+            for (let p of entity.value.parameters)
             {
-              insidestringembed = true
-              insidestring = false
-              escapenesting = nesting
-              nesting++
+              funcstring += String(p)
+              funcstring += ' '
             }
-          }
-          else
-          {
-            if (c == '\\') insidestringescape = true
-          }
+            funcstring = funcstring.slice(0, funcstring.length - 1) + ')\n\t'
+            funcstring += this.PrettyPrint(entity.value.body)
+            return funcstring
+            break
+          case 'Quote':
+            break
         }
       }
-      if (nesting > 0)
-      {
-        dispatchEvent(new this.Error("Parentheses are not balanced", undefined))
-        return false
-      }
-      return true
     }
     parenify(src)
     {
@@ -417,6 +535,8 @@ export class NIL
               break;
             case '\n': case '\t': case ' ':
               pushAtom()
+              break
+            case '\u200b':
               break
             default:
               atom += c

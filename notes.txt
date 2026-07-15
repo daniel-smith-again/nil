@@ -1103,3 +1103,24 @@ What are my primitive bindings?
   print some information about an entity
 "let"
   make a temporary symbolic binding potentially destructuring some data
+
+
+
+
+
+expand algorithm?
+it type checks sthe syntax
+
+what about macros?
+
+what gets interpreted?
+
+
+what goes in a module?
+
+module 
+  define foo 
+    function (x y) 
+      x + y
+  data (foo t)
+    make-foo t

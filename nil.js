@@ -38,238 +38,256 @@ export class NIL
       }
 
     }
-    Evaluate(program)
+    EmitResult(message)
     {
-      const Primitives = this.Primitives
-      function evaluate_(program, context)
+      let e = new this.Result(message)
+      console.log(e)
+      dispatchEvent(e)
+    }
+    evaluate_(program, context)
+    {
+      if (program.constructor && program.constructor == String)
       {
-        if (program.constructor && program.constructor == String)
+        if (program[0] =='\'')
         {
-          if (program[0] =='\'')
+          return this.Primitives.Symbol(program.slice(1))
+        }
+        else
+        {
+          console.log(program)
+          return this.resolve_(program, context)
+        }
+      }
+      let operation = program.shift()
+      switch(operation)
+      {
+        case 'symbol':
+          return this.Primitives.Symbol(program.shift())
+        case 'list':
+          let elements = []
+          for (let atom of program)
           {
-            return Primitives.Symbol(program.slice(1))
+            elements.push(this.evaluate_(atom, context))
+          }
+          return this.Primitives.List(...elements)
+          break
+        case 'type':
+          let members = []
+          for (let atom of program)
+          {
+            members.push(this.evaluate_(atom, context))
+          }
+          return this.Primitives.Type(...members)
+          break
+        case 'quote':
+          return this.Primitives.Quote(program.shift())
+        case 'data':
+          let family = program.shift()
+          let fields = []
+          for (let atom of program)
+          {
+            fields.push(this.evaluate_(atom, context))
+          }
+          return this.Primitives.Data(family, ...fields)
+          break
+        case 'let':
+          let c = {parent : context, bindings : {}}
+          let locals = []
+          while (program.length > 1)
+          {
+            locals.push(program.shift())
+          }
+          let result = program.shift()
+          for (let statement of locals)
+          {
+            let name = statement.shift()
+            let subject_list = statement
+            let subject = undefined
+            if (subject_list.length > 1)
+            {
+              subject = this.Primitives.List()
+              for (let atom of subject_list)
+              {
+                let v = evaluate_(atom, c)
+                if (v.type == "List")
+                { subject.value.concat(v.value) }
+                else
+                { subject.value.push(v) }
+              }
+            } 
+            else
+            {
+              subject = this.evaluate_(subject_list[0], c)
+            }
+            if (name.constructor == Array)
+            {
+              for (let b of this.destructure_(name, subject))
+              {
+                c.bindings[b[0]] = b[1]
+              }
+            }
+            else
+            {
+              c.bindings[name] = subject
+            }
+          }
+          return this.evaluate_(result, c)
+          break
+        case 'function':
+          let parameters = program.shift()
+          let body = program.shift()
+          console.log(parameters, body)
+          return this.Primitives.Function(parameters, body)
+          break
+        case 'conditional':
+          let subject = this.evaluate_(program.shift())
+          let matches = []
+          let tail = undefined
+          while(program.length > 1)
+          {
+            matches.push([this.evaluate_(program.shift(), context), program.shift()])
+          }
+          if (program.length == 1)
+          { tail = program.shift() }
+          for (let test of matches)
+          {
+            if (this.subtype_(subject, test[0]))
+            {
+              return this.evaluate_(test[1], context)
+            }
+          }
+          if (tail)
+          {
+            return this.evaluate_(tail, context)
           }
           else
           {
-            console.log(program)
-            return resolve_(program, context)
+            return this.Primitives.Nil()
           }
-        }
-        let operation = program.shift()
-        switch(operation)
-        {
-          case 'symbol':
-            return Primitives.Symbol(program.shift())
-          case 'list':
-            let elements = []
-            for (let atom of program)
-            {
-              elements.push(evaluate_(atom, context))
-            }
-            return Primitives.List(...elements)
-            break
-          case 'type':
-            let members = []
-            for (let atom of program)
-            {
-              members.push(evaluate_(atom, context))
-            }
-            return Primitives.Type(...members)
-            break
-          /*
-          case 'data':
-            let family = program.shift()
-            let elements = []
-            for (let atom of program)
-            {
-              elements.push(evaluate_(atom, context))
-            }
-            return this.Primitives.Data(family, elements)
-            break
-          */
-          case 'let':
-            let c = {parent : context, bindings : {}}
-            let locals = []
-            while (program.length > 1)
-            {
-              locals.push(program.shift())
-            }
-            let result = program.shift()
-            for (let statement of locals)
-            {
-              let name = statement.shift()
-              let subject_list = statement
-              let subject = undefined
-              if (subject_list.length > 1)
-              {
-                subject = Primitives.List()
-                for (let atom of subject_list)
-                {
-                  let v = evaluate_(atom, c)
-                  if (v.type == "List")
-                  { subject.value.concat(v.value) }
-                  else
-                  { subject.value.push(v) }
-                }
-              } 
-              else
-              {
-                subject = evaluate_(subject_list[0], c)
-              }
-              if (name.constructor == Array)
-              {
-                for (let b of destructure_(name, subject))
-                {
-                  c.bindings[b[0]] = b[1]
-                }
-              }
-              else
-              {
-                c.bindings[name] = subject
-              }
-            }
-            return evaluate_(result, c)
-            break
-          case 'function':
-            let parameters = program.shift()
-            let body = program.shift()
-            console.log(parameters, body)
-            return Primitives.Function(parameters, body)
-            break
-          case 'conditional':
-            let subject = evaluate_(program.shift())
-            let matches = []
-            let tail = undefined
-            while(program.length > 1)
-            {
-              matches.push([evaluate_(program.shift(), context), program.shift()])
-            }
-            if (program.length == 1)
-            { tail = program.shift() }
-            for (let test of matches)
-            {
-              if (subtype_(subject, test[0]))
-              {
-                return evaluate_(test[1], context)
-              }
-            }
-            if (tail)
-            {
-              return evaluate_(tail, context)
-            }
-            else
-            {
-              return Primitives.Nil()
-            }
-            break
-          case '\'':
+          break
+        case '\'':
 
-            break
-          case 'display':
-            return "PRIMTING"
-            break
-          case 'describe':
-            return "DESCRIMBING"
-            break
-          default: 
-            let entity = evaluate_(operation, context)
-            switch(entity.type)
-            {
-              case 'Function':
-                let c = {parent : context, bindings : {}}
-                for (let parameter of entity.value.parameters)
-                { c.bindings[parameter] = evaluate_(program.shift(), context) }
-                return evaluate_(entity.value.body, c)
-                break
-              default:
-                return entity
-            }
-        }
+          break
+        case 'display':
+          return "PRIMTING"
+          break
+        case 'describe':
+          let instance = this.evaluate_(program.shift(), context)
+          
+          switch(instance.type)
+          {
+            case "Nil":
+              dispatchEvent(new this.Result("The singleton value representing the subtype of every possible instance."))
+              break
+            case "Any":
+              dispatchEvent(new this.Result("The type family for all instances of " + instance.value + "."))
+              break
+          }
+          return this.Primitives.Nil()
+          break
+        default: 
+          let entity = this.evaluate_(operation, context)
+          switch(entity.type)
+          {
+            case 'Function':
+              let c = {parent : context, bindings : {}}
+              for (let parameter of entity.value.parameters)
+              { c.bindings[parameter] = this.evaluate_(program.shift(), context) }
+              return this.evaluate_(entity.value.body, c)
+              break
+            default:
+              return entity
+          }
       }
-      function resolve_(atom, context)
+    }
+    resolve_(atom, context)
+    {
+      console.log("resolving ", atom, " inside ", context)
+      return context.bindings[atom] ? context.bindings[atom] : resolve_(atom, context.parent)
+    }
+    destructure_(bindings, list)
+    {
+      let bindings_ = []
+      for (let binding of bindings.slice(0, bindings.length - 1))
       {
-        console.log("resolving ", atom, " inside ", context)
-        return context.bindings[atom] ? context.bindings[atom] : resolve_(atom, context.parent)
+        bindings_.push([binding, list.value.shift()])
       }
-      function destructure_(bindings, list)
+      bindings_.push([bindings.at(-1), list])
+      return bindings_
+    }
+    subtype_(a, b)
+    {
+      if (a === b) { return true }
+      if (a.type == 'Nil') { return true }
+      switch(b.type)
       {
-        let bindings_ = []
-        for (let binding of bindings.slice(0, bindings.length - 1))
-        {
-          bindings_.push([binding, list.value.shift()])
-        }
-        bindings_.push([bindings.at(-1), list])
-        return bindings_
-      }
-      function subtype_(a, b)
-      {
-        if (a === b) { return true }
-        if (a.type == 'Nil') { return true }
-        switch(b.type)
-        {
-          case 'Nil': 
-            return false 
-            break
-          case 'Any':
-            if (a.type == 'Any')
-            {
-              if (a.value == b.value)
-              { return true }
-            }
-            if (a.type == b.value)
-            { return true }
-            break
-          case 'Symbol':
+        case 'Nil': 
+          return false 
+          break
+        case 'Any':
+          if (a.type == 'Any')
+          {
             if (a.value == b.value)
             { return true }
-            else
-            { return false }
-            break
-          case 'List':
-            return false
-            break
-          case 'Type':
-            if (a.type == 'Type')
+          }
+          if (a.type == b.value)
+          { return true }
+          break
+        case 'Symbol':
+          if (a.value == b.value)
+          { return true }
+          else
+          { return false }
+          break
+        case 'List':
+          return false
+          break
+        case 'Type':
+          if (a.type == 'Type')
+          {
+            for (let member of a.value)
             {
-              for (let member of a.value)
+              let included = false
+              for (let othermember of b.value)
               {
-                let included = false
-                for (let othermember of b.value)
+                if (subtype_(member, othermember))
                 {
-                  if (subtype_(member, othermember))
-                  {
-                    included = true
-                    break
-                  }
-                }
-                if (included)
-                { return true }
-                else
-                { return false }
-              }
-            }
-            else
-            {
-              for (let member of b.value)
-              {
-                if (subtype_(a, member))
-                {
-                  return true
+                  included = true
+                  break
                 }
               }
-              return false
+              if (included)
+              { return true }
+              else
+              { return false }
             }
-            break
-          case 'Data':
-            break
-          case 'Function':
-           return false
-            break
-          case 'Quote':
+          }
+          else
+          {
+            for (let member of b.value)
+            {
+              if (subtype_(a, member))
+              {
+                return true
+              }
+            }
             return false
-            break
-        }
+          }
+          break
+        case 'Data':
+          break
+        case 'Function':
+          return false
+          break
+        case 'Quote':
+          return false
+          break
       }
+    }
+    Evaluate(program)
+    {
+      const Primitives = this.Primitives
+      
       const initialContext = 
       {
         parent : undefined,
@@ -285,7 +303,7 @@ export class NIL
         }
       }
       
-      return evaluate_(program, initialContext)
+      return this.evaluate_(program, initialContext)
     }
     Primitives =
     {
@@ -305,7 +323,6 @@ export class NIL
     }
     Input(src)
     {
-      console.log(src)
       let tree = this.parse(src)
       let tree_ = structuredClone(tree)
       console.log(tree_)
@@ -327,7 +344,6 @@ export class NIL
       }
 
       e = new this.Result(this.PrettyPrint(result))
-      console.log(e.data)
       if (e.data != undefined) dispatchEvent(e)
     }
     PrettyPrint(entity)
@@ -379,6 +395,13 @@ export class NIL
             return typestring.slice(0, typestring.length - 1) + ')'
             break
           case 'Data':
+            let datastring = '(data ' + entity.value.family + ' '
+            for (let atom of entity.value.elements)
+            {
+              datastring += this.PrettyPrint(atom)
+              datastring += ' '
+            }
+            return datastring.slice(0, datastring.length - 1) + ')'
             break
           case 'Function':
             let funcstring = '(function ('
@@ -472,7 +495,6 @@ export class NIL
       lines[0] = chunks[1] + '(' + chunks[2]
       lines = lines.reduce((o, l) => o + l, '')
       lines = lines + ')'
-      console.log(lines)
       return lines
     }
     parse(src)
@@ -627,7 +649,7 @@ export class NIL
       `
       this.#NIL.Attach(
         (e) => {
-          output.textContent = e.data
+          output.textContent += e.data + '\n'
         },
         (e) => {
           output.textContent = e.message
@@ -763,6 +785,7 @@ export class NIL
         case 'Enter':
           if (e.shiftKey)
           {
+            this.#output.textContent = ''
             this.#NIL.Input(this.#input.textContent)
             e.preventDefault()
           }

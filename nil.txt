@@ -116,7 +116,3 @@ Each association is formed from two lists, the first list matches certain struct
 the second applies a structural transformation to any list matching the pattern of the first list.
 An example of complex symbolic definition is as follows,
 (define (n) (n x) (' m ''x))
-
-
-
-

@@ -56,7 +56,6 @@ export class NIL
           }
         }
         let operation = program.shift()
-        console.log(operation)
         switch(operation)
         {
           case 'symbol':
@@ -68,6 +67,14 @@ export class NIL
               elements.push(evaluate_(atom, context))
             }
             return Primitives.List(...elements)
+            break
+          case 'type':
+            let members = []
+            for (let atom of program)
+            {
+              members.push(evaluate_(atom, context))
+            }
+            return Primitives.Type(...members)
             break
           /*
           case 'data':
@@ -88,43 +95,39 @@ export class NIL
               locals.push(program.shift())
             }
             let result = program.shift()
-            for (let binding of locals)
+            for (let statement of locals)
             {
-              if (binding[1].constructor && binding[1].constructor == Array)
+              let name = statement.shift()
+              let subject_list = statement
+              let subject = undefined
+              if (subject_list.length > 1)
               {
-                if (binding[1].length == 1)
+                subject = Primitives.List()
+                for (let atom of subject_list)
                 {
-                  binding[1] = evaluate_(binding[1])
+                  let v = evaluate_(atom, c)
+                  if (v.type == "List")
+                  { subject.value.concat(v.value) }
+                  else
+                  { subject.value.push(v) }
                 }
-                else
-                {
-                  let value = Primitives.List()
-                  for (let atom of binding[1])
-                  {
-                    let v = evaluate_(atom, c)
-                    if (v.type == "List")
-                    { value.value.concat(v.value) }
-                    else
-                    { value.value.push(v) }
-                  }
-                  binding[1] = value
-                }
-              }
+              } 
               else
               {
-                binding[1] = evaluate_(binding[1])
+                subject = evaluate_(subject_list[0], c)
               }
-              if (binding[0].constructor == Array)
+              if (name.constructor == Array)
               {
-                for (let b of destructure_(binding[0], binding[1]))
+                for (let b of destructure_(name, subject))
                 {
                   c.bindings[b[0]] = b[1]
                 }
               }
               else
-              { c.bindings[binding[0]] = binding[1] }
+              {
+                c.bindings[name] = subject
+              }
             }
-            console.log(c)
             return evaluate_(result, c)
             break
           case 'function':
@@ -169,33 +172,34 @@ export class NIL
             return "DESCRIMBING"
             break
           default: 
-            if (operation.type == 'Function')
+            let entity = evaluate_(operation, context)
+            switch(entity.type)
             {
-              console.log("Applying Function")
-              let c = {parent : context, bindings : {}}
-              for (let parameter of operation.value.parameters)
-              {
-                c.bindings[parameter] = program.shift()
-              }
-              return evaluate_(operation.value.body, c)
+              case 'Function':
+                let c = {parent : context, bindings : {}}
+                for (let parameter of entity.value.parameters)
+                { c.bindings[parameter] = evaluate_(program.shift(), context) }
+                return evaluate_(entity.value.body, c)
+                break
+              default:
+                return entity
             }
-            else
-            { return evaluate_(operation, context) }
         }
       }
       function resolve_(atom, context)
       {
         console.log("resolving ", atom, " inside ", context)
-        return context.bindings[atom]
+        return context.bindings[atom] ? context.bindings[atom] : resolve_(atom, context.parent)
       }
       function destructure_(bindings, list)
       {
         let bindings_ = []
-        for (let binding of bindings)
+        for (let binding of bindings.slice(0, bindings.length - 1))
         {
           bindings_.push([binding, list.value.shift()])
         }
-        bindings_.at(-1).concat(list.value)
+        bindings_.push([bindings.at(-1), list])
+        return bindings_
       }
       function subtype_(a, b)
       {
@@ -357,15 +361,22 @@ export class NIL
               return '\'' + entity.value
             break
           case 'List':
-              let liststring = '(list '
-              for (let atom of entity.value)
-              {
-                liststring += this.PrettyPrint(atom)
-                liststring += ' '
-              }
-              return liststring.slice(0, liststring.length - 1) + ')'
+            let liststring = '(list '
+            for (let atom of entity.value)
+            {
+              liststring += this.PrettyPrint(atom)
+              liststring += ' '
+            }
+            return liststring.slice(0, liststring.length - 1) + ')'
             break
           case 'Type':
+            let typestring = '(type '
+            for (let atom of entity.value)
+            {
+              typestring += this.PrettyPrint(atom)
+              typestring += ' '
+            }
+            return typestring.slice(0, typestring.length - 1) + ')'
             break
           case 'Data':
             break
@@ -427,6 +438,7 @@ export class NIL
       {
         indentcount[i] = ordinality.indexOf(indentcount[i])
       }
+      console.log(indentcount, ordinality)
       for (let n in lines)
       {
         let chunks = lines[n].split(/(\n\t*)/)
@@ -439,7 +451,8 @@ export class NIL
           }
           else if (i < 0)
           {
-            lines[n - 1] += ')'.repeat(i * -1)
+            lines[n - 1] += ')'.repeat(indentcount[n - 1])
+            lines[n] = chunks[1] + '(' + chunks[2]
           }
           else if (i == 0 && indentcount[n] > 0)
           {
@@ -459,6 +472,7 @@ export class NIL
       lines[0] = chunks[1] + '(' + chunks[2]
       lines = lines.reduce((o, l) => o + l, '')
       lines = lines + ')'
+      console.log(lines)
       return lines
     }
     parse(src)

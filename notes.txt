@@ -1124,3 +1124,25 @@ module
       x + y
   data (foo t)
     make-foo t
+
+
+
+
+
+macros are defined with a pattern that matches a quotation template
+
+(define (foo)
+ (foo x) (bar x))
+
+You can have fixity operations like 
+(define (foo)
+ (x foo y) (bar x y))
+
+You can have variadic functions like
+(define (foo)
+ (foo n) (bar n))
+
+You can define macros which are determined programmatically 
+
+(define (foo)
+ (foo n) (' bar (''' baz n)))

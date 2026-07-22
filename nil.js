@@ -50,62 +50,55 @@ export class NIL
       {
         case 'string':
           if (program[0] == '\'')
-          {
-            return { type : "Symbol", value : program.slice(1) }
-          }
-          else
-          {
-            let context_ = context
-            while(true)
-            {
-              if (Object.hasOwn(context_, program))
-              {
-                return context_[program]
-              }
-              else
-              {
-                if (context_.parent != undefined)
-                {
-                  context_ = context_.parent
-                }
-              }
-            }
-            return { type : "Null", value : undefined }
-          }
-          break
+          { return this.Primitives.Symbol(program.slice(1)) }
         case 'object':
           if (Array.isArray(program))
           {
-            let operative = program.shift()
-            switch(operative)
+            if (typeof program[0] == 'function')
             {
-              case 'define':
-                break
-              case 'data':
-                break
-              case 'let':
-                break
-              case 'list':
-                break
-              case 'function':
-                break
-              case 'conditional':
-                break
+              let f = program.slice()
+              let parameters = []
+              for (let atom of program)
+              {
+                if (Array.isArray(atom))
+                { parameters.push(this.evaluate_(atom)) }
+                else
+                { parameters.push(atom) }
+              }
+              f(...parameters)
             }
           }
-          else
-          {
-            return program
-          }
+        default:
+          break
       }
     }
     Operations = 
     {
       define(program, context)
       {
+        let binding = program.shift()
+        let value = program
+        if (Array.isArray(binding))
+        {
+
+        }
+        else
+        {
+          context.top[binding] = this.evaluate_(value, context)
+        }
+      },
+      data(program, context)
+      {
 
       },
-      
+      use(program, context)
+      {
+
+      },
+      in(program, context)
+      {
+
+      }
     }
     evaluate__(program_, context)
     {

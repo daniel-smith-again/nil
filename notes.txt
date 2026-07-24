@@ -1146,3 +1146,29 @@ You can define macros which are determined programmatically
 
 (define (foo)
  (foo n) (' bar (''' baz n)))
+
+
+do I even have lists?
+yes because that's what's in an expression.
+
+what about arrays?
+
+I need a syntax to say that the structure is "flat" rather than indirect
+
+data 
+  Array t
+  push Array t t
+
+
+what about polymorphic adts?
+list of whatever?
+
+
+data 
+  List
+  cons n (List)
+  empty
+
+
+
+define (x : (List (type String Number)))

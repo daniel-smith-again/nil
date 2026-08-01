@@ -1172,3 +1172,39 @@ data
 
 
 define (x : (List (type String Number)))
+
+
+
+
+
+
+module operations
+(module ...)
+(in ...)
+(leave)
+
+definition operations
+(use ...)
+(define ...)
+(data ...)
+
+list constructor
+(list ...)
+
+local binding
+(let ...)
+
+function definition
+(function ...)
+
+reflection
+(? _)
+(describe _)
+(display _)
+(format _)
+(symbol _)
+(expand _)
+(evaluate _)
+
+conditional evaluation
+(_ ? ...)

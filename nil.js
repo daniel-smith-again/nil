@@ -167,7 +167,7 @@ export class NIL
   {
     let match = (pattern, form) =>
     {
-      return true
+      
     }
   }
   evaluate_(form)

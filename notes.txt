@@ -1208,3 +1208,8 @@ reflection
 
 conditional evaluation
 (_ ? ...)
+
+
+
+what is my algorithm for matching macros?
+I can't use the first symbol because my macros are pattern based.

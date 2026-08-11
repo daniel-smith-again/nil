@@ -1213,3 +1213,33 @@ conditional evaluation
 
 what is my algorithm for matching macros?
 I can't use the first symbol because my macros are pattern based.
+
+how do syntax declarations work?
+
+(syntax (foo)
+ (foo a) '(bar baz a))
+
+
+You have a patter which denotes a structure of 
+Keywords,
+Lists,
+and Symbols
+
+
+
+how to define effects?
+
+effects are just functions that are bound in a proper place
+
+define f
+  x -> g
+    h g x
+
+let 
+  g 
+    k n -> 
+      k (l n)
+  f 'foo
+
+
+this means at compile time, the names of the effects in each function are searched in the context and checked for proper signature.

@@ -1248,6 +1248,8 @@ let
 
 
 
+actually how about I just use ellipses
+
 
 
 how to define effects?
@@ -1266,3 +1268,26 @@ let
 
 
 this means at compile time, the names of the effects in each function are searched in the context and checked for proper signature.
+
+
+
+
+
+
+how do I pattern match macros???
+I have three different patterns...
+1. a keyword
+2. any single atom
+3. a series zero or many atoms
+4. a list
+
+
+to match a keyword, a form must have an identical symbol at the point where the keyword is located
+
+to match a single atom, a form must have an atom present
+
+to match a series, a form must have zero or more atoms present where the series is located
+
+to match a list, a form must have a list present
+
+for singletons, you can just walk the two lists and they will either match or they won't

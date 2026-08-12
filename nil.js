@@ -167,22 +167,32 @@ export class NIL
   {
     let match = (pattern, form) =>
     {
-      const listwalk = function*(l) {for (let atom of l) {yield atom}}
-      let p_ = listwalk(pattern)
-      let f_ = listwalk(form)
-      while(true)
+      for (let p of pattern)
       {
-        let p_atom = p_.next()
-        let f_atom = f_.next()
-        //if form doesn't contain matches for everything in pattern, match is false
-        if (!p_.atom.done && f_atom.done)
+        switch(typeof p)
         {
-          return false
-        }
-        //form is still a potential match
-        else
-        {
-          
+          case 'string':
+            if (p[0] == ' ')
+            {
+              if (p[1] == ' ')
+              {
+
+              }
+              else
+              {
+
+              }
+            }
+            else
+            {
+              
+            }
+            break;
+          case 'object':
+            if (Array.isArray(p))
+            {
+
+            }
         }
       }
     }
@@ -289,26 +299,93 @@ export class NIL
       
     },
     Syntax:
-    //template variables are prefixed 
-    //with a space to mark them as non-keywords
+    //syntax patterns are 
+    // * keywords as strings
+    // * variables as strings beginning with space
+    // * ellipses postfix for variables that are lists
     [
-      [["module", " contents"], (form) => {
+      /*
+        Module constructor:
+        (define Module (module) (module declarations ...) _)
+      */
+      [["module", "  contents"], (form) => {}],
 
-      }],
+      /*
+        Module commands
+      */
       [["in", " module"], ["in", " module", " body"], (form) => {}],
       [["leave"], (form) => {}],
-      [["use", " includes"], (form) => {}],
-      [["define", " name", " value"], ["define", [" keywords"], " templates"], (form) => {}],
-      [["data", [" family"], " constructors"], (form) => {}],
-      [["list", " elements"], (form) => {}],
-      [["let", " bindings"], (form) => {}],
-      [[" parameters", "->", " body"], (form) => {}],
-      [["?", " value"], (form) => {}],
-      [["describe", " value"], (form) => {console.log("matched Describe syntax")}],
-      [["display", " value"], (form) => {}],
+
+      /*
+        Module serialization
+      */
+      [["load", " location"], (form) => {}],
+      [["store", " module", " location", "  options"], (form) => {}],
+
+      /*
+        Use declaration
+      */
+      [["use", "  imports"], (form) => {}],
+
+      /*
+        Definition declaration:
+        (define Define (define) 
+         (define name value) _
+         (define name (keywords ...) templates ...) _)
+      */
+      [["define", " name", " entity"],
+       ["define", " name", ["  keywords"], "  templates"],
+       (form) => {}
+      ],
+
+      /*
+        Data declaration:
+        (define Data (data)
+         (data (family qualifiers ...) constructors ...) _)
+      */
+      [["data", [" family", "  qualifiers",], "  constructors"], (form) => {}]
+
+      /*
+        Function Constructor
+      */
+      [["function", ["  parameters"], "  effects", " body"],
+       ["  parameters",, "->", "  effects", " body"],
+       (form) => {}
+      ],
+
+      /*
+        Let binding
+      */
+      [["let", "  bindings", " body"], (form) => {}],
+
+      /*
+        Do notation
+      */
+      [["do", "  expressions"], (form) => {}],
+
+      /*
+        Conditional evaluation
+      */
+      [[" subject", "?", "  cases"], (form) => {}],
+
+      /*
+        List constructor
+      */
+      [["#", "  items"], (form) => {}],
+
+      /*
+        Quote
+      */
+      [["'", "  body"], (form) => {}],
+
+      /*
+        Reflection
+      */
+      [["?", " subject"], (form) => {}], //typeof
       [["expand", " quote"], (form) => {}],
       [["evaluate", " quote"], (form) => {}],
-      [[" subject", "?", " cases"], (form) => {}]
+      [["describe", " subject"], (form) => {}],
+      [["display", "  subject"], (form) => {}],
     ],
   }
 }

@@ -167,7 +167,24 @@ export class NIL
   {
     let match = (pattern, form) =>
     {
-      
+      const listwalk = function*(l) {for (let atom of l) {yield atom}}
+      let p_ = listwalk(pattern)
+      let f_ = listwalk(form)
+      while(true)
+      {
+        let p_atom = p_.next()
+        let f_atom = f_.next()
+        //if form doesn't contain matches for everything in pattern, match is false
+        if (!p_.atom.done && f_atom.done)
+        {
+          return false
+        }
+        //form is still a potential match
+        else
+        {
+          
+        }
+      }
     }
   }
   evaluate_(form)

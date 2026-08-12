@@ -1225,6 +1225,29 @@ Keywords,
 Lists,
 and Symbols
 
+how do I separate 
+(1 2 3 + 4)
+and 
+(1 + 2)
+where the latter is what I want?
+
+(syntax (+) (x + y) (...))
+I would check the number of arguments
+
+let
+  argcheck 
+    l ->
+      (# l) ? 
+        1 l
+        * (do
+            display "too many arguments"
+            nil)
+  syntax (+)
+    (x + y)
+    ' plus (''(argcheck x)) (''(argcheck y))
+
+
+
 
 
 how to define effects?

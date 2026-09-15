@@ -1273,21 +1273,72 @@ this means at compile time, the names of the effects in each function are search
 
 
 
+how to I express macros?
+via pattern matching
+you express a macro as a structure of keywords and wildcards
+for example a function call would be described as 
+(define FunctionCall ()
+ (a b) (apply a b))
+A pattern is composed of three components 
+keywords,
+symbols,
+lists
 
-how do I pattern match macros???
-I have three different patterns...
-1. a keyword
-2. any single atom
-3. a series zero or many atoms
-4. a list
 
 
-to match a keyword, a form must have an identical symbol at the point where the keyword is located
 
-to match a single atom, a form must have an atom present
 
-to match a series, a form must have zero or more atoms present where the series is located
+I want an image based environment but with more GUI and structural editing.
+You can still type text but it's more like a form.
+This makes it hard because what if you want a macro that defines stuff for you?
+I guess you have to use a text file after all. Blah.
 
-to match a list, a form must have a list present
+What's the difference between an image and a text file actually though?
+Nothing. It's just a module definition.
+An image would just be the interpreter with some modules attached to it.
+You can always make forms based on macros though.
+Keywords are keywords.
+Single inputs are single inputs.
+List inputs are text.
+You can chose from any top-level expressions.
+Module syntax is fixed.
+(module 
+ define/data
+ ...
+)
+That's how you create a module.
+You might invoke a macro to create a module inside a module, but that still fits within the syntax.
+What's my module GUI???
 
-for singletons, you can just walk the two lists and they will either match or they won't
+module name _
+
+
+
+
+How do module work?
+Module scope is flat within the top level.
+Modules can have nested modules which need to be exported.
+Each module is a file.
+Modules can include from each other.
+
+
+
+
+There's so many good tools for transforming utf-8 text, it would be a shame to shut them out in a 
+walled garden.
+NIL also comes in a very regularly structured format where everything's grouped by indentation.
+Rather than not allowing batch compilation, NIL should embrace it as a bootstrap.
+It's fine if you want to work in a shell session, most of the time that's convenient.
+It's still important to be able to quickly ingest static source files though.
+
+NIL format lets you break up expressions by newline pairs 
+This means you can parallelize your parsing and macro resolution.
+
+
+
+this is one
+  expression
+
+
+this is a second
+  expression

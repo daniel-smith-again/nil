@@ -167,33 +167,32 @@ export class NIL
   {
     let match = (pattern, form) =>
     {
-      for (let p of pattern)
+      switch(typeof pattern)
       {
-        switch(typeof p)
-        {
-          case 'string':
-            if (p[0] == ' ')
-            {
-              if (p[1] == ' ')
-              {
+        case 'string':
+          if (pattern[0] == ' ')
+          {
 
-              }
-              else
-              {
+          }
+          else
+          {
 
-              }
-            }
-            else
-            {
-              
-            }
-            break;
-          case 'object':
-            if (Array.isArray(p))
-            {
+          }
+        break
+        case 'object':
+          if (Array.isArray(pattern))
+          {
 
-            }
-        }
+          }
+        break
+      }
+      if (pattern.type == form.type)
+      {
+        
+      }
+      else
+      {
+        return false
       }
     }
   }
@@ -298,7 +297,23 @@ export class NIL
       }
       
     },
-    Syntax:
+    Syntax: 
+    [
+      [["module", " contents"], (form) => {}],
+      [["in", " module"], ["in", " module", " body"], (form) => {}],
+      [["leave"], (form) => {}],
+      [["load", " location"], (form) => {}],
+      [["store", " module", " location", " options"], (form) => {}],
+      [["use", " imports"], (form) => {}],
+      [["define", " name", " entity"],
+       ["define", " name", [" keywords"], " templates"],
+       (form) => {}
+      ],
+      [["data", [" family", " qualifiers"], " constructors"], (form) => {}],
+      
+    ],
+
+    sSyntax:
     //syntax patterns are 
     // * keywords as strings
     // * variables as strings beginning with space

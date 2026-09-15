@@ -1,0 +1,78 @@
+nil should be a high level interpreter so that it can run on embedded environments.
+
+nil has the following datatypes
+- symbols
+- lists
+- integers
+- arrays/strings
+- structures
+- functions
+
+for symbols, the following operations apply
+- symbol 
+	symbol constructor, will give you the symbol for a string or a new unique symbol
+
+for lists
+- list
+	list constructor
+- concatenate
+	combine two lists
+
+for integers
+- addition/subtraction/multiplication/division
+
+for arrays
+- array
+	constructor
+- subscript
+	access an index
+- concatenate
+	combine two arrays
+
+for structures
+- create instance
+	create an instance of a structure
+- subscript
+	access a specific field of a structure
+
+
+I need a high level virtual machine that works on NIL's data types rather than a low level one.
+The point is that C facilitates the efficiency and NIL facilitates the portability.
+I need filesystem I/O, string manipulation, modules, functions, etc...
+
+data and operations
+Data are modules, functions, types, arrays, lists, symbols, strings, numbers
+
+operations are...
+construct module
+load module
+store module
+
+construct function
+call function
+
+construct type
+combine types
+subtype comparison
+
+construct array
+subscript array
+concatenate array
+
+construct list
+access list
+concatenate list
+
+construct tuple
+access tuple
+
+construct symbol
+convert symbol to string
+
+construct string
+subscript string
+concatenate string
+
+some stuff has to be compiled because stuff like destructuring let binging and type matching imply algorithms.
+
+

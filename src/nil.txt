@@ -1,0 +1,27 @@
+The NIL Programming Language Specification
+
+Introduction
+
+NIL is a utility for general purpose programming.
+It is both a programming language and an interactive session program.
+The programming language relies on the presence of the interactive session for
+some of its functionality.
+The interactive session is responsible for interpreting, debugging, and managing
+the programs constructed by the user.
+The programming language is responsible for specifying the form, effects, and
+correctness of programs.
+
+The NIL Interactive Session
+
+The NIL interactive session has minimal requirements.
+1. It must only accept input in the format of NIL programs.
+2. It must correctly interpret all programs input to it, and the effects on the
+   host system that they entail.
+
+The NIL Programming Language
+
+The NIL Programming Language is formatted as a string of Unicode characters.
+A Unicode string will be referred to as a "source".
+NIL source is required to ignore any code points which would cause the source to be interpreted in a manner different from the physical ordering of the characters.
+An example of what to ignore would be the Right-To-Left-Mark code point which potentially affects the order in which the characters are processed.
+

@@ -1,0 +1,138 @@
+#ifndef _NIL_H_
+#define _NIL_H_
+
+typedef struct
+{
+	enum {	load, store, copy, call, nop, 
+		add, subtract, multiply, divide, remainder, 
+		and, or, not, shift_left, shift_right 
+	} operation : 8;
+	unsigned int type : 8;
+	unsigned int a : 8;
+	unsigned int b : 8;
+} nil_machine_instruction;
+
+/*
+	operation is one of [L, S, C, ~, _, +, -, *, /, %, &, |, !, <, >]
+	type is one of [b, B, h, H, w, W, q, Q, f, F, d, D, _]
+	a is one of [I, F, S, s, a, b, c, d, e, f, g, h, _]
+	b is one of [I, F, S, s, a, b, c, d, e, f, g, h, _]
+*/
+
+typedef struct 
+{
+	nil_machine_instruction *segment;
+	unsigned int length;
+} nil_machine_code;
+
+typedef struct 
+{
+	union {
+		unsigned long byte : 8;
+		signed long Byte : 8;
+		unsigned long half : 16;
+		signed long Half : 16;
+		unsigned long word : 32;
+		signed long Word : 32;
+		unsigned long quad : 64;
+		signed long Quad : 64;
+		float single_precision : 32;
+		double double_precision : 64;
+	};
+} nil_machine_register;
+
+typedef struct
+{
+	nil_machine_register [12] page;
+	/* registers are in the order of
+		[instruction pointer, frame pointer, stack pointer, 
+		a, b, c, d, e, f, g, h, stack pointer
+	*/
+
+	//each operand is assigned an index 0-11
+	unsigned int operand_x: 4;
+	unsigned int operand_y: 4;
+} nil_machine_processor;
+
+typedef struct
+{
+	void *stack;
+	unsigned int size;
+} nil_machine_stack;
+
+typedef struct
+{
+	nil_machine_processor *p;
+	nil_machine_stack *s;
+	nil_machine_code *c;
+} nil_machine_state;
+
+void nil_machine_op_load(nil_machine_state* machine);
+void nil_machine_op_store(nil_machine_state* machine);
+void nil_machine_op_copy(nil_machine_state* machine);
+void nil_machine_op_call(nil_machine_state* machine);
+void nil_machine_op_nop(nil_machine_state* machine);
+void nil_machine_op_add(nil_machine_state* machine);
+void nil_machine_op_subtract(nil_machine_state* machine);
+void nil_machine_op_multiply(nil_machine_state* machine);
+void nil_machine_op_divide(nil_machine_state* machine);
+void nil_machine_op_remainder(nil_machine_state* machine);
+void nil_machine_op_and(nil_machine_state* machine);
+void nil_machine_op_or(nil_machine_state* machine);
+void nil_machine_op_not(nil_machine_state* machine);
+void nil_machine_op_shift_left(nil_machine_state* machine);
+void nil_machine_op_shift_right(nil_machine_state* machine);
+
+void nil_machine_init(nil_machine_state *machine, nil_machine_processor *p, nil_machine_stack *s, nil_machine_code *c);
+void nil_machine_assemble(nil_machine_code *c);
+void nil_machine_decode(nil_machine_state *machine);
+void nil_machine_loop(nil_machine_state *machine);
+
+void nil_machine_init(nil_machine_state *machine, nil_machine_processor *p, nil_machine_stack *s, nil_machine_code *c);
+{
+	nil_machine_assemble(c);
+	machine->p = p;
+	machine->s = s;
+	machine->c = c;
+}
+
+void nil_machine_decode(nil_machine_state *machine)
+{
+	nil_machine_instruction i;
+	if (machine->p.page[0].word < machine->s.size)
+	{
+		i = machine->s.stack[machine->p.page[0].word]
+	}
+	switch((char)i.a)
+	{
+		case 'I': machine->p.operand_x = 0; break;
+		case 'F': machine->p.operand_x = 1; break;
+		case 'S': machine->p.operand_x = 2; break;
+		case 'a': machine->p.operand_x = 3; break;
+		case 'b': machine->p.operand_x = 4; break;
+		case 'c': machine->p.operand_x = 5; break;	
+		case 'd': machine->p.operand_x = 6; break;
+		case 'e': machine->p.operand_x = 7; break;
+		case 'f': machine->p.operand_x = 8; break;
+		case 'g': machine->p.operand_x = 9; break;
+		case 'h': machine->p.operand_x = 10; break;
+		case 's': machine->p.operand_x = 11; break;
+	}
+	switch(char)i.b)
+	{
+		case 'I': machine->p.operand_y = 0; break;
+		case 'F': machine->p.operand_y = 1; break;
+		case 'S': machine->p.operand_y = 2; break;
+		case 'a': machine->p.operand_y = 3; break;
+		case 'b': machine->p.operand_y = 4; break;
+		case 'c': machine->p.operand_y = 5; break;	
+		case 'd': machine->p.operand_y = 6; break;
+		case 'e': machine->p.operand_y = 7; break;
+		case 'f': machine->p.operand_y = 8; break;
+		case 'g': machine->p.operand_y = 9; break;
+		case 'h': machine->p.operand_y = 10; break;
+		case 's': machine->p.operand_y = 11; break;
+	}
+	
+}
+#endif
